@@ -1,7 +1,9 @@
 from pathlib import Path
 
+from sqlalchemy import select
+
 from vendorlens.ingestion import IngestionService
-from vendorlens.models import Project
+from vendorlens.models import DocumentChunk, Project
 from vendorlens.storage import LocalDocumentStorage
 
 
@@ -41,4 +43,12 @@ def test_ingestion_is_idempotent_and_versions_changed_content(session, tmp_path:
     assert duplicate.version_id == first.version_id
     assert changed.version_number == 2
     assert changed.version_id != first.version_id
-
+    chunks = list(
+        session.scalars(
+            select(DocumentChunk)
+            .where(DocumentChunk.version_id == first.version_id)
+            .order_by(DocumentChunk.ordinal)
+        )
+    )
+    assert [chunk.chunk_type for chunk in chunks] == ["parent", "child"]
+    assert chunks[1].parent_chunk_id == chunks[0].id

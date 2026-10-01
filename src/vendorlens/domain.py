@@ -41,6 +41,8 @@ class ParsedChunk:
     location: SourceLocation
     text_hash: str
     metadata: dict[str, Any] = field(default_factory=dict)
+    chunk_type: str = "parent"
+    parent_position: int | None = None
 
 
 @dataclass(frozen=True)
@@ -52,3 +54,8 @@ class SearchHit:
     rank: int
     strategy: str
 
+
+@dataclass(frozen=True)
+class ExpandedSearchHit:
+    parent: SearchHit
+    matched_child: SearchHit

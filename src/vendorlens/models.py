@@ -79,6 +79,16 @@ class DocumentChunk(Base):
         ForeignKey("document_versions.id", ondelete="CASCADE"), index=True
     )
     ordinal: Mapped[int] = mapped_column(Integer)
+    chunk_type: Mapped[str] = mapped_column(String(20), default="parent")
+    parent_chunk_id: Mapped[str | None] = mapped_column(
+        ForeignKey(
+            "document_chunks.id",
+            ondelete="CASCADE",
+            name="fk_document_chunks_parent_chunk_id",
+        ),
+        nullable=True,
+        index=True,
+    )
     text: Mapped[str] = mapped_column(Text)
     text_hash: Mapped[str] = mapped_column(String(64))
     location: Mapped[dict] = mapped_column(JSON)

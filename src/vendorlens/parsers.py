@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import io
 import re
+from dataclasses import replace
 from pathlib import Path
 
 from docx import Document as DocxDocument
@@ -25,14 +26,58 @@ def _chunk(text: str, location: SourceLocation, **metadata) -> ParsedChunk:
 def parse_document(filename: str, content: bytes) -> list[ParsedChunk]:
     suffix = Path(filename).suffix.lower()
     if suffix in {".txt", ".md"}:
-        return _parse_text(content, markdown=suffix == ".md")
+        return _add_hierarchy(_parse_text(content, markdown=suffix == ".md"))
     if suffix == ".xlsx":
-        return _parse_xlsx(content)
+        return _add_hierarchy(_parse_xlsx(content), create_children=False)
     if suffix == ".docx":
-        return _parse_docx(content)
+        return _add_hierarchy(_parse_docx(content))
     if suffix == ".pdf":
-        return _parse_pdf(content)
+        return _add_hierarchy(_parse_pdf(content))
     raise ValueError(f"unsupported document type: {suffix or '(none)'}")
+
+
+def _split_child_text(text: str, max_chars: int = 320) -> list[str]:
+    sentences = [
+        part.strip() for part in re.split(r"(?<=[。！？.!?])\s*|\n+", text) if part.strip()
+    ]
+    children: list[str] = []
+    buffer = ""
+    for sentence in sentences:
+        if len(sentence) > max_chars:
+            if buffer:
+                children.append(buffer)
+                buffer = ""
+            children.extend(sentence[i : i + max_chars] for i in range(0, len(sentence), max_chars))
+        elif buffer and len(buffer) + len(sentence) > max_chars:
+            children.append(buffer)
+            buffer = sentence
+        else:
+            buffer += sentence
+    if buffer:
+        children.append(buffer)
+    return children or [text]
+
+
+def _add_hierarchy(
+    source_chunks: list[ParsedChunk], *, create_children: bool = True
+) -> list[ParsedChunk]:
+    hierarchical: list[ParsedChunk] = []
+    for source in source_chunks:
+        parent_position = len(hierarchical)
+        hierarchical.append(replace(source, chunk_type="parent", parent_position=None))
+        if create_children:
+            for child_text in _split_child_text(source.text):
+                hierarchical.append(
+                    _chunk(
+                        child_text,
+                        source.location,
+                        **source.metadata,
+                    )
+                )
+                hierarchical[-1] = replace(
+                    hierarchical[-1], chunk_type="child", parent_position=parent_position
+                )
+    return hierarchical
 
 
 def _parse_text(content: bytes, markdown: bool) -> list[ParsedChunk]:
@@ -50,9 +95,7 @@ def _parse_text(content: bytes, markdown: bool) -> list[ParsedChunk]:
             chunks.append(
                 _chunk(
                     value,
-                    SourceLocation(
-                        heading_path=tuple(headings), line_start=start, line_end=end
-                    ),
+                    SourceLocation(heading_path=tuple(headings), line_start=start, line_end=end),
                 )
             )
         buffer = []
@@ -109,9 +152,7 @@ def _parse_docx(content: bytes) -> list[ParsedChunk]:
             headings[:] = headings[: level - 1]
             headings.append(text)
             continue
-        chunks.append(
-            _chunk(text, SourceLocation(paragraph=index, heading_path=tuple(headings)))
-        )
+        chunks.append(_chunk(text, SourceLocation(paragraph=index, heading_path=tuple(headings))))
     for table_index, table in enumerate(document.tables, 1):
         for row_index, row in enumerate(table.rows, 1):
             text = " | ".join(cell.text.strip() for cell in row.cells)

@@ -1,7 +1,7 @@
 import pytest
 
 from vendorlens.evaluation import retrieval_metrics
-from vendorlens.retrieval import HybridRetriever, IndexedChunk
+from vendorlens.retrieval import HybridRetriever, IndexedChunk, ParentDocumentRetriever
 
 
 @pytest.fixture
@@ -34,3 +34,22 @@ def test_metrics_are_reproducible():
     assert metrics.mrr == 1.0
     assert metrics.ndcg_at_k == pytest.approx(0.9197207891)
 
+
+def test_parent_retrieval_deduplicates_parent_and_keeps_winning_child():
+    children = [
+        IndexedChunk("c1", "总报价 88 万元", {"parent_id": "p1", "version_id": "v1"}),
+        IndexedChunk("c2", "预付款比例 30%", {"parent_id": "p1", "version_id": "v1"}),
+        IndexedChunk("c3", "总报价 82 万元", {"parent_id": "p2", "version_id": "v2"}),
+    ]
+    parents = {
+        "p1": IndexedChunk("p1", "报价 88 万，预付款 30%。", {"version_id": "v1"}),
+        "p2": IndexedChunk("p2", "新版报价 82 万。", {"version_id": "v2"}),
+    }
+    retriever = ParentDocumentRetriever(HybridRetriever(children), parents)
+
+    hits = retriever.search("88 万元预付款", top_k=2, filters={"version_id": "v1"})
+
+    assert len(hits) == 1
+    assert hits[0].parent.chunk_id == "p1"
+    assert hits[0].matched_child.chunk_id in {"c1", "c2"}
+    assert hits[0].parent.metadata["version_id"] == "v1"

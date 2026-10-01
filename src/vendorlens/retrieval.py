@@ -8,7 +8,7 @@ from typing import Any, Protocol
 
 from rank_bm25 import BM25Okapi
 
-from vendorlens.domain import SearchHit
+from vendorlens.domain import ExpandedSearchHit, SearchHit
 
 
 def tokenize(text: str) -> list[str]:
@@ -74,8 +74,7 @@ class HybridRetriever:
         bm25_scores = self.bm25.get_scores(tokenize(query))
         query_vector = self.embedder.embed([query])[0]
         vector_scores = [
-            sum(a * b for a, b in zip(query_vector, vector, strict=True))
-            for vector in self.vectors
+            sum(a * b for a, b in zip(query_vector, vector, strict=True)) for vector in self.vectors
         ]
         bm25_rank = sorted(eligible, key=lambda i: (-bm25_scores[i], self.chunks[i].id))
         vector_rank = sorted(eligible, key=lambda i: (-vector_scores[i], self.chunks[i].id))
@@ -104,3 +103,38 @@ class HybridRetriever:
             )
             for rank, (index, score) in enumerate(ranked[:top_k], 1)
         ]
+
+
+class ParentDocumentRetriever:
+    def __init__(self, child_retriever: HybridRetriever, parents: dict[str, IndexedChunk]) -> None:
+        self.child_retriever = child_retriever
+        self.parents = parents
+
+    def search(self, query: str, *, top_k: int = 5, **kwargs) -> list[ExpandedSearchHit]:
+        child_hits = self.child_retriever.search(query, top_k=top_k * 3, **kwargs)
+        expanded: list[ExpandedSearchHit] = []
+        seen: set[str] = set()
+        for child in child_hits:
+            parent_id = child.metadata.get("parent_id")
+            parent = self.parents.get(parent_id) if parent_id else None
+            if parent is None or parent_id in seen:
+                continue
+            if parent.metadata.get("version_id") != child.metadata.get("version_id"):
+                continue
+            seen.add(parent_id)
+            expanded.append(
+                ExpandedSearchHit(
+                    parent=SearchHit(
+                        chunk_id=parent.id,
+                        text=parent.text,
+                        metadata=parent.metadata,
+                        score=child.score,
+                        rank=len(expanded) + 1,
+                        strategy="parent_document",
+                    ),
+                    matched_child=child,
+                )
+            )
+            if len(expanded) == top_k:
+                break
+        return expanded

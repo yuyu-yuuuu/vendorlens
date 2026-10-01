@@ -79,19 +79,22 @@ class IngestionService:
             )
             session.add(version)
             session.flush()
+            chunk_ids: dict[int, str] = {}
             for ordinal, chunk in enumerate(parsed):
-                session.add(
-                    DocumentChunk(
-                        version_id=version.id,
-                        ordinal=ordinal,
-                        text=chunk.text,
-                        text_hash=chunk.text_hash,
-                        location=chunk.location.as_dict(),
-                        chunk_metadata=chunk.metadata,
-                    )
+                parent_chunk_id = (
+                    chunk_ids[chunk.parent_position] if chunk.parent_position is not None else None
                 )
-            session.flush()
-            return IngestionResult(
-                document.id, version.id, next_version, True, len(parsed)
-            )
-
+                record = DocumentChunk(
+                    version_id=version.id,
+                    ordinal=ordinal,
+                    chunk_type=chunk.chunk_type,
+                    parent_chunk_id=parent_chunk_id,
+                    text=chunk.text,
+                    text_hash=chunk.text_hash,
+                    location=chunk.location.as_dict(),
+                    chunk_metadata=chunk.metadata,
+                )
+                session.add(record)
+                session.flush()
+                chunk_ids[ordinal] = record.id
+            return IngestionResult(document.id, version.id, next_version, True, len(parsed))
