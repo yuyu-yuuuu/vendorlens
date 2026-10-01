@@ -6,12 +6,15 @@
 
 - 本地文件存储接口与基于 SHA-256 的幂等上传。
 - 文档不可变版本；内容变化自动递增版本号。
-- PDF、DOCX、XLSX、Markdown、TXT 统一解析接口，保留来源定位和原文哈希。
-- `rank_bm25`、离线确定性向量和 RRF 融合检索，支持 metadata 过滤。
+- PDF、DOCX、XLSX、Markdown、TXT 统一解析，保留来源定位和原文哈希。
+- 叙事文档采用父子 Chunk：最多 320 字的子块负责召回，父块负责提供完整上下文；XLSX 保持一行一个可定位块。
+- BM25 索引落盘、ChromaDB 向量持久化、RRF 融合和 metadata 过滤；检索只使用每份文档最新的已索引版本。
+- LangGraph 三 Agent 纵向流程：集中检索、并行分析、确定性证据门禁、最多两次局部返工和部分完成语义。
+- 内存/PostgreSQL Checkpointer、持久化运行事件与可恢复 SSE 事件格式。
 - PostgreSQL 业务模型、Alembic 事务迁移、Redis Worker 入口和 FastAPI 健康检查。
 - 完全合成的本地检索标注集与 Recall@K、Precision@K、MRR、NDCG 评测。
 
-三 Agent LangGraph、PostgreSQL Checkpointer、证据门禁、SSE、持久化 Trace 和前端工作台按[实施计划](docs/plans/2026-09-30-implementation-plan.md)继续迭代。完整边界见[设计说明](docs/design/2026-09-30-vendorlens-design.md)。
+当前仍使用确定性哈希向量作为可复现基线；真实中文 Embedding、任务 API/RQ 接线、SSE HTTP 端点、完整 Trace 和前端工作台按[实施计划](docs/plans/2026-09-30-implementation-plan.md)继续迭代。完整边界见[设计说明](docs/design/2026-09-30-vendorlens-design.md)。
 
 ## 本地启动
 
@@ -20,12 +23,26 @@
 ```bash
 python3 -m venv .venv
 .venv/bin/pip install -e '.[dev]'
-docker compose up -d postgres redis
+docker compose up -d postgres redis chroma
 .venv/bin/alembic upgrade head
 .venv/bin/uvicorn vendorlens.api:app --reload
 ```
 
-API 健康检查：`GET http://localhost:8000/health`。
+API 健康检查：`GET http://localhost:8000/health`。本机 ChromaDB 使用 `http://localhost:8100`；容器内服务通过 `http://chroma:8000` 访问。
+
+## 当前数据流
+
+```text
+上传文件
+  → SHA-256 幂等判断与不可变 Version
+  → 解析并保存父子 Chunk
+  → 子 Chunk 写入 BM25 + ChromaDB
+  → 仅过滤各文档最新已索引 Version
+  → BM25 / Vector 召回并用 RRF 融合
+  → 根据 parent_id 回查父 Chunk
+  → 生成带版本、位置和原文哈希的 EvidenceItem
+  → LangGraph 分析与证据门禁
+```
 
 ## 验证
 

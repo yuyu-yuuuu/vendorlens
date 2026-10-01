@@ -23,4 +23,3 @@ def retrieval_metrics(ranked_ids: list[str], relevant_ids: set[str], k: int) -> 
     idcg = sum(hit / math.log2(rank + 1) for rank, hit in enumerate(ideal_hits, 1))
     ndcg = dcg / idcg if idcg else 0.0
     return RetrievalMetrics(recall, precision, reciprocal_rank, ndcg)
-

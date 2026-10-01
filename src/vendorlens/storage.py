@@ -42,4 +42,3 @@ class LocalDocumentStorage:
         if self.root not in path.parents:
             raise ValueError("storage key escapes configured root")
         return path
-

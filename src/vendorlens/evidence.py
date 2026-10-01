@@ -2,10 +2,16 @@ from __future__ import annotations
 
 import hashlib
 import re
+from collections.abc import Callable
+from contextlib import AbstractContextManager
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 from typing import Protocol
 
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+
+from vendorlens.models import Document, DocumentChunk, DocumentVersion
 from vendorlens.schemas import Claim, ClaimReview, ClaimType, EvidenceItem, ReviewResult
 
 
@@ -20,6 +26,30 @@ class SourceRecord:
 
 class EvidenceRepository(Protocol):
     def get_source(self, chunk_id: str) -> SourceRecord | None: ...
+
+
+class DatabaseEvidenceRepository:
+    def __init__(self, session_factory: Callable[[], AbstractContextManager[Session]]):
+        self.session_factory = session_factory
+
+    def get_source(self, chunk_id: str) -> SourceRecord | None:
+        with self.session_factory() as session:
+            row = session.execute(
+                select(DocumentChunk, DocumentVersion, Document)
+                .join(DocumentVersion, DocumentVersion.id == DocumentChunk.version_id)
+                .join(Document, Document.id == DocumentVersion.document_id)
+                .where(DocumentChunk.id == chunk_id)
+            ).one_or_none()
+            if row is None:
+                return None
+            chunk, version, document = row
+            return SourceRecord(
+                project_id=document.project_id,
+                version_id=version.id,
+                chunk_id=chunk.id,
+                text=chunk.text,
+                text_hash=chunk.text_hash,
+            )
 
 
 NUMERIC_TYPES = {

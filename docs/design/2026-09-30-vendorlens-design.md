@@ -17,14 +17,14 @@ VendorLens 是“项目方案与供应商资料评审 Agent 平台”。用户�
 
 ## 3. 系统架构
 
-采用 monorepo：
+目标采用 monorepo；当前后端纵向切片集中在 `src/vendorlens`，待前端实施时再拆出独立应用包，避免过早制造空目录：
 
-- `apps/web`：Next.js、TypeScript、Tailwind CSS、shadcn/ui。
-- `services/api`：FastAPI REST 与 SSE；创建分析任务后立即返回 `run_id`。
-- `services/worker`：独立 Redis 队列消费者，执行解析、索引和 LangGraph 工作流。
-- `packages/core`：领域模型、文档解析、Hybrid RAG、证据门禁、ModelProvider、Trace。
+- `src/vendorlens`：当前领域模型、解析、索引、Hybrid RAG、检索协调、证据门禁、LangGraph 工作流和 API。
+- `services/api`：FastAPI 容器入口；当前提供健康检查，任务 REST/SSE 尚待接线。
+- `services/worker`：RQ Worker 容器入口；具体解析和分析 Job 尚待接线。
+- `apps/web`：计划中的 Next.js、TypeScript、Tailwind CSS、shadcn/ui 工作台。
 - `evals`：本地标注集、检索/Claim/端到端评测和消融脚本。
-- `infra`：Docker Compose、数据库迁移与 Prometheus 配置。
+- `migrations` 与 `docker-compose.yml`：数据库迁移和本地依赖服务。
 
 PostgreSQL 保存业务对象、运行状态、LangGraph checkpoint 和 Trace；Redis 只承担队列及轻量通知；ChromaDB 保存向量；BM25 索引本地持久化；原文件经 `DocumentStorage` 接口写入本地目录，未来可替换 S3/MinIO。
 
@@ -32,7 +32,7 @@ PostgreSQL 保存业务对象、运行状态、LangGraph checkpoint 和 Trace；
 
 - Project：一次采购或项目评审空间。
 - Document：逻辑资料；DocumentVersion：不可变版本和文件哈希。
-- ParsedChunk：保留标题层级、页码/段落或工作表/单元格坐标、原文及哈希。
+- ParsedChunk/DocumentChunk：保留父子关系、标题层级、页码/段落或工作表/单元格坐标、原文及哈希。
 - ResearchTask：一次评审运行，关联目标、状态、`run_id` 和 `trace_id`。
 - ResearchPlan：维度、权重、子任务、查询和依赖。
 - EvidenceItem：版本固定的原文、定位、哈希和检索分数。
@@ -47,26 +47,30 @@ PostgreSQL 保存业务对象、运行状态、LangGraph checkpoint 和 Trace；
 
 解析器输出统一 `ParsedChunk`，同时保留格式特有定位：PDF 页码，DOCX 标题/段落，XLSX 工作表/单元格范围，Markdown/TXT 行区间。空文本 PDF 明确标记为 `ocr_required`，不进入索引。
 
+叙事文档采用父子 Chunk。父块保留完整段落或章节语义，不直接参与召回；父块再切成最多 320 字的子块并记录 `parent_chunk_id`，由子块参与 BM25 和向量检索。命中后按 `parent_id` 回查同一 `DocumentVersion` 的父块，去重后将完整父块交给分析流程，同时保留获胜子块作为精确引用。XLSX 行本身已具备稳定单元格定位，因此作为独立父块直接索引。
+
 索引包含：
 
 - `rank_bm25` 词法检索；中文使用字符二元组与词元混合分词。
-- ChromaDB 向量检索；默认本地 Embedding，可通过接口替换。
+- ChromaDB 持久化向量检索；当前使用确定性哈希 Embedding 建立离线可复现基线，并保留 `EmbeddingProvider` 接口替换真实中文模型。
 - Reciprocal Rank Fusion：`score(d)=Σ 1/(k+rank_i(d))`，默认 `k=60`。
 - 可选 reranker，默认关闭，确保基线可复现。
 
-检索条件由 LangGraph 显式节点集中执行。每个 Planner 子任务生成多个领域子查询并行检索，使用 project、document、version、supplier、type 等 metadata 过滤；检索结果去重并缓存。评测分别运行 BM25、Vector 和 Hybrid，输出 Recall@K、Precision@K、MRR、NDCG。
+检索条件由 LangGraph 显式节点集中执行。`DatabaseRetrievalCoordinator` 先从 PostgreSQL 选出项目内每份文档最新且状态为 `indexed` 的版本，再对 Planner 子任务的多个查询执行 BM25/Vector/RRF，避免把旧版本事实混入当前分析。返回的 `EvidenceItem` 固定到父 Chunk、DocumentVersion、位置和原文哈希，quote 来自命中的子 Chunk。评测分别运行 BM25、Vector 和 Hybrid，输出 Recall@K、Precision@K、MRR、NDCG。
 
 ## 6. 三 Agent 状态图
 
 LangGraph 状态以 `ResearchPlan`、`EvidenceItem[]`、`Claim[]`、`ReviewResult` 和 `FinalReport` 为核心：
 
-`load_context → plan → fan_out_retrieval → analyst_subgraphs → review → revise_claims | finalize → persist_report`
+当前已实现的图：
+
+`plan → retrieve → analyze（并行子任务）→ review → prepare_revision | finalize`
 
 - PlannerAgent：生成维度、权重、可并行子任务和检索查询。
 - AnalystAgent：每个子任务最多三轮 Agent→Tool→Observation，产出 Claim 与 EvidenceItem。
 - ReviewerAgent：语义判断证据是否支持 Claim，并结合确定性校验结果，最多两次只退回不合格 Claim。
 
-复合子任务并行执行；单项失败使用有界重试。重试耗尽后保留其他成功结果，将任务标记 `partially_completed`，报告附人工处理说明。生产使用 PostgreSQL Checkpointer，测试使用内存 Checkpointer；相同 thread/run id 可在进程重启后恢复。
+复合子任务使用线程池并行执行；Analyst 每次最多三轮工具调用。Reviewer 只退回失败 Claim，最多局部返工两次，仍未通过时将任务标记 `partially_completed`。生产可使用 PostgreSQL Checkpointer，测试使用内存 Checkpointer；相同 thread/run id 可恢复状态。模型提供方、真实 Agent 实现和任务 Worker 接线仍属于后续工作。
 
 ## 7. 证据门禁
 
@@ -76,7 +80,7 @@ LangGraph 状态以 `ResearchPlan`、`EvidenceItem[]`、`Claim[]`、`ReviewResul
 
 ## 8. API、队列与实时进度
 
-REST 管理项目、文档、版本、任务和报告。上传或创建分析任务后返回资源 ID/`run_id`，耗时工作进入 Redis 队列。SSE 端点按持久化事件序号续传，支持 `Last-Event-ID`，因此刷新页面或 API 重启后仍能恢复进度；WebSocket 不在范围内。
+目标 REST API 管理项目、文档、版本、任务和报告。当前已实现数据库健康检查、RQ Worker 入口、按任务单调递增的持久化 `RunEvent`，以及标准 SSE 文本格式和按序号续读；任务创建、入队和 SSE HTTP 端点尚待接线。完成后上传或创建分析任务会立即返回资源 ID/`run_id`，前端用 `Last-Event-ID` 在刷新后续传；WebSocket 不在范围内。
 
 ## 9. 可观测性与安全
 
@@ -96,6 +100,14 @@ REST 管理项目、文档、版本、任务和报告。上传或创建分析任
 
 - Python 3.12 作为服务运行时，Node.js 22 LTS 作为前端运行时。
 - SQLAlchemy 2 + Alembic；Pydantic v2；RQ 作为首版 Redis 队列。
-- 本地 Embedding 默认 `BAAI/bge-small-zh-v1.5`，测试使用确定性哈希 Embedding，避免下载模型。
+- 当前运行和测试使用确定性哈希 Embedding，避免下载模型并保证结果可复现；接入 `BAAI/bge-small-zh-v1.5` 后才切换为默认语义模型。
 - 文档与运行数据默认保存在项目级 Docker volume；日志采用 JSON。
 - 首个纵向切片允许通过同步管理命令触发解析和评测，随后接入 Worker/API，不用模拟实现替代真实逻辑。
+
+## 13. 当前实现状态（2026-10-01）
+
+- 已完成：版本化摄取、父子 Chunk、BM25 落盘、ChromaDB 持久化、RRF、最新版本隔离、父块回查和 EvidenceItem 转换。
+- 已完成：LangGraph 主流程、并行 Analyst、确定性证据门禁、两次局部返工、内存/PostgreSQL Checkpointer。
+- 已完成：AgentRun/RunEvent 数据模型、事件持久化与 SSE 格式化。
+- 进行中：将真实检索协调器和具体 Agent 实现装配进 API/Worker 运行入口。
+- 未开始：真实中文 Embedding 与 reranker、完整任务 REST/SSE、Trace 写入、前端工作台和端到端演示。

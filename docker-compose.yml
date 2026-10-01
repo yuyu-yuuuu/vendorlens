@@ -27,11 +27,20 @@ services:
     volumes: ["redis_data:/data"]
 
   chroma:
-    image: chromadb/chroma:1.0.20
+    image: chromadb/chroma:1.5.9
     environment:
       IS_PERSISTENT: "TRUE"
       ANONYMIZED_TELEMETRY: "FALSE"
-    ports: ["8001:8000"]
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "bash -c 'exec 3<>/dev/tcp/127.0.0.1/8000; printf \"GET /api/v2/auth/identity HTTP/1.0\\r\\nHost: localhost\\r\\n\\r\\n\" >&3; grep -q \"200 OK\" <&3'",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    ports: ["8100:8000"]
     volumes: ["chroma_data:/data"]
 
   api:
@@ -48,7 +57,7 @@ services:
     depends_on:
       postgres: {condition: service_healthy}
       redis: {condition: service_healthy}
-      chroma: {condition: service_started}
+      chroma: {condition: service_healthy}
 
   worker:
     build:
@@ -63,7 +72,7 @@ services:
     depends_on:
       postgres: {condition: service_healthy}
       redis: {condition: service_healthy}
-      chroma: {condition: service_started}
+      chroma: {condition: service_healthy}
 
 volumes:
   postgres_data:

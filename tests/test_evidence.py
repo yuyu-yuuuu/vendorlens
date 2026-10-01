@@ -1,5 +1,17 @@
-from vendorlens.evidence import DeterministicEvidenceGate, SourceRecord, source_hash
+from contextlib import nullcontext
+
+from sqlalchemy import select
+
+from vendorlens.evidence import (
+    DatabaseEvidenceRepository,
+    DeterministicEvidenceGate,
+    SourceRecord,
+    source_hash,
+)
+from vendorlens.ingestion import IngestionService
+from vendorlens.models import DocumentChunk, Project
 from vendorlens.schemas import Claim, ClaimType, EvidenceItem
+from vendorlens.storage import LocalDocumentStorage
 
 
 class MemoryEvidenceRepository:
@@ -105,3 +117,30 @@ def test_factual_claim_without_evidence_is_returned_for_revision():
     assert result.passed is False
     assert result.revision_claim_ids == ["claim-unsupported"]
     assert result.claim_reviews[0].error_codes == ["missing_evidence"]
+
+
+def test_database_repository_reads_versioned_parent_source(session, tmp_path):
+    project = Project(name="供应商评审")
+    session.add(project)
+    session.flush()
+    result = IngestionService(LocalDocumentStorage(tmp_path / "files")).ingest(
+        session,
+        project_id=project.id,
+        filename="报价.md",
+        media_type="text/markdown",
+        content="# 报价\n含税总报价为 88 万元。".encode(),
+    )
+    parent_id = session.scalar(
+        select(DocumentChunk.id).where(
+            DocumentChunk.version_id == result.version_id,
+            DocumentChunk.parent_chunk_id.is_(None),
+        )
+    )
+    assert parent_id is not None
+
+    source = DatabaseEvidenceRepository(lambda: nullcontext(session)).get_source(parent_id)
+
+    assert source is not None
+    assert source.project_id == project.id
+    assert source.version_id == result.version_id
+    assert source.text_hash == source_hash(source.text)
