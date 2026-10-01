@@ -1,0 +1,20 @@
+{
+  "dataset_version": "2026-09-30.1",
+  "description": "完全合成的供应商评审检索集，不包含 EchoMind 数据或指标。",
+  "chunks": [
+    {"id": "req-1", "text": "项目要求一期系统在 2027 年 6 月 30 日前完成上线，验收后提供三年运维服务。", "metadata": {"project": "erp", "type": "requirement"}},
+    {"id": "alpha-price", "text": "甲供应商 AlphaTech 含税总报价为 880000 元，付款方式为 30% 预付款。", "metadata": {"project": "erp", "supplier": "alpha", "type": "quote"}},
+    {"id": "alpha-plan", "text": "AlphaTech 计划合同签署后 45 天交付一期，免费运维期为一年。", "metadata": {"project": "erp", "supplier": "alpha", "type": "proposal"}},
+    {"id": "beta-price", "text": "乙供应商 BetaWorks 项目总价 920000 元，包含三年维护费用。", "metadata": {"project": "erp", "supplier": "beta", "type": "quote"}},
+    {"id": "beta-plan", "text": "BetaWorks 承诺 2027 年 7 月 15 日完成一期部署，并提供 36 个月运维。", "metadata": {"project": "erp", "supplier": "beta", "type": "proposal"}},
+    {"id": "minutes-1", "text": "评审会议确认预算上限为 900000 元，交付日期不得晚于需求书约定日期。", "metadata": {"project": "erp", "type": "minutes"}},
+    {"id": "noise-1", "text": "办公楼装修项目需要采购会议桌和显示屏。", "metadata": {"project": "office", "type": "requirement"}}
+  ],
+  "queries": [
+    {"id": "q1", "text": "AlphaTech 含税报价是多少", "relevant": ["alpha-price"], "filters": {"project": "erp"}},
+    {"id": "q2", "text": "哪个方案超过预算上限", "relevant": ["beta-price", "minutes-1"], "filters": {"project": "erp"}},
+    {"id": "q3", "text": "供应商交付计划是否满足六月底上线要求", "relevant": ["req-1", "alpha-plan", "beta-plan"], "filters": {"project": "erp"}},
+    {"id": "q4", "text": "三年运维要求与供应商承诺", "relevant": ["req-1", "alpha-plan", "beta-plan"], "filters": {"project": "erp"}}
+  ]
+}
+

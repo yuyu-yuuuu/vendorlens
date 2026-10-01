@@ -1,0 +1,72 @@
+name: vendorlens
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: vendorlens
+      POSTGRES_USER: vendorlens
+      POSTGRES_PASSWORD: vendorlens
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vendorlens -d vendorlens"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    ports: ["5433:5432"]
+    volumes: ["postgres_data:/var/lib/postgresql/data"]
+
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    ports: ["6380:6379"]
+    volumes: ["redis_data:/data"]
+
+  chroma:
+    image: chromadb/chroma:1.0.20
+    environment:
+      IS_PERSISTENT: "TRUE"
+      ANONYMIZED_TELEMETRY: "FALSE"
+    ports: ["8001:8000"]
+    volumes: ["chroma_data:/data"]
+
+  api:
+    build:
+      context: .
+      dockerfile: services/api/Dockerfile
+    env_file:
+      - path: .env
+        required: false
+    command: ["uvicorn", "vendorlens.api:app", "--host", "0.0.0.0", "--port", "8000"]
+    ports: ["8000:8000"]
+    volumes:
+      - files_data:/data/files
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
+      chroma: {condition: service_started}
+
+  worker:
+    build:
+      context: .
+      dockerfile: services/worker/Dockerfile
+    env_file:
+      - path: .env
+        required: false
+    command: ["python", "-m", "vendorlens.worker"]
+    volumes:
+      - files_data:/data/files
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
+      chroma: {condition: service_started}
+
+volumes:
+  postgres_data:
+  redis_data:
+  chroma_data:
+  files_data:

@@ -1,0 +1,206 @@
+{
+  "dataset_version": "2026-09-30.1",
+  "generated_at": "2026-09-30T14:13:19.901166+00:00",
+  "top_k": 3,
+  "embedding": "deterministic-hash-256",
+  "strategies": {
+    "bm25": {
+      "aggregate": {
+        "recall_at_k": 0.7083333333333333,
+        "precision_at_k": 0.5,
+        "mrr": 1.0,
+        "ndcg_at_k": 0.7706064796970536
+      },
+      "cases": [
+        {
+          "query_id": "q1",
+          "ranked_ids": [
+            "alpha-price",
+            "alpha-plan",
+            "beta-plan"
+          ],
+          "metrics": {
+            "recall_at_k": 1.0,
+            "precision_at_k": 0.3333333333333333,
+            "mrr": 1.0,
+            "ndcg_at_k": 1.0
+          }
+        },
+        {
+          "query_id": "q2",
+          "ranked_ids": [
+            "minutes-1",
+            "alpha-plan",
+            "alpha-price"
+          ],
+          "metrics": {
+            "recall_at_k": 0.5,
+            "precision_at_k": 0.3333333333333333,
+            "mrr": 1.0,
+            "ndcg_at_k": 0.6131471927654584
+          }
+        },
+        {
+          "query_id": "q3",
+          "ranked_ids": [
+            "req-1",
+            "alpha-plan",
+            "beta-price"
+          ],
+          "metrics": {
+            "recall_at_k": 0.6666666666666666,
+            "precision_at_k": 0.6666666666666666,
+            "mrr": 1.0,
+            "ndcg_at_k": 0.7653606369886217
+          }
+        },
+        {
+          "query_id": "q4",
+          "ranked_ids": [
+            "req-1",
+            "beta-price",
+            "beta-plan"
+          ],
+          "metrics": {
+            "recall_at_k": 0.6666666666666666,
+            "precision_at_k": 0.6666666666666666,
+            "mrr": 1.0,
+            "ndcg_at_k": 0.7039180890341347
+          }
+        }
+      ]
+    },
+    "vector": {
+      "aggregate": {
+        "recall_at_k": 0.7083333333333333,
+        "precision_at_k": 0.5,
+        "mrr": 0.75,
+        "ndcg_at_k": 0.6686474351799863
+      },
+      "cases": [
+        {
+          "query_id": "q1",
+          "ranked_ids": [
+            "alpha-price",
+            "alpha-plan",
+            "beta-price"
+          ],
+          "metrics": {
+            "recall_at_k": 1.0,
+            "precision_at_k": 0.3333333333333333,
+            "mrr": 1.0,
+            "ndcg_at_k": 1.0
+          }
+        },
+        {
+          "query_id": "q2",
+          "ranked_ids": [
+            "minutes-1",
+            "alpha-price",
+            "req-1"
+          ],
+          "metrics": {
+            "recall_at_k": 0.5,
+            "precision_at_k": 0.3333333333333333,
+            "mrr": 1.0,
+            "ndcg_at_k": 0.6131471927654584
+          }
+        },
+        {
+          "query_id": "q3",
+          "ranked_ids": [
+            "beta-price",
+            "req-1",
+            "alpha-plan"
+          ],
+          "metrics": {
+            "recall_at_k": 0.6666666666666666,
+            "precision_at_k": 0.6666666666666666,
+            "mrr": 0.5,
+            "ndcg_at_k": 0.5307212739772434
+          }
+        },
+        {
+          "query_id": "q4",
+          "ranked_ids": [
+            "beta-price",
+            "req-1",
+            "beta-plan"
+          ],
+          "metrics": {
+            "recall_at_k": 0.6666666666666666,
+            "precision_at_k": 0.6666666666666666,
+            "mrr": 0.5,
+            "ndcg_at_k": 0.5307212739772434
+          }
+        }
+      ]
+    },
+    "hybrid": {
+      "aggregate": {
+        "recall_at_k": 0.7083333333333333,
+        "precision_at_k": 0.5,
+        "mrr": 0.875,
+        "ndcg_at_k": 0.7119466389442091
+      },
+      "cases": [
+        {
+          "query_id": "q1",
+          "ranked_ids": [
+            "alpha-price",
+            "alpha-plan",
+            "beta-price"
+          ],
+          "metrics": {
+            "recall_at_k": 1.0,
+            "precision_at_k": 0.3333333333333333,
+            "mrr": 1.0,
+            "ndcg_at_k": 1.0
+          }
+        },
+        {
+          "query_id": "q2",
+          "ranked_ids": [
+            "minutes-1",
+            "alpha-price",
+            "alpha-plan"
+          ],
+          "metrics": {
+            "recall_at_k": 0.5,
+            "precision_at_k": 0.3333333333333333,
+            "mrr": 1.0,
+            "ndcg_at_k": 0.6131471927654584
+          }
+        },
+        {
+          "query_id": "q3",
+          "ranked_ids": [
+            "req-1",
+            "beta-price",
+            "alpha-plan"
+          ],
+          "metrics": {
+            "recall_at_k": 0.6666666666666666,
+            "precision_at_k": 0.6666666666666666,
+            "mrr": 1.0,
+            "ndcg_at_k": 0.7039180890341347
+          }
+        },
+        {
+          "query_id": "q4",
+          "ranked_ids": [
+            "beta-price",
+            "req-1",
+            "beta-plan"
+          ],
+          "metrics": {
+            "recall_at_k": 0.6666666666666666,
+            "precision_at_k": 0.6666666666666666,
+            "mrr": 0.5,
+            "ndcg_at_k": 0.5307212739772434
+          }
+        }
+      ]
+    }
+  }
+}
