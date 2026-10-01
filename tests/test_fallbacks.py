@@ -1,5 +1,4 @@
 from vendorlens.fallbacks import (
-    DOMAIN_TOOL_ALLOWLISTS,
     CommitmentRuleChecker,
     DeterministicCostEngine,
     RequirementRuleEvaluator,
@@ -23,15 +22,6 @@ def evidence(item_id: str, quote: str) -> EvidenceItem:
         source_text_hash="a" * 64,
         location={"page": 1},
     )
-
-
-def test_domain_tool_allowlists_do_not_overlap():
-    tool_sets = list(DOMAIN_TOOL_ALLOWLISTS.values())
-
-    assert len(tool_sets) == 3
-    assert not tool_sets[0] & tool_sets[1]
-    assert not tool_sets[0] & tool_sets[2]
-    assert not tool_sets[1] & tool_sets[2]
 
 
 def test_requirement_fallback_uses_only_explicit_response():

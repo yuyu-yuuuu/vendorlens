@@ -78,6 +78,8 @@ LangGraph 状态以 `ResearchPlan`、`EvidenceItem[]`、`Claim[]`、`ReviewResul
 
 只返工失败领域，最多两次；仍失败时进入同领域确定性降级处理器，不跨 Agent 兜底。降级结果中的冲突和缺失信息直接进入最终报告；若降级处理器也无法形成领域结果，则标记为 `failed`。推荐由公开的 50/30/20 权重和硬性淘汰规则确定，不允许任何 Agent 直接选择获胜供应商。完整契约见[领域 Agent 重构设计](../superpowers/specs/2026-10-01-domain-agent-redesign.md)。
 
+当前已实现三个领域的类型化输入契约与统一 DomainAgentExecutor。DomainAgentRouter 按任务中冻结的 `ReviewDomain` 查表路由，不使用模型做意图分类；DomainToolbox 在实际调用点执行工具白名单，执行器进一步校验领域、Vendor、版本范围和证据 ID。路由与执行组件尚未替换上面的旧 LangGraph，隔离检索接入后再完成工作流切换。
+
 ## 7. 证据门禁
 
 确定性层检查引用存在、项目和版本有效、原文哈希一致、定位可回读以及结构化数字/日期/比例/周期与原文匹配。语义支持判断作为校验服务判断证据是否蕴含 Claim、是否断章取义，以及冲突是否完整呈现；它不作为业务 Agent。

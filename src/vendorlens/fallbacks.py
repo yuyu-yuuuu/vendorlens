@@ -18,18 +18,6 @@ from vendorlens.schemas import (
     ReviewDomain,
 )
 
-DOMAIN_TOOL_ALLOWLISTS = {
-    ReviewDomain.REQUIREMENT_COMPLIANCE: frozenset(
-        {"search_requirement_evidence", "compare_requirement_response"}
-    ),
-    ReviewDomain.COST_MODELING: frozenset(
-        {"extract_cost_items", "normalize_cost", "calculate_tco"}
-    ),
-    ReviewDomain.COMMITMENT_VERIFICATION: frozenset(
-        {"extract_commitments", "compare_milestones", "check_dependencies"}
-    ),
-}
-
 
 class RequirementRuleEvaluator:
     negative_markers = ("不支持", "无法支持", "不满足", "不提供", "不具备")
