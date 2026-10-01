@@ -11,12 +11,13 @@
 - BM25 索引落盘、ChromaDB 向量持久化、RRF 融合和 metadata 过滤；检索只使用每份文档最新的已索引版本。
 - Review Project 可登记多家 Vendor；采购方资料与各供应商同名文件相互隔离，检索 metadata 固定供应商归属。
 - 确定性推荐引擎支持需求符合性、相对 TCO、承诺可信度、50/30/20 权重、必选需求硬性淘汰和条件推荐。
+- 三个领域均有互斥工具白名单和同领域确定性降级处理器；降级结果保留缺失与冲突，只能形成条件推荐，无法形成结构化结果时标记失败。
 - 可恢复 LangGraph 工作流骨架：集中检索、并行分析、确定性证据门禁、最多两次局部返工和部分完成语义。
 - 内存/PostgreSQL Checkpointer、持久化运行事件与可恢复 SSE 事件格式。
 - PostgreSQL 业务模型、Alembic 事务迁移、Redis Worker 入口和 FastAPI 健康检查。
 - 完全合成的本地检索标注集与 Recall@K、Precision@K、MRR、NDCG 评测。
 
-下一步将按[领域 Agent 重构设计](docs/superpowers/specs/2026-10-01-domain-agent-redesign.md)实现需求符合性、成本建模和承诺核验三个业务 Agent 及其同领域降级处理器。当前仍使用确定性哈希向量作为可复现基线；真实中文 Embedding、任务 API/RQ 接线、SSE HTTP 端点、完整 Trace 和前端工作台按[实施计划](docs/plans/2026-09-30-implementation-plan.md)继续迭代。完整边界见[设计说明](docs/design/2026-09-30-vendorlens-design.md)。
+下一步将按[领域 Agent 重构设计](docs/superpowers/specs/2026-10-01-domain-agent-redesign.md)实现需求符合性、成本建模和承诺核验三个业务 Agent 的输入契约与执行器，再接入隔离检索和新工作流。当前仍使用确定性哈希向量作为可复现基线；真实中文 Embedding、任务 API/RQ 接线、SSE HTTP 端点、完整 Trace 和前端工作台按[实施计划](docs/plans/2026-09-30-implementation-plan.md)继续迭代。完整边界见[设计说明](docs/design/2026-09-30-vendorlens-design.md)。
 
 ## 本地启动
 

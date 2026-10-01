@@ -140,3 +140,15 @@ def test_exact_top_score_tie_returns_joint_recommendation():
 
     assert result.level is RecommendationLevel.RECOMMENDED
     assert result.recommended_vendor_ids == ["vendor-a", "vendor-b"]
+
+
+def test_degraded_assessment_cannot_produce_unconditional_recommendation():
+    result = build_recommendation(
+        requirements=[requirement("vendor-a", "req-1", RequirementStatus.MET)],
+        costs=[cost("vendor-a", 100)],
+        commitments=[commitments("vendor-a")],
+        degraded_vendor_ids={"vendor-a"},
+    )
+
+    assert result.level is RecommendationLevel.CONDITIONALLY_RECOMMENDED
+    assert "degraded" in result.conditions[0]

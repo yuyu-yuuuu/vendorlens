@@ -123,7 +123,6 @@ class DomainAssessmentStatus(StrEnum):
     PENDING = "pending"
     COMPLETED = "completed"
     DEGRADED = "degraded"
-    NEEDS_HUMAN_REVIEW = "needs_human_review"
     FAILED = "failed"
 
 
@@ -148,6 +147,13 @@ class RequirementAssessment(BaseModel):
         if self.status is not RequirementStatus.NOT_STATED and not self.evidence_ids:
             raise ValueError("stated requirement assessment requires evidence")
         return self
+
+
+class RequirementItem(BaseModel):
+    id: str
+    text: str = Field(min_length=1)
+    mandatory: bool = False
+    weight: float = Field(default=1.0, gt=0)
 
 
 class CostAssessment(BaseModel):
@@ -215,18 +221,16 @@ class DomainAssessment(BaseModel):
             ReviewDomain.COST_MODELING: self.cost_assessment is not None,
             ReviewDomain.COMMITMENT_VERIFICATION: self.commitment_assessment is not None,
         }
-        if self.status is DomainAssessmentStatus.COMPLETED and not payloads[self.domain]:
-            raise ValueError("completed domain assessment requires its domain payload")
+        if (
+            self.status
+            in (
+                DomainAssessmentStatus.COMPLETED,
+                DomainAssessmentStatus.DEGRADED,
+            )
+            and not payloads[self.domain]
+        ):
+            raise ValueError("successful domain assessment requires its domain payload")
         return self
-
-
-class HumanReviewRequest(BaseModel):
-    task_id: str
-    vendor_id: str
-    domain: ReviewDomain
-    reason: str = Field(min_length=1)
-    questions: list[str] = Field(min_length=1)
-    evidence_ids: list[str] = Field(default_factory=list)
 
 
 class ReviewWeights(BaseModel):

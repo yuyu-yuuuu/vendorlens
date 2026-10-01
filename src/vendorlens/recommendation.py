@@ -64,8 +64,10 @@ def build_recommendation(
     costs: list[CostAssessment],
     commitments: list[CommitmentAssessment],
     weights: ReviewWeights | None = None,
+    degraded_vendor_ids: set[str] | None = None,
 ) -> RecommendationResult:
     weights = weights or ReviewWeights()
+    degraded_vendor_ids = degraded_vendor_ids or set()
     requirements_by_vendor: dict[str, list[RequirementAssessment]] = defaultdict(list)
     for item in requirements:
         requirements_by_vendor[item.vendor_id].append(item)
@@ -87,6 +89,8 @@ def build_recommendation(
             if item.mandatory and item.status is RequirementStatus.NOT_MET
         ]
         conditions: list[str] = []
+        if vendor_id in degraded_vendor_ids:
+            conditions.append(f"{vendor_id}: one or more domain assessments are degraded")
         if not vendor_requirements:
             conditions.append(f"{vendor_id}: missing requirement assessment")
         elif any(

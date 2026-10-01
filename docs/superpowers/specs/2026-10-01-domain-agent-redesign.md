@@ -143,7 +143,6 @@ prepare_review
   → prepare_domain_revisions
   → analyze_domains（仅失败领域，最多 2 次）
   → run_domain_fallbacks（仍失败的领域）
-  → create_human_review_requests（仍有高风险不确定项时）
   → aggregate_scores
   → compose_report
 ```
@@ -158,7 +157,7 @@ prepare_review
 
 两次返工后仍未通过的任务进入同领域确定性降级处理器，不转交其他 Agent：需求符合性进入 RequirementRuleEvaluator，成本建模进入 DeterministicCostEngine，承诺核验进入 CommitmentRuleChecker。降级处理器只保留明确事实和程序计算，禁止语义推断；结果状态为 `degraded`，最多支持条件推荐。
 
-降级后仍存在必选需求冲突、关键金额冲突、关键日期/SLA 冲突或无法形成可靠推荐时，系统创建 HumanReviewRequest。它记录触发原因、受影响 Vendor、冲突证据和需要人工回答的问题；人工复核是工作流出口，不是第四个 Agent。
+降级结果中的必选需求冲突、关键金额冲突、关键日期/SLA 冲突和缺失信息直接保存在 DomainAssessment，并由最终报告完整展示。若确定性降级处理器也无法形成该领域的结构化结果，则该领域标记为 `failed`；系统不假设存在人工处理队列。
 
 `aggregate_scores` 和 `compose_report` 都不是 Agent。前者执行硬性规则和公开公式，后者将已验证结构渲染为报告；可选模型润色只能改写措辞，不能新增事实或分数。
 
@@ -197,11 +196,11 @@ prepare_review
 - 证据、版本、哈希、位置或数字校验失败时只返工对应 finding。
 - 每个领域最多局部返工两次，之后进入对应的确定性降级处理器。
 - 确定性降级结果标记为 `degraded`，不能产生无条件推荐。
-- 降级后仍存在关键不确定项时创建 `needs_human_review` 的 HumanReviewRequest。
+- 降级后仍存在关键不确定项时保留冲突与缺失信息，最终推荐最多为有条件推荐。
 - Agent 或工具异常不会删除已成功的其他领域结果。
 - Checkpoint 保存冻结版本、领域状态、返工次数和已验证输出；恢复时不重跑完成领域。
 - 找不到材料时输出 `not_stated` 或缺失信息，而不是制造事实。
-- 最终领域状态为 `completed`、`degraded`、`needs_human_review` 或 `failed`；任务状态为 `completed`、`partially_completed` 或 `failed`。
+- 最终领域状态为 `completed`、`degraded` 或 `failed`；任务状态为 `completed`、`partially_completed` 或 `failed`。
 
 ## 10. 代码迁移边界
 
@@ -211,7 +210,7 @@ prepare_review
 - `ResearchPlan` 调整为冻结后的 ReviewPlan，包含三个领域任务、权重、供应商和版本集合。
 - 新增领域专属 Pydantic Schema 和推荐结果 Schema。
 - 新增 Vendor、Requirement、ReviewConfig 和 DomainAssessment 的持久化模型及迁移。
-- 新增三个确定性领域降级处理器和 HumanReviewRequest Schema。
+- 新增三个确定性领域降级处理器；冲突和缺失信息沿用 DomainAssessment Schema。
 - 重构 ReviewWorkflow 状态，使结果、错误和返工次数按领域存储。
 - 现有摄取、索引、DatabaseRetrievalCoordinator、EvidenceItem 和 checkpoint 接口继续复用。
 
@@ -236,7 +235,7 @@ prepare_review
 - 只有失败领域进入局部返工；
 - 单领域失败保留其他领域结果；
 - 两次无效输出后只进入同领域降级处理器，不发生跨 Agent 兜底；
-- 降级结果只能生成条件推荐，关键冲突会生成人工复核请求；
+- 降级结果只能生成条件推荐，关键冲突必须保留在领域结果和最终报告中；
 - PostgreSQL checkpoint 恢复后只执行未完成节点；
 - 缺少需求符合性时不产生推荐；
 - 缺少成本或承诺时只产生条件推荐。
