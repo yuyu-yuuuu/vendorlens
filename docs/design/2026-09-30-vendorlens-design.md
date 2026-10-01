@@ -58,23 +58,29 @@ PostgreSQL 保存业务对象、运行状态、LangGraph checkpoint 和 Trace；
 
 检索条件由 LangGraph 显式节点集中执行。`DatabaseRetrievalCoordinator` 先从 PostgreSQL 选出项目内每份文档最新且状态为 `indexed` 的版本，再对 Planner 子任务的多个查询执行 BM25/Vector/RRF，避免把旧版本事实混入当前分析。返回的 `EvidenceItem` 固定到父 Chunk、DocumentVersion、位置和原文哈希，quote 来自命中的子 Chunk。评测分别运行 BM25、Vector 和 Hybrid，输出 Recall@K、Precision@K、MRR、NDCG。
 
-## 6. 三 Agent 状态图
+## 6. 领域 Agent 与状态图
 
 LangGraph 状态以 `ResearchPlan`、`EvidenceItem[]`、`Claim[]`、`ReviewResult` 和 `FinalReport` 为核心：
 
-当前已实现的图：
+当前代码中的过渡图：
 
 `plan → retrieve → analyze（并行子任务）→ review → prepare_revision | finalize`
 
 - PlannerAgent：生成维度、权重、可并行子任务和检索查询。
-- AnalystAgent：每个子任务最多三轮 Agent→Tool→Observation，产出 Claim 与 EvidenceItem。
-- ReviewerAgent：语义判断证据是否支持 Claim，并结合确定性校验结果，最多两次只退回不合格 Claim。
+- AnalystAgent：按子任务产出 Claim。
+- ReviewerAgent：结合确定性门禁检查 Claim。
 
-复合子任务使用线程池并行执行；Analyst 每次最多三轮工具调用。Reviewer 只退回失败 Claim，最多局部返工两次，仍未通过时将任务标记 `partially_completed`。生产可使用 PostgreSQL Checkpointer，测试使用内存 Checkpointer；相同 thread/run id 可恢复状态。模型提供方、真实 Agent 实现和任务 Worker 接线仍属于后续工作。
+这三个名称对应流程阶段，不作为最终多 Agent 业务边界。已确认的目标架构将其替换为需求符合性 Agent、成本建模 Agent 和承诺核验 Agent。三者分别交付需求—响应矩阵、统一成本模型和承诺核验表；Planner、Reviewer、评分器和报告合并器降为普通工作流组件。
+
+目标图：
+
+`prepare_review → retrieve_domain_evidence → analyze_domains（并行）→ validate_domains → retry_failed_domains → aggregate_scores → compose_report`
+
+只返工失败领域，最多两次。推荐由公开的 50/30/20 权重和硬性淘汰规则确定，不允许任何 Agent 直接选择获胜供应商。完整契约见[领域 Agent 重构设计](../superpowers/specs/2026-10-01-domain-agent-redesign.md)。
 
 ## 7. 证据门禁
 
-确定性层检查引用存在、项目和版本有效、原文哈希一致、定位可回读以及结构化数字/日期/比例/周期与原文匹配。语义层由 ReviewerAgent 判断证据是否蕴含 Claim、是否断章取义，以及冲突是否完整呈现。
+确定性层检查引用存在、项目和版本有效、原文哈希一致、定位可回读以及结构化数字/日期/比例/周期与原文匹配。语义支持判断作为校验服务判断证据是否蕴含 Claim、是否断章取义，以及冲突是否完整呈现；它不作为业务 Agent。
 
 确定性失败不得由模型覆盖。语义失败只回退相关 Claim；超过两次后将 Claim 标记 `unsupported`，报告显示“无法判断”及所需资料。
 
@@ -109,5 +115,6 @@ LangGraph 状态以 `ResearchPlan`、`EvidenceItem[]`、`Claim[]`、`ReviewResul
 - 已完成：版本化摄取、父子 Chunk、BM25 落盘、ChromaDB 持久化、RRF、最新版本隔离、父块回查和 EvidenceItem 转换。
 - 已完成：LangGraph 主流程、并行 Analyst、确定性证据门禁、两次局部返工、内存/PostgreSQL Checkpointer。
 - 已完成：AgentRun/RunEvent 数据模型、事件持久化与 SSE 格式化。
-- 进行中：将真实检索协调器和具体 Agent 实现装配进 API/Worker 运行入口。
+- 已确认设计：以需求符合性、成本建模和承诺核验三个领域 Agent 替换按流程阶段划分的 Planner/Analyst/Reviewer 角色。
+- 进行中：按领域 Agent 重构工作流，再将真实检索协调器和 Agent 实现装配进 API/Worker 运行入口。
 - 未开始：真实中文 Embedding 与 reranker、完整任务 REST/SSE、Trace 写入、前端工作台和端到端演示。

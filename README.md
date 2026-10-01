@@ -9,12 +9,12 @@
 - PDF、DOCX、XLSX、Markdown、TXT 统一解析，保留来源定位和原文哈希。
 - 叙事文档采用父子 Chunk：最多 320 字的子块负责召回，父块负责提供完整上下文；XLSX 保持一行一个可定位块。
 - BM25 索引落盘、ChromaDB 向量持久化、RRF 融合和 metadata 过滤；检索只使用每份文档最新的已索引版本。
-- LangGraph 三 Agent 纵向流程：集中检索、并行分析、确定性证据门禁、最多两次局部返工和部分完成语义。
+- 可恢复 LangGraph 工作流骨架：集中检索、并行分析、确定性证据门禁、最多两次局部返工和部分完成语义。
 - 内存/PostgreSQL Checkpointer、持久化运行事件与可恢复 SSE 事件格式。
 - PostgreSQL 业务模型、Alembic 事务迁移、Redis Worker 入口和 FastAPI 健康检查。
 - 完全合成的本地检索标注集与 Recall@K、Precision@K、MRR、NDCG 评测。
 
-当前仍使用确定性哈希向量作为可复现基线；真实中文 Embedding、任务 API/RQ 接线、SSE HTTP 端点、完整 Trace 和前端工作台按[实施计划](docs/plans/2026-09-30-implementation-plan.md)继续迭代。完整边界见[设计说明](docs/design/2026-09-30-vendorlens-design.md)。
+下一步将按[领域 Agent 重构设计](docs/superpowers/specs/2026-10-01-domain-agent-redesign.md)把通用流程角色替换为需求符合性、成本建模和承诺核验三个业务 Agent。当前仍使用确定性哈希向量作为可复现基线；真实中文 Embedding、任务 API/RQ 接线、SSE HTTP 端点、完整 Trace 和前端工作台按[实施计划](docs/plans/2026-09-30-implementation-plan.md)继续迭代。完整边界见[设计说明](docs/design/2026-09-30-vendorlens-design.md)。
 
 ## 本地启动
 
