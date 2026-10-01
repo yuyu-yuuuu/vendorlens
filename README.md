@@ -38,7 +38,6 @@ API 健康检查：`GET http://localhost:8000/health`。
 
 当前提交的实测检索结果来自 7 个合成 chunk、4 个标注查询。样本仅用于打通可复现评测链路，不代表生产质量，也不会直接写入简历。详见[基线说明](docs/results/2026-09-30-retrieval-baseline.md)与[原始结果](docs/results/retrieval-baseline.json)。
 
-## 独立性
+## 可复现性
 
-VendorLens 是独立仓库，不导入、不复制 EchoMind 模块或指标。所有后续量化结果必须由本仓库的版本化数据、脚本和原始产物复现。
-
+所有后续量化结果必须由本仓库的版本化数据、脚本和原始产物复现。

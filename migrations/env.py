@@ -17,6 +17,17 @@ if not settings_url.startswith("sqlite"):
 
 target_metadata = Base.metadata
 
+LANGGRAPH_TABLES = {
+    "checkpoint_migrations",
+    "checkpoint_blobs",
+    "checkpoint_writes",
+    "checkpoints",
+}
+
+
+def include_object(object_, name, type_, reflected, compare_to):
+    return not (type_ == "table" and name in LANGGRAPH_TABLES)
+
 
 def run_migrations_offline() -> None:
     context.configure(
@@ -25,6 +36,7 @@ def run_migrations_offline() -> None:
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
         compare_type=True,
+        include_object=include_object,
     )
     with context.begin_transaction():
         context.run_migrations()
@@ -37,7 +49,12 @@ def run_migrations_online() -> None:
         poolclass=pool.NullPool,
     )
     with connectable.connect() as connection:
-        context.configure(connection=connection, target_metadata=target_metadata, compare_type=True)
+        context.configure(
+            connection=connection,
+            target_metadata=target_metadata,
+            compare_type=True,
+            include_object=include_object,
+        )
         with context.begin_transaction():
             context.run_migrations()
 

@@ -147,3 +147,34 @@ class TraceSpan(Base):
     duration_ms: Mapped[int | None] = mapped_column(Integer, nullable=True)
     attributes: Mapped[dict] = mapped_column(JSON, default=dict)
     error: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+
+class AgentRun(Base):
+    __tablename__ = "agent_runs"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    task_id: Mapped[str] = mapped_column(
+        ForeignKey("research_tasks.id", ondelete="CASCADE"), index=True
+    )
+    agent_name: Mapped[str] = mapped_column(String(80))
+    attempt: Mapped[int] = mapped_column(Integer, default=1)
+    status: Mapped[str] = mapped_column(String(30), default="running")
+    input_summary: Mapped[dict] = mapped_column(JSON, default=dict)
+    output_summary: Mapped[dict] = mapped_column(JSON, default=dict)
+    started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    ended_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class RunEvent(Base):
+    __tablename__ = "run_events"
+    __table_args__ = (
+        UniqueConstraint("task_id", "sequence"),
+        Index("ix_run_events_task_sequence", "task_id", "sequence"),
+    )
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    task_id: Mapped[str] = mapped_column(
+        ForeignKey("research_tasks.id", ondelete="CASCADE"), index=True
+    )
+    sequence: Mapped[int] = mapped_column(Integer)
+    event_type: Mapped[str] = mapped_column(String(80))
+    payload: Mapped[dict] = mapped_column(JSON, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)

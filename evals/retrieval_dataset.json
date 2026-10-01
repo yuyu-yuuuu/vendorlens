@@ -1,6 +1,6 @@
 {
   "dataset_version": "2026-09-30.1",
-  "description": "完全合成的供应商评审检索集，不包含 EchoMind 数据或指标。",
+  "description": "完全合成的供应商评审检索集。",
   "chunks": [
     {"id": "req-1", "text": "项目要求一期系统在 2027 年 6 月 30 日前完成上线，验收后提供三年运维服务。", "metadata": {"project": "erp", "type": "requirement"}},
     {"id": "alpha-price", "text": "甲供应商 AlphaTech 含税总报价为 880000 元，付款方式为 30% 预付款。", "metadata": {"project": "erp", "supplier": "alpha", "type": "quote"}},
@@ -17,4 +17,3 @@
     {"id": "q4", "text": "三年运维要求与供应商承诺", "relevant": ["req-1", "alpha-plan", "beta-plan"], "filters": {"project": "erp"}}
   ]
 }
-
