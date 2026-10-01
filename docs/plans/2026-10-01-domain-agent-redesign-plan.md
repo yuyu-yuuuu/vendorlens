@@ -24,9 +24,11 @@
 1. 定义统一 DomainAgent 协议和三种领域输入包。
 2. 实现需求匹配、金额归一化/TCO、日期周期/承诺冲突等确定性工具。
 3. 为三个 Agent 建立互斥工具白名单和结构化输出校验。
-4. 使用固定模型替身测试，不在此阶段依赖真实模型服务。
+4. 为三个领域分别实现 RequirementRuleEvaluator、DeterministicCostEngine 和 CommitmentRuleChecker。
+5. 新增 HumanReviewRequest；关键冲突在降级后仍未解决时进入人工复核。
+6. 使用固定模型替身测试，不在此阶段依赖真实模型服务。
 
-验收：跨领域工具调用被拒绝；事实性 finding 无证据不能通过；算术只由工具执行。
+验收：跨领域工具调用被拒绝；事实性 finding 无证据不能通过；算术只由工具执行；降级不跨 Agent，降级结果不能产生无条件推荐。
 
 ## 阶段 4：按领域和供应商隔离检索
 
@@ -38,7 +40,7 @@
 
 ## 阶段 5：重构 LangGraph
 
-1. 将旧 Planner/Analyst/Reviewer 工作流替换为 prepare、retrieve、analyze、validate、revise、aggregate、compose 节点。
+1. 将旧 Planner/Analyst/Reviewer 工作流替换为 prepare、retrieve、analyze、validate、revise、fallback、human_review、aggregate、compose 节点。
 2. 首轮并行执行全部领域和供应商任务；返工仅重跑失败任务，最多两次。
 3. Checkpoint 保存冻结上下文、每个任务状态、返工次数和已验证输出。
 4. 报告合并器只消费验证结果，不新增事实。

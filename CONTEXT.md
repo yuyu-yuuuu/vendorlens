@@ -40,6 +40,14 @@ _Avoid_: Delivery score, project review
 The structured findings, evidence, conflicts, and missing information produced for one Vendor in one review domain. It never selects the winning Vendor.
 _Avoid_: Agent answer, review report
 
+**Degraded Assessment（降级评审结果）**:
+A Domain Assessment produced only from explicit facts and deterministic rules after the corresponding domain Agent cannot return a valid result. It can support only a conditional Recommendation.
+_Avoid_: General Agent fallback, guessed result
+
+**Human Review Request（人工复核请求）**:
+A structured request identifying unresolved high-risk questions, affected Vendors, and conflicting evidence that require a person to decide.
+_Avoid_: Escalation Agent, support ticket
+
 **Hard Disqualification（硬性淘汰）**:
 A non-compensable result triggered by an explicit deterministic rule, such as failure of a Mandatory Requirement.
 _Avoid_: Low score, recommendation penalty

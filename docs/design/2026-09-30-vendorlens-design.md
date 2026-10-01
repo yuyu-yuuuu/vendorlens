@@ -74,9 +74,9 @@ LangGraph 状态以 `ResearchPlan`、`EvidenceItem[]`、`Claim[]`、`ReviewResul
 
 目标图：
 
-`prepare_review → retrieve_domain_evidence → analyze_domains（并行）→ validate_domains → retry_failed_domains → aggregate_scores → compose_report`
+`prepare_review → retrieve_domain_evidence → analyze_domains（并行）→ validate_domains → retry_failed_domains → run_domain_fallbacks → create_human_review_requests → aggregate_scores → compose_report`
 
-只返工失败领域，最多两次。推荐由公开的 50/30/20 权重和硬性淘汰规则确定，不允许任何 Agent 直接选择获胜供应商。完整契约见[领域 Agent 重构设计](../superpowers/specs/2026-10-01-domain-agent-redesign.md)。
+只返工失败领域，最多两次；仍失败时进入同领域确定性降级处理器，关键冲突再生成人工复核请求，不跨 Agent 兜底。推荐由公开的 50/30/20 权重和硬性淘汰规则确定，不允许任何 Agent 直接选择获胜供应商。完整契约见[领域 Agent 重构设计](../superpowers/specs/2026-10-01-domain-agent-redesign.md)。
 
 ## 7. 证据门禁
 
