@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from vendorlens.models import Document, DocumentChunk, DocumentVersion
+from vendorlens.models import Document, DocumentChunk, DocumentVersion, Vendor
 from vendorlens.parsers import parse_document
 from vendorlens.storage import DocumentStorage
 
@@ -28,20 +28,32 @@ class IngestionService:
         session: Session,
         *,
         project_id: str,
+        vendor_id: str | None = None,
         filename: str,
         media_type: str,
         content: bytes,
     ) -> IngestionResult:
         stored = self.storage.put(project_id, filename, content)
         with session.begin_nested():
+            if vendor_id is not None:
+                vendor = session.scalar(
+                    select(Vendor).where(Vendor.id == vendor_id, Vendor.project_id == project_id)
+                )
+                if vendor is None:
+                    raise ValueError("vendor does not belong to project")
             document = session.scalar(
                 select(Document).where(
-                    Document.project_id == project_id, Document.logical_name == filename
+                    Document.project_id == project_id,
+                    Document.vendor_id == vendor_id,
+                    Document.logical_name == filename,
                 )
             )
             if document is None:
                 document = Document(
-                    project_id=project_id, logical_name=filename, media_type=media_type
+                    project_id=project_id,
+                    vendor_id=vendor_id,
+                    logical_name=filename,
+                    media_type=media_type,
                 )
                 session.add(document)
                 session.flush()

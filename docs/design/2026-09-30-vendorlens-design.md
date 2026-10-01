@@ -116,5 +116,6 @@ LangGraph 状态以 `ResearchPlan`、`EvidenceItem[]`、`Claim[]`、`ReviewResul
 - 已完成：LangGraph 主流程、并行 Analyst、确定性证据门禁、两次局部返工、内存/PostgreSQL Checkpointer。
 - 已完成：AgentRun/RunEvent 数据模型、事件持久化与 SSE 格式化。
 - 已确认设计：以需求符合性、成本建模和承诺核验三个领域 Agent 替换按流程阶段划分的 Planner/Analyst/Reviewer 角色。
-- 进行中：按领域 Agent 重构工作流，再将真实检索协调器和 Agent 实现装配进 API/Worker 运行入口。
+- 已完成：Vendor、Requirement、ReviewConfig、DomainAssessment 数据模型，供应商文件隔离和确定性推荐规则。
+- 进行中：实现三个领域 Agent 契约、专属工具和同领域降级处理器，再重构工作流。
 - 未开始：真实中文 Embedding 与 reranker、完整任务 REST/SSE、Trace 写入、前端工作台和端到端演示。

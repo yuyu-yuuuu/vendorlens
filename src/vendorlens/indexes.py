@@ -308,21 +308,19 @@ class DocumentIndexingService:
             for item in records
             if item.chunk_type == "child" or item.id not in parents_with_children
         ]
-        chunks = [
-            IndexedChunk(
-                id=item.id,
-                text=item.text,
-                metadata={
-                    "project_id": document.project_id,
-                    "document_id": document.id,
-                    "version_id": version.id,
-                    "parent_id": item.parent_chunk_id or item.id,
-                    "chunk_type": item.chunk_type,
-                    "ordinal": item.ordinal,
-                },
-            )
-            for item in indexable
-        ]
+        chunks = []
+        for item in indexable:
+            metadata = {
+                "project_id": document.project_id,
+                "document_id": document.id,
+                "version_id": version.id,
+                "parent_id": item.parent_chunk_id or item.id,
+                "chunk_type": item.chunk_type,
+                "ordinal": item.ordinal,
+            }
+            if document.vendor_id is not None:
+                metadata["vendor_id"] = document.vendor_id
+            chunks.append(IndexedChunk(id=item.id, text=item.text, metadata=metadata))
         self.bm25.replace_version(version_id, chunks)
         self.vector.replace_version(version_id, chunks)
         version.status = "indexed"

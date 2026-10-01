@@ -5,6 +5,7 @@ from datetime import UTC, datetime
 
 from sqlalchemy import (
     JSON,
+    Boolean,
     DateTime,
     Float,
     ForeignKey,
@@ -13,6 +14,7 @@ from sqlalchemy import (
     String,
     Text,
     UniqueConstraint,
+    text,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -34,19 +36,55 @@ class Project(Base):
     description: Mapped[str] = mapped_column(Text, default="")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     documents: Mapped[list[Document]] = relationship(back_populates="project")
+    vendors: Mapped[list[Vendor]] = relationship(back_populates="project")
+    requirements: Mapped[list[Requirement]] = relationship(back_populates="project")
+
+
+class Vendor(Base):
+    __tablename__ = "vendors"
+    __table_args__ = (UniqueConstraint("project_id", "name"),)
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    project_id: Mapped[str] = mapped_column(
+        ForeignKey("projects.id", ondelete="CASCADE"), index=True
+    )
+    name: Mapped[str] = mapped_column(String(200))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    project: Mapped[Project] = relationship(back_populates="vendors")
+    documents: Mapped[list[Document]] = relationship(back_populates="vendor")
 
 
 class Document(Base):
     __tablename__ = "documents"
-    __table_args__ = (UniqueConstraint("project_id", "logical_name"),)
+    __table_args__ = (
+        Index(
+            "uq_documents_buyer_logical_name",
+            "project_id",
+            "logical_name",
+            unique=True,
+            sqlite_where=text("vendor_id IS NULL"),
+            postgresql_where=text("vendor_id IS NULL"),
+        ),
+        Index(
+            "uq_documents_vendor_logical_name",
+            "vendor_id",
+            "logical_name",
+            unique=True,
+            sqlite_where=text("vendor_id IS NOT NULL"),
+            postgresql_where=text("vendor_id IS NOT NULL"),
+        ),
+    )
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
     project_id: Mapped[str] = mapped_column(
         ForeignKey("projects.id", ondelete="CASCADE"), index=True
+    )
+    vendor_id: Mapped[str | None] = mapped_column(
+        ForeignKey("vendors.id", ondelete="RESTRICT"), nullable=True, index=True
     )
     logical_name: Mapped[str] = mapped_column(String(255))
     media_type: Mapped[str] = mapped_column(String(100))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     project: Mapped[Project] = relationship(back_populates="documents")
+    vendor: Mapped[Vendor | None] = relationship(back_populates="documents")
     versions: Mapped[list[DocumentVersion]] = relationship(
         back_populates="document", order_by="DocumentVersion.version_number"
     )
@@ -96,6 +134,39 @@ class DocumentChunk(Base):
     version: Mapped[DocumentVersion] = relationship(back_populates="chunks")
 
 
+class Requirement(Base):
+    __tablename__ = "requirements"
+    __table_args__ = (UniqueConstraint("project_id", "code"),)
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    project_id: Mapped[str] = mapped_column(
+        ForeignKey("projects.id", ondelete="CASCADE"), index=True
+    )
+    source_chunk_id: Mapped[str] = mapped_column(
+        ForeignKey("document_chunks.id", ondelete="RESTRICT"), index=True
+    )
+    code: Mapped[str] = mapped_column(String(80))
+    text: Mapped[str] = mapped_column(Text)
+    mandatory: Mapped[bool] = mapped_column(Boolean, default=False)
+    weight: Mapped[float] = mapped_column(Float, default=1.0)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    project: Mapped[Project] = relationship(back_populates="requirements")
+
+
+class ReviewConfig(Base):
+    __tablename__ = "review_configs"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    project_id: Mapped[str] = mapped_column(
+        ForeignKey("projects.id", ondelete="CASCADE"), unique=True
+    )
+    requirement_weight: Mapped[float] = mapped_column(Float, default=0.5)
+    cost_weight: Mapped[float] = mapped_column(Float, default=0.3)
+    commitment_weight: Mapped[float] = mapped_column(Float, default=0.2)
+    comparison_months: Mapped[int] = mapped_column(Integer, default=36)
+    currency: Mapped[str] = mapped_column(String(3), default="CNY")
+    commitment_checklist: Mapped[list] = mapped_column(JSON, default=list)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
 class ResearchTask(Base):
     __tablename__ = "research_tasks"
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
@@ -106,6 +177,25 @@ class ResearchTask(Base):
     trace_id: Mapped[str] = mapped_column(String(36), unique=True, default=new_id)
     objective: Mapped[str] = mapped_column(Text)
     status: Mapped[str] = mapped_column(String(30), default="queued")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class DomainAssessmentRecord(Base):
+    __tablename__ = "domain_assessments"
+    __table_args__ = (UniqueConstraint("task_id", "vendor_id", "domain"),)
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    task_id: Mapped[str] = mapped_column(
+        ForeignKey("research_tasks.id", ondelete="CASCADE"), index=True
+    )
+    vendor_id: Mapped[str] = mapped_column(
+        ForeignKey("vendors.id", ondelete="RESTRICT"), index=True
+    )
+    domain: Mapped[str] = mapped_column(String(40))
+    status: Mapped[str] = mapped_column(String(30), default="pending")
+    payload: Mapped[dict] = mapped_column(JSON, default=dict)
+    missing_information: Mapped[list] = mapped_column(JSON, default=list)
+    conflicts: Mapped[list] = mapped_column(JSON, default=list)
+    revision_count: Mapped[int] = mapped_column(Integer, default=0)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 
