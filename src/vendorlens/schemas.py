@@ -233,6 +233,22 @@ class DomainAssessment(BaseModel):
         return self
 
 
+class VendorAssessment(BaseModel):
+    vendor_id: str
+    domains: dict[ReviewDomain, DomainAssessment]
+
+    @model_validator(mode="after")
+    def validate_domain_set_and_identity(self) -> VendorAssessment:
+        if set(self.domains) != set(ReviewDomain):
+            raise ValueError("vendor assessment requires exactly one result for every domain")
+        for domain, assessment in self.domains.items():
+            if assessment.domain is not domain:
+                raise ValueError("domain assessment key does not match its payload")
+            if assessment.vendor_id != self.vendor_id:
+                raise ValueError("domain assessment belongs to another vendor")
+        return self
+
+
 class ReviewWeights(BaseModel):
     requirement_compliance: float = Field(default=0.5, ge=0, le=1)
     cost_competitiveness: float = Field(default=0.3, ge=0, le=1)

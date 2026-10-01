@@ -58,7 +58,7 @@ PostgreSQL 保存业务对象、运行状态、LangGraph checkpoint 和 Trace；
 
 检索条件由 LangGraph 显式节点集中执行。`DatabaseRetrievalCoordinator` 先从 PostgreSQL 选出项目内每份文档最新且状态为 `indexed` 的版本，再对 Planner 子任务的多个查询执行 BM25/Vector/RRF，避免把旧版本事实混入当前分析。返回的 `EvidenceItem` 固定到父 Chunk、DocumentVersion、位置和原文哈希，quote 来自命中的子 Chunk。评测分别运行 BM25、Vector 和 Hybrid，输出 Recall@K、Precision@K、MRR、NDCG。
 
-## 6. 领域 Agent 与状态图
+## 6. 供应商评审 Agent 与状态图
 
 LangGraph 状态以 `ResearchPlan`、`EvidenceItem[]`、`Claim[]`、`ReviewResult` 和 `FinalReport` 为核心：
 
@@ -70,15 +70,15 @@ LangGraph 状态以 `ResearchPlan`、`EvidenceItem[]`、`Claim[]`、`ReviewResul
 - AnalystAgent：按子任务产出 Claim。
 - ReviewerAgent：结合确定性门禁检查 Claim。
 
-这三个名称对应流程阶段，不作为最终多 Agent 业务边界。已确认的目标架构将其替换为需求符合性 Agent、成本建模 Agent 和承诺核验 Agent。三者分别交付需求—响应矩阵、统一成本模型和承诺核验表；Planner、Reviewer、评分器和报告合并器降为普通工作流组件。
+这三个名称对应流程阶段，不作为最终业务 Agent。目标架构使用一个 VendorReviewAgent 对一家供应商进行完整评审，一次输出需求—响应矩阵、统一成本模型和承诺核验表；Planner、Reviewer、评分器和报告合并器降为普通工作流组件。
 
 目标图：
 
-`prepare_review → retrieve_domain_evidence → analyze_domains（并行）→ validate_domains → retry_failed_domains → run_domain_fallbacks → aggregate_scores → compose_report`
+`prepare_review → retrieve_vendor_evidence → analyze_vendors（Vendor 间并行）→ validate_domains → retry_failed_domains → run_domain_fallbacks → aggregate_scores → compose_report`
 
-只返工失败领域，最多两次；仍失败时进入同领域确定性降级处理器，不跨 Agent 兜底。降级结果中的冲突和缺失信息直接进入最终报告；若降级处理器也无法形成领域结果，则标记为 `failed`。推荐由公开的 50/30/20 权重和硬性淘汰规则确定，不允许任何 Agent 直接选择获胜供应商。完整契约见[领域 Agent 重构设计](../superpowers/specs/2026-10-01-domain-agent-redesign.md)。
+VendorReviewAgent 每个 Vendor 调用一次，Vendor 之间可以并行；输出仍按需求、成本和承诺三个领域分别校验。只返工失败领域，最多两次；仍失败时进入对应的确定性降级处理器。降级结果中的冲突和缺失信息直接进入最终报告；若降级处理器也无法形成领域结果，则标记为 `failed`。推荐由公开的 50/30/20 权重和硬性淘汰规则确定，不允许 Agent 直接选择获胜供应商。完整契约见[供应商评审 Agent 设计](../superpowers/specs/2026-10-01-domain-agent-redesign.md)。
 
-当前已实现三个领域的类型化输入契约与统一 DomainAgentExecutor。DomainAgentRouter 按任务中冻结的 `ReviewDomain` 查表路由，不使用模型做意图分类；DomainToolbox 在实际调用点执行工具白名单，执行器进一步校验领域、Vendor、版本范围和证据 ID。路由与执行组件尚未替换上面的旧 LangGraph，隔离检索接入后再完成工作流切换。
+当前已实现 VendorReviewInput、VendorReviewAgent、ReviewToolbox 和 VendorReviewExecutor。系统不再包含领域 Router：一次调用读取当前 Vendor 的冻结证据包并返回三个 DomainAssessment；单领域输出缺失时只将该领域标记为 `failed`。执行器校验 Vendor、版本范围、成本口径和证据 ID。该执行组件尚未替换旧 LangGraph，隔离检索接入后再完成工作流切换。
 
 ## 7. 证据门禁
 
@@ -117,7 +117,8 @@ LangGraph 状态以 `ResearchPlan`、`EvidenceItem[]`、`Claim[]`、`ReviewResul
 - 已完成：版本化摄取、父子 Chunk、BM25 落盘、ChromaDB 持久化、RRF、最新版本隔离、父块回查和 EvidenceItem 转换。
 - 已完成：LangGraph 主流程、并行 Analyst、确定性证据门禁、两次局部返工、内存/PostgreSQL Checkpointer。
 - 已完成：AgentRun/RunEvent 数据模型、事件持久化与 SSE 格式化。
-- 已确认设计：以需求符合性、成本建模和承诺核验三个领域 Agent 替换按流程阶段划分的 Planner/Analyst/Reviewer 角色。
+- 已确认设计：以单个 VendorReviewAgent 替换按流程阶段划分的 Planner/Analyst/Reviewer 角色，并输出需求、成本、承诺三个领域结果。
 - 已完成：Vendor、Requirement、ReviewConfig、DomainAssessment 数据模型，供应商文件隔离和确定性推荐规则。
-- 进行中：实现三个领域 Agent 契约、专属工具和同领域降级处理器，再重构工作流。
+- 已完成：VendorReviewAgent 输入/输出契约、受限工具箱、证据范围校验和三个领域降级处理器。
+- 进行中：接入 Vendor 隔离检索并重构工作流，实现领域级返工与降级编排。
 - 未开始：真实中文 Embedding 与 reranker、完整任务 REST/SSE、Trace 写入、前端工作台和端到端演示。
