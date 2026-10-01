@@ -262,6 +262,7 @@ class DatabaseParentRetriever:
                             "text_hash": parent.text_hash,
                             "location": parent.location,
                             "chunk_type": parent.chunk_type,
+                            "vendor_id": document.vendor_id,
                         },
                         score=child.score,
                         rank=len(expanded) + 1,

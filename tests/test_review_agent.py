@@ -109,6 +109,7 @@ def test_single_agent_returns_all_three_domain_results():
     [
         ("project_id", "project-2", "frozen project"),
         ("document_version_id", "version-2", "frozen document versions"),
+        ("vendor_id", "vendor-b", "another vendor"),
     ],
 )
 def test_review_input_rejects_evidence_outside_frozen_scope(field, value, message):

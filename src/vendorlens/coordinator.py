@@ -1,15 +1,58 @@
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from contextlib import AbstractContextManager
+from dataclasses import dataclass
 
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
 from vendorlens.domain import ExpandedSearchHit
 from vendorlens.indexes import DatabaseParentRetriever
-from vendorlens.models import Document, DocumentVersion
-from vendorlens.schemas import EvidenceItem, ResearchPlan
+from vendorlens.models import Document, DocumentVersion, Vendor
+from vendorlens.review_agent import VendorReviewInput
+from vendorlens.schemas import EvidenceItem, RequirementItem, ResearchPlan, ReviewDomain
+
+
+@dataclass(frozen=True)
+class VendorEvidencePackage:
+    project_id: str
+    vendor_id: str
+    document_version_ids: tuple[str, ...]
+    evidence_by_domain: dict[ReviewDomain, list[EvidenceItem]]
+
+    @property
+    def evidence(self) -> list[EvidenceItem]:
+        unique = {item.id: item for items in self.evidence_by_domain.values() for item in items}
+        return list(unique.values())
+
+    def to_review_input(
+        self,
+        *,
+        task_id: str,
+        requirements: Sequence[RequirementItem],
+        currency: str,
+        comparison_months: int,
+        required_cost_categories: Sequence[str] = (),
+        required_commitments: Sequence[str] = (),
+        project_context: str = "",
+    ) -> VendorReviewInput:
+        if not self.document_version_ids:
+            raise ValueError("cannot build review input without indexed document versions")
+        return VendorReviewInput(
+            task_id=task_id,
+            project_id=self.project_id,
+            vendor_id=self.vendor_id,
+            document_version_ids=list(self.document_version_ids),
+            evidence=self.evidence,
+            evidence_by_domain=self.evidence_by_domain,
+            requirements=list(requirements),
+            currency=currency,
+            comparison_months=comparison_months,
+            required_cost_categories=list(required_cost_categories),
+            required_commitments=list(required_commitments),
+            project_context=project_context,
+        )
 
 
 class DatabaseRetrievalCoordinator:
@@ -35,12 +78,66 @@ class DatabaseRetrievalCoordinator:
                 for subtask in plan.subtasks
             }
 
+    def retrieve_vendor_evidence(
+        self,
+        *,
+        project_id: str,
+        vendor_id: str,
+        queries_by_domain: dict[ReviewDomain, list[str]],
+    ) -> VendorEvidencePackage:
+        if set(queries_by_domain) != set(ReviewDomain):
+            raise ValueError("vendor retrieval requires queries for every review domain")
+        with self.session_factory() as session:
+            vendor_exists = session.scalar(
+                select(Vendor.id).where(
+                    Vendor.id == vendor_id,
+                    Vendor.project_id == project_id,
+                )
+            )
+            if vendor_exists is None:
+                raise ValueError("vendor does not belong to the project")
+            version_ids = self._latest_indexed_version_ids_for_vendor(
+                session, project_id, vendor_id
+            )
+            filters = {"project_id": project_id, "version_id": version_ids}
+            evidence_by_domain = {
+                domain: self._retrieve_subtask(session, queries, filters) if version_ids else []
+                for domain, queries in queries_by_domain.items()
+            }
+            return VendorEvidencePackage(
+                project_id=project_id,
+                vendor_id=vendor_id,
+                document_version_ids=tuple(version_ids),
+                evidence_by_domain=evidence_by_domain,
+            )
+
     @staticmethod
     def _latest_indexed_version_ids(session: Session, project_id: str) -> list[str]:
         rows = session.execute(
             select(DocumentVersion.id, DocumentVersion.document_id)
             .join(Document, Document.id == DocumentVersion.document_id)
             .where(Document.project_id == project_id, DocumentVersion.status == "indexed")
+            .order_by(DocumentVersion.document_id, DocumentVersion.version_number.desc())
+        )
+        latest_by_document: dict[str, str] = {}
+        for version_id, document_id in rows:
+            latest_by_document.setdefault(document_id, version_id)
+        return list(latest_by_document.values())
+
+    @staticmethod
+    def _latest_indexed_version_ids_for_vendor(
+        session: Session,
+        project_id: str,
+        vendor_id: str,
+    ) -> list[str]:
+        rows = session.execute(
+            select(DocumentVersion.id, DocumentVersion.document_id)
+            .join(Document, Document.id == DocumentVersion.document_id)
+            .where(
+                Document.project_id == project_id,
+                or_(Document.vendor_id.is_(None), Document.vendor_id == vendor_id),
+                DocumentVersion.status == "indexed",
+            )
             .order_by(DocumentVersion.document_id, DocumentVersion.version_number.desc())
         )
         latest_by_document: dict[str, str] = {}
@@ -78,4 +175,5 @@ class DatabaseRetrievalCoordinator:
             quote=hit.matched_child.text,
             source_text_hash=metadata["text_hash"],
             location=metadata["location"],
+            vendor_id=metadata.get("vendor_id"),
         )

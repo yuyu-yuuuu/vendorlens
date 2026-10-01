@@ -28,6 +28,8 @@
 
 ## 阶段 4：按 Vendor 隔离检索
 
+状态：已完成。
+
 1. ReviewOrchestrator 冻结 Vendor、DocumentVersion、Requirement、权重和成本周期。
 2. 检索协调器按 `vendor_id × latest_version_ids` 生成证据包，内部按需求、成本和承诺组织证据预算。
 3. 采购方需求证据与当前供应商响应证据使用不同来源角色，禁止供应商之间串线。

@@ -78,7 +78,9 @@ LangGraph 状态以 `ResearchPlan`、`EvidenceItem[]`、`Claim[]`、`ReviewResul
 
 VendorReviewAgent 每个 Vendor 调用一次，Vendor 之间可以并行；输出仍按需求、成本和承诺三个领域分别校验。只返工失败领域，最多两次；仍失败时进入对应的确定性降级处理器。降级结果中的冲突和缺失信息直接进入最终报告；若降级处理器也无法形成领域结果，则标记为 `failed`。推荐由公开的 50/30/20 权重和硬性淘汰规则确定，不允许 Agent 直接选择获胜供应商。完整契约见[供应商评审 Agent 设计](../superpowers/specs/2026-10-01-domain-agent-redesign.md)。
 
-当前已实现 VendorReviewInput、VendorReviewAgent、ReviewToolbox 和 VendorReviewExecutor。系统不再包含领域 Router：一次调用读取当前 Vendor 的冻结证据包并返回三个 DomainAssessment；单领域输出缺失时只将该领域标记为 `failed`。执行器校验 Vendor、版本范围、成本口径和证据 ID。该执行组件尚未替换旧 LangGraph，隔离检索接入后再完成工作流切换。
+当前已实现 VendorReviewInput、VendorReviewAgent、ReviewToolbox 和 VendorReviewExecutor。系统不再包含领域 Router：一次调用读取当前 Vendor 的冻结证据包并返回三个 DomainAssessment；单领域输出缺失时只将该领域标记为 `failed`。执行器校验 Vendor、版本范围、成本口径和证据 ID。该执行组件尚未替换旧 LangGraph，下一步完成工作流切换。
+
+DatabaseRetrievalCoordinator 已新增 Vendor 级检索：从数据库冻结采购方公共文档和当前 Vendor 每份文档的最新已索引版本，再按三个领域分别执行检索并合并为 VendorReviewInput。版本集合在检索前排除其他 Vendor，EvidenceItem 同时携带 `vendor_id` 供输入门禁二次校验。
 
 ## 7. 证据门禁
 

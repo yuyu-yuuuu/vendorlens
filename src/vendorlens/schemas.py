@@ -58,6 +58,7 @@ class EvidenceItem(BaseModel):
     quote: str = Field(min_length=1)
     source_text_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
     location: dict[str, Any]
+    vendor_id: str | None = None
 
 
 class Claim(BaseModel):

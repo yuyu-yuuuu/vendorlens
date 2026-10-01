@@ -49,6 +49,7 @@ class VendorReviewInput(BaseModel):
     vendor_id: str = Field(min_length=1)
     document_version_ids: list[str] = Field(min_length=1)
     evidence: list[EvidenceItem] = Field(default_factory=list)
+    evidence_by_domain: dict[ReviewDomain, list[EvidenceItem]] = Field(default_factory=dict)
     requirements: list[RequirementItem] = Field(min_length=1)
     currency: str = Field(min_length=3, max_length=3)
     comparison_months: int = Field(gt=0)
@@ -68,6 +69,14 @@ class VendorReviewInput(BaseModel):
                 raise ValueError("evidence is outside the frozen project")
             if item.document_version_id not in version_ids:
                 raise ValueError("evidence is outside the frozen document versions")
+            if item.vendor_id not in (None, self.vendor_id):
+                raise ValueError("evidence belongs to another vendor")
+        if self.evidence_by_domain:
+            if set(self.evidence_by_domain) != set(ReviewDomain):
+                raise ValueError("domain evidence must cover every review domain")
+            grouped_ids = {item.id for items in self.evidence_by_domain.values() for item in items}
+            if grouped_ids - {item.id for item in self.evidence}:
+                raise ValueError("domain evidence must be included in the review evidence")
         return self
 
 
