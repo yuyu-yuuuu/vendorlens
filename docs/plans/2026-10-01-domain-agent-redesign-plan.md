@@ -38,6 +38,8 @@
 
 ## 阶段 5：重构 LangGraph
 
+状态：已完成。
+
 1. 将旧 Planner/Analyst/Reviewer 流程替换为 prepare、retrieve、analyze_vendors、validate_domains、revise、fallback、aggregate、compose。
 2. Vendor 间并行；返工只标记失败领域，最多两次。
 3. Checkpoint 保存冻结上下文、每个 Vendor 的三个领域状态、返工次数和已验证输出。

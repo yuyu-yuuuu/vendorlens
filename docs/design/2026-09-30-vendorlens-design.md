@@ -56,37 +56,23 @@ PostgreSQL 保存业务对象、运行状态、LangGraph checkpoint 和 Trace；
 - Reciprocal Rank Fusion：`score(d)=Σ 1/(k+rank_i(d))`，默认 `k=60`。
 - 可选 reranker，默认关闭，确保基线可复现。
 
-检索条件由 LangGraph 显式节点集中执行。`DatabaseRetrievalCoordinator` 先从 PostgreSQL 选出项目内每份文档最新且状态为 `indexed` 的版本，再对 Planner 子任务的多个查询执行 BM25/Vector/RRF，避免把旧版本事实混入当前分析。返回的 `EvidenceItem` 固定到父 Chunk、DocumentVersion、位置和原文哈希，quote 来自命中的子 Chunk。评测分别运行 BM25、Vector 和 Hybrid，输出 Recall@K、Precision@K、MRR、NDCG。
+检索条件由 LangGraph 显式节点集中执行。`DatabaseRetrievalCoordinator` 为每个 Vendor 从 PostgreSQL 冻结采购方公共文档和当前 Vendor 每份文档最新且状态为 `indexed` 的版本，再按需求、成本和承诺查询执行 BM25/Vector/RRF，避免旧版本和竞争对手事实混入当前分析。返回的 `EvidenceItem` 固定到 Vendor、父 Chunk、DocumentVersion、位置和原文哈希，quote 来自命中的子 Chunk。评测分别运行 BM25、Vector 和 Hybrid，输出 Recall@K、Precision@K、MRR、NDCG。
 
 ## 6. 供应商评审 Agent 与状态图
 
-LangGraph 状态以 `ResearchPlan`、`EvidenceItem[]`、`Claim[]`、`ReviewResult` 和 `FinalReport` 为核心：
-
-当前代码中的过渡图：
-
-`plan → retrieve → analyze（并行子任务）→ review → prepare_revision | finalize`
-
-- PlannerAgent：生成维度、权重、可并行子任务和检索查询。
-- AnalystAgent：按子任务产出 Claim。
-- ReviewerAgent：结合确定性门禁检查 Claim。
-
-这三个名称对应流程阶段，不作为最终业务 Agent。目标架构使用一个 VendorReviewAgent 对一家供应商进行完整评审，一次输出需求—响应矩阵、统一成本模型和承诺核验表；Planner、Reviewer、评分器和报告合并器降为普通工作流组件。
-
-目标图：
+LangGraph 状态以 `VendorReviewInput`、`VendorAssessment`、领域返工次数、`RecommendationResult` 和 `FinalReport` 为核心。当前图：
 
 `prepare_review → retrieve_vendor_evidence → analyze_vendors（Vendor 间并行）→ validate_domains → retry_failed_domains → run_domain_fallbacks → aggregate_scores → compose_report`
 
-VendorReviewAgent 每个 Vendor 调用一次，Vendor 之间可以并行；输出仍按需求、成本和承诺三个领域分别校验。只返工失败领域，最多两次；仍失败时进入对应的确定性降级处理器。降级结果中的冲突和缺失信息直接进入最终报告；若降级处理器也无法形成领域结果，则标记为 `failed`。推荐由公开的 50/30/20 权重和硬性淘汰规则确定，不允许 Agent 直接选择获胜供应商。完整契约见[供应商评审 Agent 设计](../superpowers/specs/2026-10-01-domain-agent-redesign.md)。
+VendorReviewAgent 每个 Vendor 首轮调用一次，Vendor 之间并行；输出按需求、成本和承诺三个领域分别校验。后续只重新调用包含失败领域的 Vendor，并通过 `revision_domains` 指定返工范围，最多两次；仍失败时进入对应的确定性降级处理器。单个 Vendor 检索或执行失败不会删除其他 Vendor 结果。降级结果中的冲突和缺失信息直接进入最终报告；若降级处理器也无法形成领域结果，则标记为 `failed`。推荐由公开的 50/30/20 权重和硬性淘汰规则确定，不允许 Agent 直接选择获胜供应商。完整契约见[供应商评审 Agent 设计](../superpowers/specs/2026-10-01-domain-agent-redesign.md)。
 
-当前已实现 VendorReviewInput、VendorReviewAgent、ReviewToolbox 和 VendorReviewExecutor。系统不再包含领域 Router：一次调用读取当前 Vendor 的冻结证据包并返回三个 DomainAssessment；单领域输出缺失时只将该领域标记为 `failed`。执行器校验 Vendor、版本范围、成本口径和证据 ID。该执行组件尚未替换旧 LangGraph，下一步完成工作流切换。
+当前已实现 VendorReviewInput、VendorReviewAgent、ReviewToolbox、VendorReviewExecutor 和上述 VendorReviewWorkflow。系统不包含领域 Router：一次调用读取当前 Vendor 的冻结证据包并返回三个 DomainAssessment；单领域输出缺失时只将该领域标记为 `failed`。执行器校验 Vendor、版本范围、成本口径和证据 ID。
 
 DatabaseRetrievalCoordinator 已新增 Vendor 级检索：从数据库冻结采购方公共文档和当前 Vendor 每份文档的最新已索引版本，再按三个领域分别执行检索并合并为 VendorReviewInput。版本集合在检索前排除其他 Vendor，EvidenceItem 同时携带 `vendor_id` 供输入门禁二次校验。
 
 ## 7. 证据门禁
 
-确定性层检查引用存在、项目和版本有效、原文哈希一致、定位可回读以及结构化数字/日期/比例/周期与原文匹配。语义支持判断作为校验服务判断证据是否蕴含 Claim、是否断章取义，以及冲突是否完整呈现；它不作为业务 Agent。
-
-确定性失败不得由模型覆盖。语义失败只回退相关 Claim；超过两次后将 Claim 标记 `unsupported`，报告显示“无法判断”及所需资料。
+输入门禁检查项目、Vendor、冻结版本和领域证据范围；输出门禁检查 Requirement ID、成本口径、证据 ID 和三个领域身份。确定性失败不得由模型覆盖。失败领域最多返工两次，之后进入只保留明确事实的降级处理器；报告显示降级、冲突和缺失信息。
 
 ## 8. API、队列与实时进度
 
@@ -114,13 +100,13 @@ DatabaseRetrievalCoordinator 已新增 Vendor 级检索：从数据库冻结采�
 - 文档与运行数据默认保存在项目级 Docker volume；日志采用 JSON。
 - 首个纵向切片允许通过同步管理命令触发解析和评测，随后接入 Worker/API，不用模拟实现替代真实逻辑。
 
-## 13. 当前实现状态（2026-10-01）
+## 13. 当前实现状态（2026-10-02）
 
 - 已完成：版本化摄取、父子 Chunk、BM25 落盘、ChromaDB 持久化、RRF、最新版本隔离、父块回查和 EvidenceItem 转换。
-- 已完成：LangGraph 主流程、并行 Analyst、确定性证据门禁、两次局部返工、内存/PostgreSQL Checkpointer。
+- 已完成：VendorReviewWorkflow、Vendor 间并行、领域级校验与两次局部返工、确定性降级、评分、报告和内存/PostgreSQL Checkpointer。
 - 已完成：AgentRun/RunEvent 数据模型、事件持久化与 SSE 格式化。
-- 已确认设计：以单个 VendorReviewAgent 替换按流程阶段划分的 Planner/Analyst/Reviewer 角色，并输出需求、成本、承诺三个领域结果。
+- 已完成：单个 VendorReviewAgent 输出需求、成本、承诺三个领域结果，不保留 Planner/Analyst/Reviewer 业务角色。
 - 已完成：Vendor、Requirement、ReviewConfig、DomainAssessment 数据模型，供应商文件隔离和确定性推荐规则。
 - 已完成：VendorReviewAgent 输入/输出契约、受限工具箱、证据范围校验和三个领域降级处理器。
-- 进行中：接入 Vendor 隔离检索并重构工作流，实现领域级返工与降级编排。
+- 进行中：注册正式领域工具和模型适配器，并将新工作流接入 Worker/API。
 - 未开始：真实中文 Embedding 与 reranker、完整任务 REST/SSE、Trace 写入、前端工作台和端到端演示。

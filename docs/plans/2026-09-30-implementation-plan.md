@@ -14,9 +14,9 @@
 
 ## 里程碑 3：LangGraph 证据驱动纵向流程
 
-交付：结构化状态；三 Agent；集中检索节点；并行 Analyst 子图；最多三轮工具循环；确定性/语义证据门禁；最多两次局部返工；PostgreSQL/InMemory Checkpointer；部分完成语义。
+交付：单个 VendorReviewAgent；Vendor 隔离检索；Vendor 间并行分析；需求、成本和承诺领域级状态；最多两次局部返工；确定性降级与评分；PostgreSQL/InMemory Checkpointer；部分完成语义。
 
-验收：固定模型替身测试所有分支；断点恢复测试；无证据 Claim 无法进入最终事实；数字错配被确定性拒绝；失败子任务不丢失成功结果。
+验收：固定模型替身测试所有分支；断点恢复测试；输入包之外的证据无法进入结果；成本口径错配被拒绝；失败领域和失败 Vendor 不丢失其他成功结果。
 
 ## 里程碑 4：异步运行、可恢复 SSE 与 Trace
 
@@ -38,5 +38,4 @@
 
 ## 当前迭代切片
 
-本次直接完成里程碑 1 的可运行核心，并推进里程碑 2 的最小闭环：TXT/Markdown/XLSX 解析、版本化、本地 BM25/确定性向量/RRF、标注集与检索指标。PDF/DOCX、Chroma 持久化和 API 异步接入在下一迭代补齐，但接口在本次固定并由测试覆盖。
-
+当前已完成里程碑 1 至 3 的核心闭环：版本化摄取、父子 Chunk、BM25/Chroma/RRF、Vendor 隔离检索、单 Agent 结构化评审、领域级返工与降级、确定性推荐和可恢复 checkpoint。下一迭代进入里程碑 4，注册正式工具和模型适配器，并接入 Worker、任务 API、SSE 与 Trace。

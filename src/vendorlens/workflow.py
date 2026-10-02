@@ -8,55 +8,98 @@ from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import END, START, StateGraph
 
-from vendorlens.evidence import DeterministicEvidenceGate
+from vendorlens.coordinator import VendorEvidencePackage
+from vendorlens.fallbacks import (
+    CommitmentRuleChecker,
+    DeterministicCostEngine,
+    RequirementRuleEvaluator,
+)
+from vendorlens.recommendation import build_recommendation
+from vendorlens.review_agent import VendorReviewInput
 from vendorlens.schemas import (
-    Claim,
-    EvidenceItem,
+    DomainAssessment,
+    DomainAssessmentStatus,
     FinalReport,
-    ResearchPlan,
-    ResearchSubtask,
-    ReviewResult,
+    RecommendationLevel,
+    RecommendationResult,
+    RequirementItem,
+    ReviewDomain,
+    ReviewWeights,
+    VendorAssessment,
 )
 
 
-class PlannerAgent(Protocol):
-    def plan(self, objective: str, project_context: str) -> ResearchPlan: ...
-
-
-class RetrievalCoordinator(Protocol):
-    def retrieve(self, plan: ResearchPlan, project_id: str) -> dict[str, list[EvidenceItem]]: ...
-
-
-class AnalystAgent(Protocol):
-    def analyze(
+class VendorEvidenceRetriever(Protocol):
+    def retrieve_vendor_evidence(
         self,
-        subtask: ResearchSubtask,
-        evidence: list[EvidenceItem],
-        claims_to_revise: list[Claim],
-        max_tool_rounds: int,
-    ) -> list[Claim]: ...
+        *,
+        project_id: str,
+        vendor_id: str,
+        queries_by_domain: dict[ReviewDomain, list[str]],
+    ) -> VendorEvidencePackage: ...
 
 
-class ReviewerAgent(Protocol):
-    def review(
+class VendorReviewRunner(Protocol):
+    def execute(self, input_data: VendorReviewInput) -> VendorAssessment: ...
+
+
+class DomainFallbackRunner(Protocol):
+    def run(
         self,
-        claims: list[Claim],
-        evidence: list[EvidenceItem],
-        deterministic_result: ReviewResult,
-    ) -> ReviewResult: ...
+        input_data: VendorReviewInput,
+        domain: ReviewDomain,
+    ) -> DomainAssessment: ...
+
+
+class DeterministicDomainFallbackRunner:
+    def __init__(self):
+        self.requirements = RequirementRuleEvaluator()
+        self.costs = DeterministicCostEngine()
+        self.commitments = CommitmentRuleChecker()
+
+    def run(
+        self,
+        input_data: VendorReviewInput,
+        domain: ReviewDomain,
+    ) -> DomainAssessment:
+        evidence = input_data.evidence_by_domain.get(domain, input_data.evidence)
+        if domain is ReviewDomain.REQUIREMENT_COMPLIANCE:
+            evidence_by_requirement = {item.id: evidence for item in input_data.requirements}
+            result = self.requirements.evaluate(
+                input_data.vendor_id,
+                input_data.requirements,
+                evidence_by_requirement,
+            )
+        elif domain is ReviewDomain.COST_MODELING:
+            result = self.costs.evaluate(
+                input_data.vendor_id,
+                evidence,
+                currency=input_data.currency,
+                comparison_months=input_data.comparison_months,
+            )
+        else:
+            result = self.commitments.evaluate(input_data.vendor_id, evidence)
+        return result.model_copy(update={"revision_count": input_data.revision_count})
 
 
 class WorkflowState(TypedDict, total=False):
+    task_id: str
     project_id: str
-    objective: str
+    vendor_ids: list[str]
+    requirements: list[RequirementItem]
+    queries_by_domain: dict[ReviewDomain, list[str]]
+    currency: str
+    comparison_months: int
+    required_cost_categories: list[str]
+    required_commitments: list[str]
     project_context: str
-    plan: ResearchPlan
-    evidence_by_subtask: dict[str, list[EvidenceItem]]
-    evidence: list[EvidenceItem]
-    claims: list[Claim]
-    review: ReviewResult
-    revision_count: int
-    pending_claim_ids: list[str]
+    weights: ReviewWeights
+    review_inputs: dict[str, VendorReviewInput]
+    retrieval_errors: dict[str, str]
+    assessments: dict[str, VendorAssessment]
+    pending_domains: dict[str, list[ReviewDomain]]
+    revision_counts: dict[str, int]
+    recommendation: RecommendationResult
     report: FinalReport
     status: str
 
@@ -64,136 +107,359 @@ class WorkflowState(TypedDict, total=False):
 class ReviewWorkflow:
     def __init__(
         self,
-        planner: PlannerAgent,
-        retriever: RetrievalCoordinator,
-        analyst: AnalystAgent,
-        reviewer: ReviewerAgent,
-        evidence_gate: DeterministicEvidenceGate,
+        retriever: VendorEvidenceRetriever,
+        executor: VendorReviewRunner,
+        fallback: DomainFallbackRunner | None = None,
         checkpointer: BaseCheckpointSaver | None = None,
-        max_parallel_subtasks: int = 4,
+        max_parallel_vendors: int = 4,
     ):
-        self.planner = planner
         self.retriever = retriever
-        self.analyst = analyst
-        self.reviewer = reviewer
-        self.evidence_gate = evidence_gate
-        self.max_parallel_subtasks = max_parallel_subtasks
+        self.executor = executor
+        self.fallback = fallback or DeterministicDomainFallbackRunner()
+        self.max_parallel_vendors = max_parallel_vendors
         self.graph = self._build().compile(checkpointer=checkpointer or InMemorySaver())
 
     def _build(self) -> StateGraph:
         graph = StateGraph(WorkflowState)
-        graph.add_node("plan", self._plan)
-        graph.add_node("retrieve", self._retrieve)
-        graph.add_node("analyze", self._analyze)
-        graph.add_node("review", self._review)
-        graph.add_node("prepare_revision", self._prepare_revision)
-        graph.add_node("finalize", self._finalize)
-        graph.add_edge(START, "plan")
-        graph.add_edge("plan", "retrieve")
-        graph.add_edge("retrieve", "analyze")
-        graph.add_edge("analyze", "review")
+        graph.add_node("prepare_review", self._prepare_review)
+        graph.add_node("retrieve_vendor_evidence", self._retrieve_vendor_evidence)
+        graph.add_node("analyze_vendors", self._analyze_vendors)
+        graph.add_node("validate_domains", self._validate_domains)
+        graph.add_node("prepare_domain_revisions", self._prepare_domain_revisions)
+        graph.add_node("run_domain_fallbacks", self._run_domain_fallbacks)
+        graph.add_node("aggregate_scores", self._aggregate_scores)
+        graph.add_node("compose_report", self._compose_report)
+        graph.add_edge(START, "prepare_review")
+        graph.add_edge("prepare_review", "retrieve_vendor_evidence")
+        graph.add_edge("retrieve_vendor_evidence", "analyze_vendors")
+        graph.add_edge("analyze_vendors", "validate_domains")
         graph.add_conditional_edges(
-            "review",
-            self._route_review,
-            {"revise": "prepare_revision", "finalize": "finalize"},
+            "validate_domains",
+            self._route_after_validation,
+            {
+                "revise": "prepare_domain_revisions",
+                "fallback": "run_domain_fallbacks",
+                "aggregate": "aggregate_scores",
+            },
         )
-        graph.add_edge("prepare_revision", "analyze")
-        graph.add_edge("finalize", END)
+        graph.add_edge("prepare_domain_revisions", "analyze_vendors")
+        graph.add_edge("run_domain_fallbacks", "aggregate_scores")
+        graph.add_edge("aggregate_scores", "compose_report")
+        graph.add_edge("compose_report", END)
         return graph
 
-    def _plan(self, state: WorkflowState) -> dict:
+    @staticmethod
+    def _prepare_review(state: WorkflowState) -> dict:
+        vendor_ids = state.get("vendor_ids", [])
+        if not vendor_ids or len(set(vendor_ids)) != len(vendor_ids):
+            raise ValueError("review requires unique vendor ids")
+        if not state.get("requirements"):
+            raise ValueError("review requires a requirement catalog")
+        if set(state.get("queries_by_domain", {})) != set(ReviewDomain):
+            raise ValueError("review requires queries for every domain")
+        pending = {vendor_id: list(ReviewDomain) for vendor_id in vendor_ids}
+        counts = {
+            _domain_key(vendor_id, domain): 0 for vendor_id in vendor_ids for domain in ReviewDomain
+        }
         return {
-            "plan": self.planner.plan(state["objective"], state.get("project_context", "")),
-            "revision_count": 0,
-            "status": "planned",
+            "pending_domains": pending,
+            "revision_counts": counts,
+            "assessments": {},
+            "weights": ReviewWeights.model_validate(state.get("weights", ReviewWeights())),
+            "status": "prepared",
         }
 
-    def _retrieve(self, state: WorkflowState) -> dict:
-        evidence_by_subtask = self.retriever.retrieve(state["plan"], state["project_id"])
-        evidence = [item for items in evidence_by_subtask.values() for item in items]
-        unique = {item.id: item for item in evidence}
+    def _retrieve_vendor_evidence(self, state: WorkflowState) -> dict:
+        def retrieve(vendor_id: str) -> VendorReviewInput:
+            package = self.retriever.retrieve_vendor_evidence(
+                project_id=state["project_id"],
+                vendor_id=vendor_id,
+                queries_by_domain=state["queries_by_domain"],
+            )
+            return package.to_review_input(
+                task_id=state["task_id"],
+                requirements=state["requirements"],
+                currency=state["currency"],
+                comparison_months=state["comparison_months"],
+                required_cost_categories=state.get("required_cost_categories", []),
+                required_commitments=state.get("required_commitments", []),
+                project_context=state.get("project_context", ""),
+            )
+
+        inputs: dict[str, VendorReviewInput] = {}
+        errors: dict[str, str] = {}
+        counts = dict(state["revision_counts"])
+        with ThreadPoolExecutor(max_workers=self.max_parallel_vendors) as pool:
+            futures = {
+                pool.submit(retrieve, vendor_id): vendor_id for vendor_id in state["vendor_ids"]
+            }
+            for future in as_completed(futures):
+                vendor_id = futures[future]
+                try:
+                    inputs[vendor_id] = future.result()
+                except Exception as error:
+                    errors[vendor_id] = str(error) or "供应商证据检索失败"
+                    for domain in ReviewDomain:
+                        counts[_domain_key(vendor_id, domain)] = 2
         return {
-            "evidence_by_subtask": evidence_by_subtask,
-            "evidence": list(unique.values()),
+            "review_inputs": inputs,
+            "retrieval_errors": errors,
+            "revision_counts": counts,
             "status": "retrieved",
         }
 
-    def _analyze(self, state: WorkflowState) -> dict:
-        pending = set(state.get("pending_claim_ids", []))
-        existing = state.get("claims", [])
-        claims_to_revise = [claim for claim in existing if claim.id in pending]
-        retained = [claim for claim in existing if claim.id not in pending]
-        subtasks = [
-            task
-            for task in state["plan"].subtasks
-            if not pending or any(claim.subtask_id == task.id for claim in claims_to_revise)
-        ]
+    def _analyze_vendors(self, state: WorkflowState) -> dict:
+        current = dict(state.get("assessments", {}))
+        targets = {
+            vendor_id: domains
+            for vendor_id, domains in state.get("pending_domains", {}).items()
+            if domains
+        }
 
-        def run(task: ResearchSubtask) -> list[Claim]:
-            relevant = [claim for claim in claims_to_revise if claim.subtask_id == task.id]
-            return self.analyst.analyze(
-                task,
-                state["evidence_by_subtask"].get(task.id, []),
-                relevant,
-                max_tool_rounds=3,
+        def analyze(vendor_id: str, domains: list[ReviewDomain]) -> VendorAssessment:
+            if vendor_id not in state["review_inputs"]:
+                return _failed_vendor_assessment(
+                    vendor_id,
+                    state.get("retrieval_errors", {}).get(vendor_id, "供应商证据输入不可用"),
+                )
+            counts = [
+                state["revision_counts"][_domain_key(vendor_id, domain)] for domain in domains
+            ]
+            input_data = state["review_inputs"][vendor_id].model_copy(
+                update={
+                    "revision_domains": set(domains),
+                    "revision_count": max(counts, default=0),
+                }
             )
+            try:
+                return self.executor.execute(input_data)
+            except Exception as error:
+                return _failed_vendor_assessment(vendor_id, str(error))
 
-        produced: list[Claim] = []
-        with ThreadPoolExecutor(max_workers=self.max_parallel_subtasks) as pool:
-            futures = {pool.submit(run, task): task.id for task in subtasks}
+        produced: dict[str, VendorAssessment] = {}
+        with ThreadPoolExecutor(max_workers=self.max_parallel_vendors) as pool:
+            futures = {
+                pool.submit(analyze, vendor_id, domains): (vendor_id, domains)
+                for vendor_id, domains in targets.items()
+            }
             for future in as_completed(futures):
-                produced.extend(future.result())
-        return {"claims": retained + produced, "status": "analyzed"}
-
-    def _review(self, state: WorkflowState) -> dict:
-        deterministic = self.evidence_gate.review(state["claims"], state["evidence"])
-        result = self.reviewer.review(state["claims"], state["evidence"], deterministic)
-        return {"review": result, "status": "reviewed"}
+                vendor_id, domains = futures[future]
+                result = future.result()
+                previous = current.get(vendor_id)
+                merged = dict(previous.domains) if previous is not None else dict(result.domains)
+                for domain in domains:
+                    count = state["revision_counts"][_domain_key(vendor_id, domain)]
+                    merged[domain] = result.domains[domain].model_copy(
+                        update={"revision_count": count}
+                    )
+                produced[vendor_id] = VendorAssessment(vendor_id=vendor_id, domains=merged)
+        current.update(produced)
+        return {"assessments": current, "status": "analyzed"}
 
     @staticmethod
-    def _route_review(state: WorkflowState) -> str:
-        if state["review"].passed or state.get("revision_count", 0) >= 2:
-            return "finalize"
-        return "revise"
+    def _validate_domains(state: WorkflowState) -> dict:
+        pending = {
+            vendor_id: [
+                domain
+                for domain, assessment in result.domains.items()
+                if assessment.status is DomainAssessmentStatus.FAILED
+            ]
+            for vendor_id, result in state["assessments"].items()
+        }
+        return {"pending_domains": pending, "status": "validated"}
 
     @staticmethod
-    def _prepare_revision(state: WorkflowState) -> dict:
+    def _route_after_validation(state: WorkflowState) -> str:
+        pending = [
+            (vendor_id, domain)
+            for vendor_id, domains in state.get("pending_domains", {}).items()
+            for domain in domains
+        ]
+        if not pending:
+            return "aggregate"
+        if any(
+            state["revision_counts"][_domain_key(vendor_id, domain)] < 2
+            for vendor_id, domain in pending
+        ):
+            return "revise"
+        return "fallback"
+
+    @staticmethod
+    def _prepare_domain_revisions(state: WorkflowState) -> dict:
+        counts = dict(state["revision_counts"])
+        retryable: dict[str, list[ReviewDomain]] = {}
+        for vendor_id, domains in state["pending_domains"].items():
+            for domain in domains:
+                key = _domain_key(vendor_id, domain)
+                if counts[key] >= 2:
+                    continue
+                counts[key] += 1
+                retryable.setdefault(vendor_id, []).append(domain)
         return {
-            "revision_count": state.get("revision_count", 0) + 1,
-            "pending_claim_ids": state["review"].revision_claim_ids,
+            "revision_counts": counts,
+            "pending_domains": retryable,
             "status": "revising",
         }
 
+    def _run_domain_fallbacks(self, state: WorkflowState) -> dict:
+        assessments = dict(state["assessments"])
+        for vendor_id, domains in state["pending_domains"].items():
+            merged = dict(assessments[vendor_id].domains)
+            for domain in domains:
+                count = state["revision_counts"][_domain_key(vendor_id, domain)]
+                if vendor_id not in state["review_inputs"]:
+                    merged[domain] = _failed_domain(
+                        vendor_id,
+                        domain,
+                        state.get("retrieval_errors", {}).get(vendor_id, "供应商证据输入不可用"),
+                        count,
+                    )
+                    continue
+                input_data = state["review_inputs"][vendor_id].model_copy(
+                    update={
+                        "revision_domains": {domain},
+                        "revision_count": count,
+                    }
+                )
+                try:
+                    result = self.fallback.run(input_data, domain)
+                    if result.domain is not domain or result.vendor_id != vendor_id:
+                        raise ValueError("fallback output identity does not match its input")
+                    if result.status not in (
+                        DomainAssessmentStatus.DEGRADED,
+                        DomainAssessmentStatus.FAILED,
+                    ):
+                        raise ValueError("fallback must return degraded or failed status")
+                except Exception as error:
+                    result = _failed_domain(vendor_id, domain, str(error), count)
+                merged[domain] = result.model_copy(update={"revision_count": count})
+            assessments[vendor_id] = VendorAssessment(
+                vendor_id=vendor_id,
+                domains=merged,
+            )
+        return {"assessments": assessments, "status": "degraded"}
+
     @staticmethod
-    def _finalize(state: WorkflowState) -> dict:
-        review = state["review"]
-        evidence = {item.id: item for item in state["evidence"]}
+    def _aggregate_scores(state: WorkflowState) -> dict:
+        requirements = []
+        costs = []
+        commitments = []
+        degraded_vendor_ids: set[str] = set()
+        for vendor_id, result in state["assessments"].items():
+            for assessment in result.domains.values():
+                if assessment.status is DomainAssessmentStatus.DEGRADED:
+                    degraded_vendor_ids.add(vendor_id)
+                requirements.extend(assessment.requirement_findings)
+                if assessment.cost_assessment is not None:
+                    costs.append(assessment.cost_assessment)
+                if assessment.commitment_assessment is not None:
+                    commitments.append(assessment.commitment_assessment)
+        recommendation = build_recommendation(
+            requirements=requirements,
+            costs=costs,
+            commitments=commitments,
+            weights=state["weights"],
+            degraded_vendor_ids=degraded_vendor_ids,
+        )
+        return {"recommendation": recommendation, "status": "scored"}
+
+    @staticmethod
+    def _compose_report(state: WorkflowState) -> dict:
+        recommendation = state["recommendation"]
+        assessments = state["assessments"]
+        scores = [
+            recommendation.vendor_scores[vendor_id].model_dump()
+            for vendor_id in sorted(recommendation.vendor_scores)
+        ]
+        risks = [
+            {
+                "vendor_id": vendor_id,
+                "disqualification_reasons": score.disqualification_reasons,
+                "conditions": score.conditions,
+            }
+            for vendor_id, score in sorted(recommendation.vendor_scores.items())
+            if score.disqualification_reasons or score.conditions
+        ]
+        conflicts = [
+            {"vendor_id": vendor_id, "domain": domain.value, "detail": conflict}
+            for vendor_id, result in assessments.items()
+            for domain, assessment in result.domains.items()
+            for conflict in assessment.conflicts
+        ]
+        missing = [
+            f"{vendor_id}/{domain.value}: {detail}"
+            for vendor_id, result in assessments.items()
+            for domain, assessment in result.domains.items()
+            for detail in assessment.missing_information
+        ]
         matrix = [
             {
-                "claim_id": claim.id,
-                "statement": claim.statement,
-                "evidence": [
-                    evidence[item_id].model_dump()
-                    for item_id in claim.evidence_ids
-                    if item_id in evidence
-                ],
+                "vendor_id": vendor_id,
+                "domain": domain.value,
+                "status": assessment.status.value,
+                "evidence_ids": assessment.evidence_ids,
             }
-            for claim in state["claims"]
+            for vendor_id, result in assessments.items()
+            for domain, assessment in result.domains.items()
         ]
         report = FinalReport(
-            executive_summary=(
-                "评审已通过证据门禁。" if review.passed else "部分结论证据不足，需要人工处理。"
-            ),
-            comparison_matrix=[],
-            risks=[],
-            conflicts=review.conflicts,
-            missing_information=review.missing_information,
+            executive_summary=_recommendation_summary(recommendation),
+            comparison_matrix=scores,
+            risks=risks,
+            conflicts=conflicts,
+            missing_information=missing,
             claim_evidence_matrix=matrix,
         )
-        return {
-            "report": report,
-            "status": "completed" if review.passed else "partially_completed",
-        }
+        statuses = [
+            assessment.status
+            for result in assessments.values()
+            for assessment in result.domains.values()
+        ]
+        if statuses and all(item is DomainAssessmentStatus.FAILED for item in statuses):
+            status = "failed"
+        elif any(
+            item in (DomainAssessmentStatus.DEGRADED, DomainAssessmentStatus.FAILED)
+            for item in statuses
+        ):
+            status = "partially_completed"
+        else:
+            status = "completed"
+        return {"report": report, "status": status}
+
+
+def _domain_key(vendor_id: str, domain: ReviewDomain) -> str:
+    return f"{vendor_id}:{domain.value}"
+
+
+def _failed_domain(
+    vendor_id: str,
+    domain: ReviewDomain,
+    reason: str,
+    revision_count: int = 0,
+) -> DomainAssessment:
+    return DomainAssessment(
+        domain=domain,
+        vendor_id=vendor_id,
+        status=DomainAssessmentStatus.FAILED,
+        missing_information=[reason or "领域分析失败"],
+        revision_count=revision_count,
+    )
+
+
+def _failed_vendor_assessment(vendor_id: str, reason: str) -> VendorAssessment:
+    return VendorAssessment(
+        vendor_id=vendor_id,
+        domains={domain: _failed_domain(vendor_id, domain, reason) for domain in ReviewDomain},
+    )
+
+
+def _recommendation_summary(recommendation: RecommendationResult) -> str:
+    if recommendation.level is RecommendationLevel.UNABLE_TO_RECOMMEND:
+        return "现有证据不足以形成供应商推荐。"
+    vendors = "、".join(recommendation.recommended_vendor_ids)
+    if recommendation.level is RecommendationLevel.CONDITIONALLY_RECOMMENDED:
+        return f"有条件推荐：{vendors}。"
+    return f"推荐：{vendors}。"
 
 
 def memory_workflow_factory(builder: Callable[[BaseCheckpointSaver], ReviewWorkflow]):

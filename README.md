@@ -11,15 +11,15 @@
 - BM25 索引落盘、ChromaDB 向量持久化、RRF 融合和 metadata 过滤；检索只使用每份文档最新的已索引版本。
 - Review Project 可登记多家 Vendor；采购方资料与各供应商同名文件相互隔离，检索 metadata 固定供应商归属。
 - 确定性推荐引擎支持需求符合性、相对 TCO、承诺可信度、50/30/20 权重、必选需求硬性淘汰和条件推荐。
-- 三个领域均有互斥工具白名单和同领域确定性降级处理器；降级结果保留缺失与冲突，只能形成条件推荐，无法形成结构化结果时标记失败。
+- 单 Agent 工具箱只开放已登记的需求、成本和承诺工具；三个领域各有确定性降级处理器，降级结果保留缺失与冲突且只能形成条件推荐。
 - 单个 VendorReviewAgent 一次生成需求、成本和承诺三个结构化领域结果；执行器拒绝未知工具、跨项目/版本证据及输入包之外的证据引用，并允许单领域失败而保留其他结果。
 - Vendor 级检索输入包只冻结采购方公共材料和当前供应商各文档的最新已索引版本，内部按三个领域组织查询，竞争对手材料不会进入 Agent 输入。
-- 可恢复 LangGraph 工作流骨架：集中检索、并行分析、确定性证据门禁、最多两次局部返工和部分完成语义。
+- 可恢复 LangGraph 工作流：Vendor 间并行检索与分析、领域级校验、最多两次局部返工、确定性降级、评分、报告和部分完成语义。
 - 内存/PostgreSQL Checkpointer、持久化运行事件与可恢复 SSE 事件格式。
 - PostgreSQL 业务模型、Alembic 事务迁移、Redis Worker 入口和 FastAPI 健康检查。
 - 完全合成的本地检索标注集与 Recall@K、Precision@K、MRR、NDCG 评测。
 
-下一步将按[供应商评审 Agent 设计](docs/superpowers/specs/2026-10-01-domain-agent-redesign.md)用新的 Vendor 证据包和单 Agent 执行器重构 LangGraph 工作流。当前仍使用固定分析器替身验证 Agent 契约，尚未接入真实模型；确定性哈希向量继续作为可复现检索基线。真实中文 Embedding、任务 API/RQ 接线、SSE HTTP 端点、完整 Trace 和前端工作台按[实施计划](docs/plans/2026-09-30-implementation-plan.md)继续迭代。完整边界见[设计说明](docs/design/2026-09-30-vendorlens-design.md)。
+下一步将新的 VendorReviewWorkflow 接入 Worker 和任务 API，并补充真实领域工具注册与模型适配器。当前仍使用固定分析器替身验证 Agent 契约，尚未接入真实模型；确定性哈希向量继续作为可复现检索基线。真实中文 Embedding、SSE HTTP 端点、完整 Trace 和前端工作台按[实施计划](docs/plans/2026-09-30-implementation-plan.md)继续迭代。完整边界见[供应商评审 Agent 设计](docs/superpowers/specs/2026-10-01-domain-agent-redesign.md)与[设计说明](docs/design/2026-09-30-vendorlens-design.md)。
 
 ## 本地启动
 
@@ -42,11 +42,13 @@ API 健康检查：`GET http://localhost:8000/health`。本机 ChromaDB 使用 `
   → SHA-256 幂等判断与不可变 Version
   → 解析并保存父子 Chunk
   → 子 Chunk 写入 BM25 + ChromaDB
-  → 仅过滤各文档最新已索引 Version
+  → 冻结采购方与当前 Vendor 的最新已索引 Version
   → BM25 / Vector 召回并用 RRF 融合
   → 根据 parent_id 回查父 Chunk
   → 生成带版本、位置和原文哈希的 EvidenceItem
-  → LangGraph 分析与证据门禁
+  → Vendor 间并行调用单 Agent
+  → 领域级校验、局部返工与确定性降级
+  → 确定性评分并生成报告
 ```
 
 ## 验证
