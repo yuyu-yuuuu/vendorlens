@@ -38,6 +38,14 @@ API 健康检查：`GET http://localhost:8000/health`。本机 ChromaDB 使用 `
 
 真实模型执行器使用 `.env.example` 中的 `VENDORLENS_MODEL_*` 配置；不要把真实 API Key 提交到仓库。
 
+配置 `.env` 后，可运行真实模型与工具调用链的合成冒烟测试：
+
+```bash
+.venv/bin/python -m vendorlens.model_smoke
+```
+
+重新执行 `pip install -e '.[dev]'` 后也可以使用 `.venv/bin/vendorlens-model-smoke`。该命令只读取内置合成供应商材料，打印三个领域的结构化结果，不写数据库，也不输出模型密钥。
+
 ## 当前数据流
 
 ```text

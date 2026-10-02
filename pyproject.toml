@@ -36,6 +36,7 @@ dev = [
 
 [project.scripts]
 vendorlens-eval-retrieval = "vendorlens.eval_cli:main"
+vendorlens-model-smoke = "vendorlens.model_smoke:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/vendorlens"]
