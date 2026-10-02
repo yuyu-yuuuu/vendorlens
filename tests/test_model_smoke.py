@@ -1,6 +1,14 @@
 import json
 
-from vendorlens.model_smoke import build_smoke_input, format_result, run
+import pytest
+
+from vendorlens.model_smoke import (
+    SmokeTestError,
+    build_smoke_input,
+    ensure_success,
+    format_result,
+    run,
+)
 from vendorlens.schemas import (
     DomainAssessment,
     DomainAssessmentStatus,
@@ -59,3 +67,8 @@ def test_smoke_output_is_json_and_contains_no_configuration():
     assert payload["vendor_id"] == "smoke-vendor"
     assert set(payload["domains"]) == {domain.value for domain in ReviewDomain}
     assert "api_key" not in format_result(result()).lower()
+
+
+def test_smoke_rejects_failed_domain_results():
+    with pytest.raises(SmokeTestError, match="failed domains"):
+        ensure_success(result())

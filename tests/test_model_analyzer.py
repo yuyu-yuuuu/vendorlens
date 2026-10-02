@@ -96,8 +96,8 @@ class SequenceModel:
         self.responses = iter(responses)
         self.requests = []
 
-    def complete(self, *, messages, tools=None):
-        self.requests.append({"messages": messages, "tools": tools})
+    def complete(self, *, messages, tools=None, tool_choice=None):
+        self.requests.append({"messages": messages, "tools": tools, "tool_choice": tool_choice})
         return next(self.responses)
 
 
@@ -126,6 +126,11 @@ def test_analyzer_executes_tools_and_enforces_tco_result():
 
     assert draft.cost_assessment.total_cost_of_ownership == 1_100_000
     assert draft.cost_assessment.one_time_cost == 800_000
+    assert chat_model.requests[0]["tool_choice"] == {
+        "type": "function",
+        "function": {"name": "calculate_tco"},
+    }
+    assert chat_model.requests[1]["tool_choice"] == "auto"
     assert chat_model.requests[1]["messages"][-1]["tool_call_id"] == "call-1"
 
 
@@ -140,6 +145,7 @@ def test_analyzer_marks_revision_domains_in_prompt():
     prompt = chat_model.requests[0]["messages"][1]["content"]
     assert "requirement_compliance" in prompt
     assert "返工次数：1" in prompt
+    assert "requirement_findings" in chat_model.requests[0]["messages"][0]["content"]
 
 
 def test_analyzer_rejects_cost_result_without_authoritative_tco_tool():
@@ -194,4 +200,7 @@ def test_executor_factory_configures_deepseek_non_thinking_mode():
     chat_model = executor.agent._analyzer.chat_model
 
     assert chat_model.store is None
-    assert chat_model.request_options == {"thinking": {"type": "disabled"}}
+    assert chat_model.request_options == {
+        "thinking": {"type": "disabled"},
+        "response_format": {"type": "json_object"},
+    }

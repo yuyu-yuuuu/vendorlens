@@ -56,6 +56,7 @@ class ChatModel(Protocol):
         *,
         messages: list[dict[str, Any]],
         tools: list[dict[str, Any]] | None = None,
+        tool_choice: str | dict[str, Any] | None = None,
     ) -> ModelResponse: ...
 
 
@@ -98,13 +99,14 @@ class OpenAICompatibleChatModel:
         *,
         messages: list[dict[str, Any]],
         tools: list[dict[str, Any]] | None = None,
+        tool_choice: str | dict[str, Any] | None = None,
     ) -> ModelResponse:
         payload: dict[str, Any] = {"model": self.model, "messages": messages}
         if self.store is not None:
             payload["store"] = self.store
         payload.update(self.request_options)
         if tools:
-            payload.update({"tools": tools, "tool_choice": "auto"})
+            payload.update({"tools": tools, "tool_choice": tool_choice or "auto"})
         try:
             response = self._client.post(
                 f"{self.base_url}/chat/completions",

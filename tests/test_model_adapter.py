@@ -133,6 +133,7 @@ def test_chat_model_supports_deepseek_request_options():
         payload = json.loads(request.content)
         assert "store" not in payload
         assert payload["thinking"] == {"type": "disabled"}
+        assert payload["tool_choice"] == "required"
         return httpx.Response(
             200,
             json={
@@ -145,6 +146,10 @@ def test_chat_model_supports_deepseek_request_options():
         handler,
         store=None,
         request_options={"thinking": {"type": "disabled"}},
-    ).complete(messages=[{"role": "user", "content": "review"}])
+    ).complete(
+        messages=[{"role": "user", "content": "review"}],
+        tools=[{"type": "function", "function": {"name": "review"}}],
+        tool_choice="required",
+    )
 
     assert response.content == "{}"

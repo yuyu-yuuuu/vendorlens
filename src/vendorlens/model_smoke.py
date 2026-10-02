@@ -8,7 +8,17 @@ from vendorlens.config import get_settings
 from vendorlens.model_adapter import ModelError
 from vendorlens.model_analyzer import build_vendor_review_executor
 from vendorlens.review_agent import ReviewAgentError, VendorReviewInput
-from vendorlens.schemas import EvidenceItem, RequirementItem, ReviewDomain, VendorAssessment
+from vendorlens.schemas import (
+    DomainAssessmentStatus,
+    EvidenceItem,
+    RequirementItem,
+    ReviewDomain,
+    VendorAssessment,
+)
+
+
+class SmokeTestError(ModelError):
+    pass
 
 
 class ReviewExecutor(Protocol):
@@ -74,6 +84,17 @@ def run(executor: ReviewExecutor) -> VendorAssessment:
     return executor.execute(build_smoke_input())
 
 
+def ensure_success(result: VendorAssessment) -> VendorAssessment:
+    failed = [
+        domain.value
+        for domain, assessment in result.domains.items()
+        if assessment.status is DomainAssessmentStatus.FAILED
+    ]
+    if failed:
+        raise SmokeTestError(f"model smoke test produced failed domains: {', '.join(failed)}")
+    return result
+
+
 def format_result(result: VendorAssessment) -> str:
     return result.model_dump_json(indent=2)
 
@@ -81,7 +102,7 @@ def format_result(result: VendorAssessment) -> str:
 def main() -> None:
     try:
         executor = build_vendor_review_executor(get_settings())
-        result = run(executor)
+        result = ensure_success(run(executor))
     except (ModelError, ReviewAgentError) as error:
         print(f"VendorLens model smoke test failed: {error}", file=sys.stderr)
         raise SystemExit(1) from None

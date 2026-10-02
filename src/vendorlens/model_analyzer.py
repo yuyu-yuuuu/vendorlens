@@ -39,7 +39,11 @@ class VendorReviewModelAnalyzer:
         messages = self._messages(input_data)
         tool_rounds = 0
         while True:
-            response = self.chat_model.complete(messages=messages, tools=registry.definitions())
+            response = self.chat_model.complete(
+                messages=messages,
+                tools=registry.definitions(),
+                tool_choice=self._tool_choice(input_data, registry),
+            )
             if response.tool_calls:
                 if tool_rounds >= self.max_tool_rounds:
                     raise ModelToolLoopError("model exceeded the tool call round limit")
@@ -79,6 +83,21 @@ class VendorReviewModelAnalyzer:
             return self._apply_authoritative_results(input_data, draft, registry)
 
     @staticmethod
+    def _tool_choice(
+        input_data: VendorReviewInput,
+        registry: ReviewToolRegistry,
+    ) -> str | dict[str, Any]:
+        cost_is_active = not input_data.revision_domains or ReviewDomain.COST_MODELING in (
+            input_data.revision_domains
+        )
+        if cost_is_active and registry.authoritative_cost is None:
+            return {
+                "type": "function",
+                "function": {"name": "calculate_tco"},
+            }
+        return "auto"
+
+    @staticmethod
     def _messages(input_data: VendorReviewInput) -> list[dict[str, str]]:
         revision = ", ".join(sorted(domain.value for domain in input_data.revision_domains))
         payload = {
@@ -93,10 +112,16 @@ class VendorReviewModelAnalyzer:
             "project_context": input_data.project_context,
             "evidence": [item.model_dump(mode="json") for item in input_data.evidence],
         }
+        draft_schema = json.dumps(
+            VendorReviewDraft.model_json_schema(),
+            ensure_ascii=False,
+            separators=(",", ":"),
+        )
         instruction = (
             "你是 VendorLens 的单一供应商评审 Agent。只使用输入证据和已注册工具；"
             "所有事实必须引用 evidence_id；成本 TCO 必须采用 calculate_tco 的结果；"
-            "不得选择最终供应商。最终只返回符合 VendorReviewDraft schema 的 JSON。"
+            "不得选择最终供应商。最终只返回符合以下 JSON Schema 的 JSON："
+            f"{draft_schema}"
         )
         user = (
             f"返工领域：{revision or '全部领域'}\n返工次数：{input_data.revision_count}\n"
@@ -140,7 +165,10 @@ def build_vendor_review_executor(
     request_options = None
     if settings.model_provider == "deepseek":
         store = None
-        request_options = {"thinking": {"type": "disabled"}}
+        request_options = {
+            "thinking": {"type": "disabled"},
+            "response_format": {"type": "json_object"},
+        }
     chat_model = OpenAICompatibleChatModel(
         base_url=settings.model_base_url,
         api_key=settings.model_api_key.get_secret_value(),

@@ -55,7 +55,7 @@ VENDORLENS_MODEL_API_KEY=你的本地密钥
 VENDORLENS_MODEL_NAME=deepseek-flash
 ```
 
-DeepSeek 适配会省略未在其 Chat Completions 文档中声明的 `store` 参数，并关闭思考模式，避免多轮工具调用要求回传 `reasoning_content`。密钥只写入被 Git 忽略的 `.env`。
+DeepSeek 适配会省略未在其 Chat Completions 文档中声明的 `store` 参数、关闭思考模式并启用 JSON Output，避免多轮工具调用要求回传 `reasoning_content`。密钥只写入被 Git 忽略的 `.env`。
 
 ## 当前数据流
 
