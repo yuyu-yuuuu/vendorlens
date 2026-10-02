@@ -9,6 +9,8 @@ VendorLens 已完成单 `VendorReviewAgent` 契约、Vendor 级证据隔离、�
 
 模型接入采用 OpenAI 兼容的 Chat Completions 接口。运行时只依赖统一的 `base_url`、`api_key` 和 `model` 配置，因此既可连接 OpenAI，也可连接实现相同协议的服务。适配器通过 `httpx` 调用 `/chat/completions`，业务代码不直接依赖具体供应商 SDK；测试使用内存假模型或假 HTTP 传输，不发送网络请求。
 
+所选模型必须支持 Chat Completions 的 `tools`/`tool_calls`。仅支持 Responses API 工具调用的模型不在本阶段兼容范围内，适配器应给出明确的协议或配置错误，而不是静默退化。
+
 本阶段只实现模型适配器、提示输入、领域工具注册和相应测试。RQ Worker、任务 REST API、SSE 与 Trace 接线属于后续阶段。
 
 ## 2. 目标与非目标
