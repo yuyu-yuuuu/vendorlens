@@ -1,5 +1,6 @@
 from functools import lru_cache
 from pathlib import Path
+from typing import Literal
 
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -13,6 +14,7 @@ class Settings(BaseSettings):
     redis_url: str = "redis://localhost:6380/0"
     chroma_url: str = "http://localhost:8100"
     storage_root: Path = Path("data/files")
+    model_provider: Literal["openai_compatible", "deepseek"] = "openai_compatible"
     model_base_url: str | None = None
     model_api_key: SecretStr | None = None
     model_name: str | None = None

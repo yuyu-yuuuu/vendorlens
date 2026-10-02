@@ -67,16 +67,24 @@ class OpenAICompatibleChatModel:
         api_key: str,
         model: str,
         timeout_seconds: float = 60.0,
+        store: bool | None = False,
+        request_options: dict[str, Any] | None = None,
         client: httpx.Client | None = None,
     ):
         if not base_url.strip() or not api_key.strip() or not model.strip():
             raise ModelConfigurationError("model base URL, API key, and model name are required")
         if timeout_seconds <= 0:
             raise ModelConfigurationError("model timeout must be positive")
+        request_options = dict(request_options or {})
+        reserved = {"model", "messages", "tools", "tool_choice", "store"}
+        if reserved & set(request_options):
+            raise ModelConfigurationError("model request options contain reserved fields")
         self.base_url = base_url.rstrip("/")
         self._api_key = api_key
         self.model = model
         self.timeout_seconds = timeout_seconds
+        self.store = store
+        self.request_options = request_options
         self._client = client or httpx.Client(timeout=timeout_seconds)
 
     def __repr__(self) -> str:
@@ -91,7 +99,10 @@ class OpenAICompatibleChatModel:
         messages: list[dict[str, Any]],
         tools: list[dict[str, Any]] | None = None,
     ) -> ModelResponse:
-        payload: dict[str, Any] = {"model": self.model, "messages": messages, "store": False}
+        payload: dict[str, Any] = {"model": self.model, "messages": messages}
+        if self.store is not None:
+            payload["store"] = self.store
+        payload.update(self.request_options)
         if tools:
             payload.update({"tools": tools, "tool_choice": "auto"})
         try:

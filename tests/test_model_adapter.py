@@ -1,3 +1,5 @@
+import json
+
 import httpx
 import pytest
 
@@ -10,13 +12,14 @@ from vendorlens.model_adapter import (
 )
 
 
-def model(handler, *, api_key="secret-value"):
+def model(handler, *, api_key="secret-value", **options):
     client = httpx.Client(transport=httpx.MockTransport(handler))
     return OpenAICompatibleChatModel(
         base_url="https://models.example/v1",
         api_key=api_key,
         model="compatible-model",
         client=client,
+        **options,
     )
 
 
@@ -24,6 +27,7 @@ def test_chat_model_parses_content_and_usage():
     def handler(request):
         assert request.url == "https://models.example/v1/chat/completions"
         assert request.headers["authorization"] == "Bearer secret-value"
+        assert json.loads(request.content)["store"] is False
         return httpx.Response(
             200,
             json={
@@ -122,3 +126,25 @@ def test_chat_model_maps_timeout_to_transport_error():
         model(handler).complete(messages=[])
 
     assert "secret-value" not in str(caught.value)
+
+
+def test_chat_model_supports_deepseek_request_options():
+    def handler(request):
+        payload = json.loads(request.content)
+        assert "store" not in payload
+        assert payload["thinking"] == {"type": "disabled"}
+        return httpx.Response(
+            200,
+            json={
+                "model": "deepseek-flash",
+                "choices": [{"message": {"role": "assistant", "content": "{}"}}],
+            },
+        )
+
+    response = model(
+        handler,
+        store=None,
+        request_options={"thinking": {"type": "disabled"}},
+    ).complete(messages=[{"role": "user", "content": "review"}])
+
+    assert response.content == "{}"

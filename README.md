@@ -46,6 +46,17 @@ API 健康检查：`GET http://localhost:8000/health`。本机 ChromaDB 使用 `
 
 重新执行 `pip install -e '.[dev]'` 后也可以使用 `.venv/bin/vendorlens-model-smoke`。该命令只读取内置合成供应商材料，打印三个领域的结构化结果，不写数据库，也不输出模型密钥。
 
+使用 DeepSeek 时配置为：
+
+```env
+VENDORLENS_MODEL_PROVIDER=deepseek
+VENDORLENS_MODEL_BASE_URL=https://api.deepseek.com
+VENDORLENS_MODEL_API_KEY=你的本地密钥
+VENDORLENS_MODEL_NAME=deepseek-flash
+```
+
+DeepSeek 适配会省略未在其 Chat Completions 文档中声明的 `store` 参数，并关闭思考模式，避免多轮工具调用要求回传 `reasoning_content`。密钥只写入被 Git 忽略的 `.env`。
+
 ## 当前数据流
 
 ```text

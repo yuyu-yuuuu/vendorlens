@@ -165,11 +165,12 @@ def test_analyzer_stops_infinite_tool_loop():
 
 def test_executor_factory_requires_complete_model_configuration():
     with pytest.raises(ModelConfigurationError, match="model configuration"):
-        build_vendor_review_executor(Settings())
+        build_vendor_review_executor(Settings(_env_file=None))
 
 
 def test_executor_factory_does_not_expose_api_key():
     settings = Settings(
+        _env_file=None,
         model_base_url="https://models.example/v1",
         model_api_key=SecretStr("secret-value"),
         model_name="compatible-model",
@@ -178,3 +179,19 @@ def test_executor_factory_does_not_expose_api_key():
     executor = build_vendor_review_executor(settings)
 
     assert "secret-value" not in repr(executor.agent._analyzer.chat_model)
+
+
+def test_executor_factory_configures_deepseek_non_thinking_mode():
+    settings = Settings(
+        _env_file=None,
+        model_provider="deepseek",
+        model_base_url="https://api.deepseek.com",
+        model_api_key=SecretStr("secret-value"),
+        model_name="deepseek-flash",
+    )
+
+    executor = build_vendor_review_executor(settings)
+    chat_model = executor.agent._analyzer.chat_model
+
+    assert chat_model.store is None
+    assert chat_model.request_options == {"thinking": {"type": "disabled"}}

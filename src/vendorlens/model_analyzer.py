@@ -136,11 +136,18 @@ def build_vendor_review_executor(
 ) -> VendorReviewExecutor:
     if not settings.model_base_url or not settings.model_api_key or not settings.model_name:
         raise ModelConfigurationError("complete model configuration is required")
+    store: bool | None = False
+    request_options = None
+    if settings.model_provider == "deepseek":
+        store = None
+        request_options = {"thinking": {"type": "disabled"}}
     chat_model = OpenAICompatibleChatModel(
         base_url=settings.model_base_url,
         api_key=settings.model_api_key.get_secret_value(),
         model=settings.model_name,
         timeout_seconds=settings.model_timeout_seconds,
+        store=store,
+        request_options=request_options,
         client=client,
     )
     analyzer = VendorReviewModelAnalyzer(
