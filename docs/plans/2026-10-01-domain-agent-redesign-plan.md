@@ -18,13 +18,14 @@
 
 ## 阶段 3：单 Agent 契约、工具与降级
 
-状态：契约与降级已完成；正式工具注册和真实模型适配器待接入。
+状态：已完成。
 
 1. VendorReviewInput 一次携带当前 Vendor 的三个领域上下文。
 2. VendorReviewAgent 一次输出 VendorAssessment 的三个领域结果。
 3. ReviewToolbox 拒绝未登记工具；VendorReviewExecutor 校验证据、Vendor、版本和成本口径。
 4. 单领域输出缺失时标记该领域 `failed`，保留其他领域结果。
 5. RequirementRuleEvaluator、DeterministicCostEngine 和 CommitmentRuleChecker 提供领域级确定性降级。
+6. OpenAI 兼容 Chat Completions 适配器支持多轮工具调用，11 个正式工具绑定当前 Vendor 冻结证据。
 
 ## 阶段 4：按 Vendor 隔离检索
 

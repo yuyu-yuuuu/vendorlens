@@ -107,6 +107,6 @@ DatabaseRetrievalCoordinator 已新增 Vendor 级检索：从数据库冻结采�
 - 已完成：AgentRun/RunEvent 数据模型、事件持久化与 SSE 格式化。
 - 已完成：单个 VendorReviewAgent 输出需求、成本、承诺三个领域结果，不保留 Planner/Analyst/Reviewer 业务角色。
 - 已完成：Vendor、Requirement、ReviewConfig、DomainAssessment 数据模型，供应商文件隔离和确定性推荐规则。
-- 已完成：VendorReviewAgent 输入/输出契约、受限工具箱、证据范围校验和三个领域降级处理器。
-- 进行中：注册正式领域工具和模型适配器，并将新工作流接入 Worker/API。
+- 已完成：VendorReviewAgent 输入/输出契约、11 个正式领域工具、OpenAI 兼容 Chat Completions 模型适配器、证据范围校验和三个领域降级处理器。
+- 进行中：将新工作流和正式模型执行器接入 Worker/API。
 - 未开始：真实中文 Embedding 与 reranker、完整任务 REST/SSE、Trace 写入、前端工作台和端到端演示。

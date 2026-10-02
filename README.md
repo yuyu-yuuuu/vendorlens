@@ -11,15 +11,16 @@
 - BM25 索引落盘、ChromaDB 向量持久化、RRF 融合和 metadata 过滤；检索只使用每份文档最新的已索引版本。
 - Review Project 可登记多家 Vendor；采购方资料与各供应商同名文件相互隔离，检索 metadata 固定供应商归属。
 - 确定性推荐引擎支持需求符合性、相对 TCO、承诺可信度、50/30/20 权重、必选需求硬性淘汰和条件推荐。
-- 单 Agent 工具箱只开放已登记的需求、成本和承诺工具；三个领域各有确定性降级处理器，降级结果保留缺失与冲突且只能形成条件推荐。
+- 单 Agent 工具箱只开放 11 个已登记的需求、成本和承诺工具；工具参数与证据范围由本地代码校验，TCO 由确定性工具计算且覆盖模型数值。
 - 单个 VendorReviewAgent 一次生成需求、成本和承诺三个结构化领域结果；执行器拒绝未知工具、跨项目/版本证据及输入包之外的证据引用，并允许单领域失败而保留其他结果。
+- OpenAI 兼容 Chat Completions 模型适配器支持多轮 `tool_calls`、结构化 Draft、限流/鉴权/协议错误分类和密钥脱敏；离线测试使用假模型与假 HTTP 传输。
 - Vendor 级检索输入包只冻结采购方公共材料和当前供应商各文档的最新已索引版本，内部按三个领域组织查询，竞争对手材料不会进入 Agent 输入。
 - 可恢复 LangGraph 工作流：Vendor 间并行检索与分析、领域级校验、最多两次局部返工、确定性降级、评分、报告和部分完成语义。
 - 内存/PostgreSQL Checkpointer、持久化运行事件与可恢复 SSE 事件格式。
 - PostgreSQL 业务模型、Alembic 事务迁移、Redis Worker 入口和 FastAPI 健康检查。
 - 完全合成的本地检索标注集与 Recall@K、Precision@K、MRR、NDCG 评测。
 
-下一步将新的 VendorReviewWorkflow 接入 Worker 和任务 API，并补充真实领域工具注册与模型适配器。当前仍使用固定分析器替身验证 Agent 契约，尚未接入真实模型；确定性哈希向量继续作为可复现检索基线。真实中文 Embedding、SSE HTTP 端点、完整 Trace 和前端工作台按[实施计划](docs/plans/2026-09-30-implementation-plan.md)继续迭代。完整边界见[供应商评审 Agent 设计](docs/superpowers/specs/2026-10-01-domain-agent-redesign.md)与[设计说明](docs/design/2026-09-30-vendorlens-design.md)。
+下一步将新的 VendorReviewWorkflow 和正式模型执行器接入 Worker 与任务 API。真实模型调用需要配置支持 Chat Completions `tools`/`tool_calls` 的兼容模型；默认测试不访问网络。确定性哈希向量继续作为可复现检索基线，真实中文 Embedding、SSE HTTP 端点、完整 Trace 和前端工作台按[实施计划](docs/plans/2026-09-30-implementation-plan.md)继续迭代。完整边界见[供应商评审 Agent 设计](docs/superpowers/specs/2026-10-01-domain-agent-redesign.md)、[模型适配器设计](docs/superpowers/specs/2026-10-02-model-adapter-tools-design.md)与[设计说明](docs/design/2026-09-30-vendorlens-design.md)。
 
 ## 本地启动
 
@@ -34,6 +35,8 @@ docker compose up -d postgres redis chroma
 ```
 
 API 健康检查：`GET http://localhost:8000/health`。本机 ChromaDB 使用 `http://localhost:8100`；容器内服务通过 `http://chroma:8000` 访问。
+
+真实模型执行器使用 `.env.example` 中的 `VENDORLENS_MODEL_*` 配置；不要把真实 API Key 提交到仓库。
 
 ## 当前数据流
 

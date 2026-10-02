@@ -2,6 +2,8 @@
 
 日期：2026-10-02
 
+状态：已完成。
+
 ## 目标
 
 在不改变单 Agent、领域级返工、确定性降级和推荐规则的前提下，为 `VendorReviewAgent` 接入 OpenAI 兼容 Chat Completions 模型与受限领域工具。所有测试离线运行。
