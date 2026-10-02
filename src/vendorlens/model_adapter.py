@@ -48,6 +48,7 @@ class ModelResponse(BaseModel):
     tool_calls: list[ModelToolCall] = Field(default_factory=list)
     model: str | None = None
     usage: ModelUsage = Field(default_factory=ModelUsage)
+    usage_reported: bool = False
 
 
 class ChatModel(Protocol):
@@ -131,6 +132,11 @@ class OpenAICompatibleChatModel:
                 tool_calls=tool_calls,
                 model=body.get("model"),
                 usage=ModelUsage.model_validate(body.get("usage") or {}),
+                usage_reported=isinstance(body.get("usage"), dict)
+                and all(
+                    key in body["usage"]
+                    for key in ("prompt_tokens", "completion_tokens", "total_tokens")
+                ),
             )
         except (KeyError, IndexError, TypeError, ValueError, ValidationError) as error:
             if isinstance(error, ModelProtocolError):

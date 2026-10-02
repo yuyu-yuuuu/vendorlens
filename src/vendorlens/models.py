@@ -176,6 +176,7 @@ class ResearchTask(Base):
     run_id: Mapped[str] = mapped_column(String(36), unique=True, default=new_id)
     trace_id: Mapped[str] = mapped_column(String(36), unique=True, default=new_id)
     objective: Mapped[str] = mapped_column(Text)
+    request_snapshot: Mapped[dict] = mapped_column(JSON, default=dict)
     status: Mapped[str] = mapped_column(String(30), default="queued")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 

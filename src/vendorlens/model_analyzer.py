@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from contextlib import nullcontext
 from typing import Any
 
 import httpx
@@ -19,8 +20,9 @@ from vendorlens.review_agent import (
     VendorReviewExecutor,
     VendorReviewInput,
 )
-from vendorlens.review_tools import ReviewToolRegistry
+from vendorlens.review_tools import TOOL_SCHEMAS, ReviewToolRegistry
 from vendorlens.schemas import ReviewDomain
+from vendorlens.tracing import get_active_trace
 
 
 class ModelToolLoopError(ModelProtocolError):
@@ -33,17 +35,33 @@ class VendorReviewModelAnalyzer:
             raise ValueError("max tool rounds cannot be negative")
         self.chat_model = chat_model
         self.max_tool_rounds = max_tool_rounds
+        self.tracer = get_active_trace()
 
     def __call__(self, input_data: VendorReviewInput, _tools: Any) -> VendorReviewDraft:
         registry = ReviewToolRegistry(input_data)
         messages = self._messages(input_data)
         tool_rounds = 0
         while True:
-            response = self.chat_model.complete(
-                messages=messages,
-                tools=registry.definitions(),
-                tool_choice=self._tool_choice(input_data, registry),
+            scope = (
+                self.tracer.span("chat_completion", "model", round=tool_rounds + 1)
+                if self.tracer
+                else nullcontext()
             )
+            with scope as span:
+                response = self.chat_model.complete(
+                    messages=messages,
+                    tools=registry.definitions(),
+                    tool_choice=self._tool_choice(input_data, registry),
+                )
+                if span:
+                    span.attributes.update(
+                        tool_call_count=len(response.tool_calls),
+                        usage_reported=response.usage_reported,
+                    )
+                    if response.model:
+                        span.attributes["model"] = response.model
+                    if response.usage_reported:
+                        span.attributes.update(response.usage.model_dump())
             if response.tool_calls:
                 if tool_rounds >= self.max_tool_rounds:
                     raise ModelToolLoopError("model exceeded the tool call round limit")
@@ -65,7 +83,18 @@ class VendorReviewModelAnalyzer:
                     }
                 )
                 for call in response.tool_calls:
-                    result = registry.call(call.name, **call.arguments)
+                    scope = (
+                        self.tracer.span(
+                            call.name if call.name in TOOL_SCHEMAS else "unregistered_tool",
+                            "tool",
+                            argument_count=len(call.arguments),
+                            round=tool_rounds + 1,
+                        )
+                        if self.tracer
+                        else nullcontext()
+                    )
+                    with scope:
+                        result = registry.call(call.name, **call.arguments)
                     messages.append(
                         {
                             "role": "tool",

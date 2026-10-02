@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from contextlib import nullcontext
+from contextvars import copy_context
 from typing import Protocol, TypedDict
 
 from langgraph.checkpoint.base import BaseCheckpointSaver
@@ -27,6 +29,7 @@ from vendorlens.schemas import (
     ReviewWeights,
     VendorAssessment,
 )
+from vendorlens.tracing import get_active_trace
 
 
 class VendorEvidenceRetriever(Protocol):
@@ -117,18 +120,22 @@ class ReviewWorkflow:
         self.executor = executor
         self.fallback = fallback or DeterministicDomainFallbackRunner()
         self.max_parallel_vendors = max_parallel_vendors
+        self.tracer = get_active_trace()
         self.graph = self._build().compile(checkpointer=checkpointer or InMemorySaver())
 
     def _build(self) -> StateGraph:
         graph = StateGraph(WorkflowState)
-        graph.add_node("prepare_review", self._prepare_review)
-        graph.add_node("retrieve_vendor_evidence", self._retrieve_vendor_evidence)
-        graph.add_node("analyze_vendors", self._analyze_vendors)
-        graph.add_node("validate_domains", self._validate_domains)
-        graph.add_node("prepare_domain_revisions", self._prepare_domain_revisions)
-        graph.add_node("run_domain_fallbacks", self._run_domain_fallbacks)
-        graph.add_node("aggregate_scores", self._aggregate_scores)
-        graph.add_node("compose_report", self._compose_report)
+        for name, handler in {
+            "prepare_review": self._prepare_review,
+            "retrieve_vendor_evidence": self._retrieve_vendor_evidence,
+            "analyze_vendors": self._analyze_vendors,
+            "validate_domains": self._validate_domains,
+            "prepare_domain_revisions": self._prepare_domain_revisions,
+            "run_domain_fallbacks": self._run_domain_fallbacks,
+            "aggregate_scores": self._aggregate_scores,
+            "compose_report": self._compose_report,
+        }.items():
+            graph.add_node(name, self._trace_node(name, handler))
         graph.add_edge(START, "prepare_review")
         graph.add_edge("prepare_review", "retrieve_vendor_evidence")
         graph.add_edge("retrieve_vendor_evidence", "analyze_vendors")
@@ -147,6 +154,18 @@ class ReviewWorkflow:
         graph.add_edge("aggregate_scores", "compose_report")
         graph.add_edge("compose_report", END)
         return graph
+
+    def _trace_node(self, name, handler):
+        if self.tracer is None:
+            return handler
+
+        def traced(state: WorkflowState) -> dict:
+            with self.tracer.span(name, "node") as span:
+                result = handler(state)
+                span.attributes["state_status"] = result.get("status", "")
+                return result
+
+        return traced
 
     @staticmethod
     def _prepare_review(state: WorkflowState) -> dict:
@@ -171,6 +190,21 @@ class ReviewWorkflow:
 
     def _retrieve_vendor_evidence(self, state: WorkflowState) -> dict:
         def retrieve(vendor_id: str) -> VendorReviewInput:
+            scope = (
+                self.tracer.span("retrieve_vendor", "retrieval", vendor_id=vendor_id)
+                if self.tracer
+                else nullcontext()
+            )
+            with scope as span:
+                result = retrieve_input(vendor_id)
+                if span:
+                    span.attributes.update(
+                        evidence_count=len(result.evidence),
+                        version_count=len(result.document_version_ids),
+                    )
+                return result
+
+        def retrieve_input(vendor_id: str) -> VendorReviewInput:
             package = self.retriever.retrieve_vendor_evidence(
                 project_id=state["project_id"],
                 vendor_id=vendor_id,
@@ -191,7 +225,8 @@ class ReviewWorkflow:
         counts = dict(state["revision_counts"])
         with ThreadPoolExecutor(max_workers=self.max_parallel_vendors) as pool:
             futures = {
-                pool.submit(retrieve, vendor_id): vendor_id for vendor_id in state["vendor_ids"]
+                pool.submit(copy_context().run, retrieve, vendor_id): vendor_id
+                for vendor_id in state["vendor_ids"]
             }
             for future in as_completed(futures):
                 vendor_id = futures[future]
@@ -232,14 +267,40 @@ class ReviewWorkflow:
                 }
             )
             try:
-                return self.executor.execute(input_data)
+                scope = (
+                    self.tracer.span(
+                        "VendorReviewAgent",
+                        "agent",
+                        vendor_id=vendor_id,
+                        revision_count=input_data.revision_count,
+                        domain_count=len(domains),
+                    )
+                    if self.tracer
+                    else nullcontext()
+                )
+                with scope as span:
+                    result = self.executor.execute(input_data)
+                    if span:
+                        failed = sum(
+                            result.domains[d].status is DomainAssessmentStatus.FAILED
+                            for d in domains
+                        )
+                        span.attributes["failed_domain_count"] = failed
+                        span.status = (
+                            "failed"
+                            if failed == len(domains)
+                            else "partially_completed"
+                            if failed
+                            else "completed"
+                        )
+                    return result
             except Exception as error:
                 return _failed_vendor_assessment(vendor_id, str(error))
 
         produced: dict[str, VendorAssessment] = {}
         with ThreadPoolExecutor(max_workers=self.max_parallel_vendors) as pool:
             futures = {
-                pool.submit(analyze, vendor_id, domains): (vendor_id, domains)
+                pool.submit(copy_context().run, analyze, vendor_id, domains): (vendor_id, domains)
                 for vendor_id, domains in targets.items()
             }
             for future in as_completed(futures):
@@ -322,14 +383,28 @@ class ReviewWorkflow:
                     }
                 )
                 try:
-                    result = self.fallback.run(input_data, domain)
-                    if result.domain is not domain or result.vendor_id != vendor_id:
-                        raise ValueError("fallback output identity does not match its input")
-                    if result.status not in (
-                        DomainAssessmentStatus.DEGRADED,
-                        DomainAssessmentStatus.FAILED,
-                    ):
-                        raise ValueError("fallback must return degraded or failed status")
+                    scope = (
+                        self.tracer.span(
+                            "domain_fallback",
+                            "fallback",
+                            vendor_id=vendor_id,
+                            domain=domain.value,
+                            revision_count=count,
+                        )
+                        if self.tracer
+                        else nullcontext()
+                    )
+                    with scope as span:
+                        result = self.fallback.run(input_data, domain)
+                        if result.domain is not domain or result.vendor_id != vendor_id:
+                            raise ValueError("fallback output identity does not match its input")
+                        if result.status not in (
+                            DomainAssessmentStatus.DEGRADED,
+                            DomainAssessmentStatus.FAILED,
+                        ):
+                            raise ValueError("fallback must return degraded or failed status")
+                        if span:
+                            span.status = result.status.value
                 except Exception as error:
                     result = _failed_domain(vendor_id, domain, str(error), count)
                 merged[domain] = result.model_copy(update={"revision_count": count})

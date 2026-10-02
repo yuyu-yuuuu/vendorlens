@@ -76,11 +76,17 @@ DatabaseRetrievalCoordinator 已新增 Vendor 级检索：从数据库冻结采�
 
 ## 8. API、队列与实时进度
 
-目标 REST API 管理项目、文档、版本、任务和报告。当前已实现数据库健康检查、RQ Worker 入口、按任务单调递增的持久化 `RunEvent`，以及标准 SSE 文本格式和按序号续读；任务创建、入队和 SSE HTTP 端点尚待接线。完成后上传或创建分析任务会立即返回资源 ID/`run_id`，前端用 `Last-Event-ID` 在刷新后续传；WebSocket 不在范围内。
+目标 REST API 管理项目、文档、版本、任务和报告。当前已实现健康检查、`POST /projects/{project_id}/tasks`、任务/报告查询和 SSE HTTP 端点。任务提交先将需求、配置和查询快照与 queued 事件提交到数据库，再以 run_id 作为 RQ job_id 入队，正常返回 202；入队失败返回 503 和 task_id 并记录 enqueue_failed。Worker 原子领取 queued 任务，运行真实检索与模型工作流，按节点完成写入事件，领域结果、报告和终态事件在同一事务提交。前端用 `Last-Event-ID` 或 after 续读，终态连接关闭；每次轮询只持有短数据库事务。项目/文档/上传管理端点尚未实现，材料与索引仍需由现有数据层准备。WebSocket 不在范围内。
+
+文档版本在 Worker 检索节点冻结，不是任务提交时冻结。重复投递不会重复执行已领取任务；首版没有 Worker 硬中断恢复或重试入队端点，硬中断可遗留 running 状态。API 无鉴权，仅用于可信本地环境。
+
+接口文档由 FastAPI/Pydantic 自动生成：`/docs` 为 Swagger UI，`/redoc` 为阅读版，`/openapi.json` 为规范。已有六个业务端点按中文标签分组，声明请求示例、成功响应模型、已知错误状态和 SSE 的 text/event-stream 类型；执行调试调用真实业务，不是模拟接口。文档页无需数据库连接，业务调用需要依赖与前置数据；CDN 前端资源未离线打包。操作说明见[接口文档](../api.md)。
 
 ## 9. 可观测性与安全
 
 每次运行生成 `trace_id`。每个节点、检索、模型、工具、重试、校验和状态变化写入父子 `TraceSpan`，记录状态、时间、耗时、模型、Token、估算成本、脱敏参数和错误。禁止保存隐藏思维链、API Key、Authorization header 或原始敏感配置。Prometheus 只暴露聚合指标；LangSmith 是关闭默认的适配器。
+
+当前已实现整次运行、节点、供应商检索、Agent 尝试、模型请求、工具和领域降级的父子 TraceSpan，并提供 GET /tasks/{task_id}/trace 查询。TraceRecorder 通过 ContextVar 管理父节点，线程池每项任务使用独立 copy_context，避免并行供应商串线。跨度单独提交起始状态，再运行操作，结束时提交耗时/终态；不持有跨模型请求的数据库事务。属性只保留白名单标量，不存原始参数、模型全文或异常文本；错误只存异常类型。模型完整 usage 的 Token 计入汇总，未报告或不完整 usage 不当作零消耗。Trace 根状态与业务终态一致，子操作状态反映本次调用是否成功；降级不等同于模型成功。金额估算、Prometheus、Trace 前端与硬中断后的跨度修复尚未实现。
 
 ## 10. 前端原则
 
@@ -108,5 +114,5 @@ DatabaseRetrievalCoordinator 已新增 Vendor 级检索：从数据库冻结采�
 - 已完成：单个 VendorReviewAgent 输出需求、成本、承诺三个领域结果，不保留 Planner/Analyst/Reviewer 业务角色。
 - 已完成：Vendor、Requirement、ReviewConfig、DomainAssessment 数据模型，供应商文件隔离和确定性推荐规则。
 - 已完成：VendorReviewAgent 输入/输出契约、11 个正式领域工具、OpenAI 兼容 Chat Completions 模型适配器、证据范围校验和三个领域降级处理器。
-- 进行中：将新工作流和正式模型执行器接入 Worker/API。
-- 未开始：真实中文 Embedding 与 reranker、完整任务 REST/SSE、Trace 写入、前端工作台和端到端演示。
+- 已完成：正式模型工作流接入 RQ、任务创建/状态/报告 API、SSE HTTP 续读、任务输入快照、结果事务落库与运行/节点/检索/Agent/模型/工具/降级父子 Trace。
+- 待实现：Worker 硬中断恢复、管理/上传 REST、成本计费统计、Prometheus、真实中文 Embedding 与 reranker、前端工作台和端到端演示。

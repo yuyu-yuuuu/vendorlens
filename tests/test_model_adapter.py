@@ -41,6 +41,21 @@ def test_chat_model_parses_content_and_usage():
 
     assert response.content == '{"ok":true}'
     assert response.usage.total_tokens == 14
+    assert response.usage_reported is True
+
+
+@pytest.mark.parametrize("usage", [None, {}, {"prompt_tokens": 10}])
+def test_incomplete_usage_is_not_claimed_as_complete(usage):
+    response = model(
+        lambda _request: httpx.Response(
+            200,
+            json={
+                "choices": [{"message": {"content": "{}"}}],
+                "usage": usage,
+            },
+        )
+    ).complete(messages=[])
+    assert response.usage_reported is False
 
 
 def test_chat_model_parses_and_validates_tool_calls():
