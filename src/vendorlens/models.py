@@ -163,6 +163,9 @@ class ReviewConfig(Base):
     commitment_weight: Mapped[float] = mapped_column(Float, default=0.2)
     comparison_months: Mapped[int] = mapped_column(Integer, default=36)
     currency: Mapped[str] = mapped_column(String(3), default="CNY")
+    required_cost_categories: Mapped[list] = mapped_column(
+        JSON, default=lambda: ["software", "implementation", "maintenance"]
+    )
     commitment_checklist: Mapped[list] = mapped_column(JSON, default=list)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
@@ -178,6 +181,12 @@ class ResearchTask(Base):
     objective: Mapped[str] = mapped_column(Text)
     request_snapshot: Mapped[dict] = mapped_column(JSON, default=dict)
     status: Mapped[str] = mapped_column(String(30), default="queued")
+    lease_owner: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    lease_expires_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    attempt: Mapped[int] = mapped_column(Integer, default=0)
+    resume_requested: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 
@@ -278,4 +287,103 @@ class RunEvent(Base):
     sequence: Mapped[int] = mapped_column(Integer)
     event_type: Mapped[str] = mapped_column(String(80))
     payload: Mapped[dict] = mapped_column(JSON, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class TaskDispatch(Base):
+    __tablename__ = "task_dispatches"
+    task_id: Mapped[str] = mapped_column(
+        ForeignKey("research_tasks.id", ondelete="CASCADE"), primary_key=True
+    )
+    job_id: Mapped[str] = mapped_column(String(120))
+    delivered_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    lease_owner: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    lease_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    next_attempt_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    attempts: Mapped[int] = mapped_column(Integer, default=0)
+    error_type: Mapped[str | None] = mapped_column(String(100), nullable=True)
+
+
+class ConversationSession(Base):
+    __tablename__ = "conversation_sessions"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    project_id: Mapped[str] = mapped_column(
+        ForeignKey("projects.id", ondelete="CASCADE"), index=True
+    )
+    user_id: Mapped[str] = mapped_column(String(100), index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class ConversationMessage(Base):
+    __tablename__ = "conversation_messages"
+    __table_args__ = (UniqueConstraint("session_id", "sequence"),)
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    session_id: Mapped[str] = mapped_column(
+        ForeignKey("conversation_sessions.id", ondelete="CASCADE"), index=True
+    )
+    sequence: Mapped[int] = mapped_column(Integer)
+    role: Mapped[str] = mapped_column(String(20))
+    content: Mapped[str] = mapped_column(Text)
+    task_id: Mapped[str | None] = mapped_column(
+        ForeignKey("research_tasks.id", ondelete="CASCADE"), nullable=True
+    )
+    compressed: Mapped[bool] = mapped_column(Boolean, default=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class EpisodicMemory(Base):
+    __tablename__ = "episodic_memories"
+    __table_args__ = (UniqueConstraint("task_id", "vendor_id"),)
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    project_id: Mapped[str] = mapped_column(
+        ForeignKey("projects.id", ondelete="CASCADE"), index=True
+    )
+    user_id: Mapped[str] = mapped_column(String(100), index=True)
+    session_id: Mapped[str] = mapped_column(
+        ForeignKey("conversation_sessions.id", ondelete="CASCADE"), index=True
+    )
+    task_id: Mapped[str | None] = mapped_column(
+        ForeignKey("research_tasks.id", ondelete="CASCADE"), nullable=True
+    )
+    vendor_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    summary: Mapped[str] = mapped_column(Text)
+    source_versions: Mapped[list] = mapped_column(JSON, default=list)
+    evidence_ids: Mapped[list] = mapped_column(JSON, default=list)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class UserPreference(Base):
+    __tablename__ = "user_preferences"
+    __table_args__ = (UniqueConstraint("project_id", "user_id"),)
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    project_id: Mapped[str] = mapped_column(
+        ForeignKey("projects.id", ondelete="CASCADE"), index=True
+    )
+    user_id: Mapped[str] = mapped_column(String(100))
+    preferences: Mapped[dict] = mapped_column(JSON, default=dict)
+
+
+class RoutingHealth(Base):
+    __tablename__ = "routing_health"
+    endpoint_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    cooldown_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    probe_owner: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    probe_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class RoutingAttempt(Base):
+    __tablename__ = "routing_attempts"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    endpoint_id: Mapped[str] = mapped_column(String(60), index=True)
+    config_hash: Mapped[str] = mapped_column(String(64), index=True)
+    task_id: Mapped[str] = mapped_column(String(36), index=True)
+    vendor_id: Mapped[str] = mapped_column(String(36))
+    decision: Mapped[dict] = mapped_column(JSON)
+    status: Mapped[str] = mapped_column(String(30), default="running")
+    error_type: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    latency_ms: Mapped[float] = mapped_column(Float, default=0)
+    request_latencies: Mapped[list] = mapped_column(JSON, default=list)
+    quality_failure_rate: Mapped[float] = mapped_column(Float, default=0)
+    estimated_cost: Mapped[float | None] = mapped_column(Float, nullable=True)
+    price_currency: Mapped[str | None] = mapped_column(String(3), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)

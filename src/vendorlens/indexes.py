@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import fcntl
 import json
+import os
+import tempfile
 from collections.abc import Collection
 from dataclasses import asdict
 from pathlib import Path
@@ -52,20 +55,30 @@ class PersistentBM25Index:
         return [IndexedChunk(**item) for item in data]
 
     def replace_version(self, version_id: str, chunks: list[IndexedChunk]) -> None:
-        self.chunks = [
-            item for item in self.chunks if item.metadata.get("version_id") != version_id
-        ] + chunks
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        temporary = self.path.with_suffix(".tmp")
-        temporary.write_text(
-            json.dumps([asdict(item) for item in self.chunks], ensure_ascii=False),
-            encoding="utf-8",
-        )
-        temporary.replace(self.path)
+        with self.path.with_suffix(".lock").open("a") as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX)
+            try:
+                self.chunks = [
+                    item for item in self._load() if item.metadata.get("version_id") != version_id
+                ] + chunks
+                with tempfile.NamedTemporaryFile(mode="w", dir=self.path.parent,
+                                                 encoding="utf-8", delete=False) as temporary:
+                    json.dump([asdict(item) for item in self.chunks], temporary, ensure_ascii=False)
+                    temporary.flush()
+                    os.fsync(temporary.fileno())
+                    temporary_path = Path(temporary.name)
+                try:
+                    temporary_path.replace(self.path)
+                finally:
+                    temporary_path.unlink(missing_ok=True)
+            finally:
+                fcntl.flock(lock, fcntl.LOCK_UN)
 
     def search(
         self, query: str, *, top_k: int, filters: dict[str, Any] | None = None
     ) -> list[SearchHit]:
+        self.chunks = self._load()
         eligible = [item for item in self.chunks if _matches_filters(item.metadata, filters)]
         if not eligible:
             return []
@@ -179,9 +192,10 @@ class SearchableIndex(Protocol):
 
 
 class PersistentHybridRetriever:
-    def __init__(self, bm25: SearchableIndex, vector: SearchableIndex):
+    def __init__(self, bm25: SearchableIndex, vector: SearchableIndex, reranker=None):
         self.bm25 = bm25
         self.vector = vector
+        self.reranker = reranker
 
     def search(
         self,
@@ -199,14 +213,21 @@ class PersistentHybridRetriever:
         if strategy != "hybrid":
             raise ValueError(f"unknown retrieval strategy: {strategy}")
         candidate_count = max(top_k * 3, top_k)
-        return rrf_merge(
+        hits = rrf_merge(
             [
                 self.bm25.search(query, top_k=candidate_count, filters=filters),
                 self.vector.search(query, top_k=candidate_count, filters=filters),
             ],
-            top_k=top_k,
+            top_k=candidate_count if self.reranker else top_k,
             rrf_k=rrf_k,
         )
+        if self.reranker:
+            try:
+                return self.reranker.rank(query, hits)[:top_k]
+            except Exception:
+                # Preserve the fused order if ranking is unavailable; never add new evidence.
+                pass
+        return hits[:top_k]
 
 
 class DatabaseParentRetriever:

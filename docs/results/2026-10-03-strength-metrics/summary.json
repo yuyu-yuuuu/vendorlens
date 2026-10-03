@@ -1,0 +1,63 @@
+{
+  "test_count": 237,
+  "real_requirement_classification": {
+    "samples": 5,
+    "correct": 4,
+    "accuracy": 0.8,
+    "macro_f1": 0.6666666666666666,
+    "per_class": {
+      "met": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 2
+      },
+      "partially_met": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 1
+      },
+      "not_met": {
+        "precision": 0.5,
+        "recall": 1.0,
+        "f1": 0.6666666666666666,
+        "support": 1
+      },
+      "not_stated": {
+        "precision": 0,
+        "recall": 0.0,
+        "f1": 0,
+        "support": 1
+      }
+    },
+    "cases": [
+      {
+        "gold": "met",
+        "prediction": "met"
+      },
+      {
+        "gold": "not_met",
+        "prediction": "not_met"
+      },
+      {
+        "gold": "partially_met",
+        "prediction": "partially_met"
+      },
+      {
+        "gold": "not_stated",
+        "prediction": "not_met"
+      },
+      {
+        "gold": "met",
+        "prediction": "met"
+      }
+    ]
+  },
+  "real_checked_case_success": 3,
+  "token_totals_reported": {
+    "prompt_tokens": 41561,
+    "completion_tokens": 3655,
+    "total_tokens": 45216
+  }
+}

@@ -37,8 +37,9 @@ def parse_document(filename: str, content: bytes) -> list[ParsedChunk]:
 
 
 def _split_child_text(text: str, max_chars: int = 320) -> list[str]:
+    # 保留句间空格与换行，确保每个子块都是父块中连续的原文。
     sentences = [
-        part.strip() for part in re.split(r"(?<=[。！？.!?])\s*|\n+", text) if part.strip()
+        match.group() for match in re.finditer(r".+?(?:[。！？.!?]\s*|\n+|$)", text, re.DOTALL)
     ]
     children: list[str] = []
     buffer = ""
@@ -55,7 +56,7 @@ def _split_child_text(text: str, max_chars: int = 320) -> list[str]:
             buffer += sentence
     if buffer:
         children.append(buffer)
-    return children or [text]
+    return [child.strip() for child in children if child.strip()] or [text]
 
 
 def _add_hierarchy(

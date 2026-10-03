@@ -3,7 +3,7 @@ from time import sleep
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Path, Query
-from fastapi.responses import StreamingResponse
+from fastapi.responses import Response, StreamingResponse
 from sqlalchemy import select, text
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -21,9 +21,15 @@ from vendorlens.api_contracts import (
     TraceResponse,
     documented_error,
 )
+from vendorlens.auth import authenticate
 from vendorlens.db import get_session
 from vendorlens.events import RunEventStore, format_sse
+from vendorlens.management_api import router as management_router
 from vendorlens.models import AnalysisReport, ResearchTask, TraceSpan
+from vendorlens.observability import cost_summary, prometheus_metrics
+from vendorlens.recovery import prepare_recovery
+from vendorlens.report_api import router as report_router
+from vendorlens.runtime_api import router as runtime_router
 from vendorlens.tasks import (
     TERMINAL_STATUSES,
     ReviewTaskRequest,
@@ -33,20 +39,23 @@ from vendorlens.tasks import (
 from vendorlens.tracing import safe_attributes
 
 app = FastAPI(
+    dependencies=[Depends(authenticate)],
     title="VendorLens 接口文档",
     version=__version__,
     description="""证据驱动供应商评审服务。\n\n
 **使用顺序**：准备项目、供应商、需求目录和已索引资料 → 创建任务 → 查询进度 → 读取报告和 Trace。
 
-当前仅提供健康检查和评审运行接口，**尚无项目创建、文件上传或自动恢复接口**。
+已提供项目、供应商、需求、配置与上传/索引管理，并支持过期任务恢复。
 创建任务返回 202 不代表评审已完成；Worker 需单独启动。
 
 **注意**：Try it out 会调用真实接口。创建任务可能触发付费模型；示例 ID 为占位值，
-请替换为数据库中真实 ID。当前无鉴权，仅用于可信本地环境。
+请替换为数据库中真实 ID。可配置共享 Bearer Key；未配置时仅用于可信本地环境。
 
 SSE 为长连接，建议使用终端 `curl -N`；它是节点进度，不是模型逐字输出。
 """,
     openapi_tags=[
+        {"name": "项目与资料管理", "description": "项目、供应商、需求、配置和不可变资料版本。"},
+        {"name": "运行维护", "description": "租约恢复和聚合指标。"},
         {"name": "健康检查", "description": "检查 API 与数据库连接，不检查所有外部依赖。"},
         {"name": "评审任务", "description": "创建异步任务，查询状态与结构化报告。"},
         {"name": "进度事件", "description": "持久化 SSE 事件流，支持断线续读。"},
@@ -60,6 +69,8 @@ SSE 为长连接，建议使用终端 `curl -N`；它是节点进度，不是模
         "persistAuthorization": False,
     },
 )
+app.include_router(runtime_router)
+app.include_router(report_router)
 
 
 DatabaseSession = Annotated[Session, Depends(get_session)]
@@ -102,6 +113,8 @@ def task_summary(task: ResearchTask) -> dict:
         "trace_id": task.trace_id,
         "project_id": task.project_id,
         "status": task.status,
+        "attempt": task.attempt,
+        "lease_expires_at": task.lease_expires_at,
     }
 
 
@@ -145,6 +158,10 @@ def submit_review(
     session.commit()
     try:
         enqueuer(task.id, task.run_id)
+        from vendorlens.models import TaskDispatch, utcnow
+
+        session.get(TaskDispatch, task.id).delivered_at = utcnow()
+        session.commit()
     except Exception:
         # A network timeout can leave enqueue outcome uncertain. Do not overwrite a
         # running/completed task if the worker already claimed the accepted job.
@@ -168,7 +185,8 @@ def submit_review(
     tags=["评审任务"],
     summary="查询任务状态",
     response_model=TaskResponse,
-    description="读取任务状态，不重新执行 Agent。Worker 硬中断可能遗留 running，当前无自动恢复。",
+    description="读取任务状态，不重新执行 Agent。Worker 使用心跳租约，"
+    "过期后可恢复并继续持久化 checkpoint。",
     responses={404: TASK_NOT_FOUND},
 )
 def get_task(task_id: TaskId, session: DatabaseSession):
@@ -210,7 +228,7 @@ def get_report(task_id: TaskId, session: DatabaseSession):
     responses={404: TASK_NOT_FOUND},
     description="按开始时间返回跨度，以 parent_span_id 重建执行树。排队任务可能返回空 spans。"
     "Token 只汇总完整 usage 的请求；usage_complete=false 时不是完整总消耗，"
-    "无已报告用量时为 null。不提供账单金额、提示词、原始工具参数或密钥。",
+    "无已报告用量时为 null。费用仅按显式配置单价估算，非账单；不提供提示词或密钥。",
 )
 def get_trace(task_id: TaskId, session: DatabaseSession):
     task = session.get(ResearchTask, task_id)
@@ -226,6 +244,7 @@ def get_trace(task_id: TaskId, session: DatabaseSession):
     models = [span for span in spans if span.kind == "model"]
     reported = [span for span in models if span.attributes.get("usage_reported")]
     summary = {
+        **cost_summary(models),
         "model_calls": len(models),
         "tool_calls": sum(span.kind == "tool" for span in spans),
         "usage_reported_calls": len(reported),
@@ -327,3 +346,65 @@ def get_events(
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
+
+
+app.include_router(management_router)
+
+
+@app.get(
+    "/metrics", tags=["运行维护"], summary="读取持久化聚合 Prometheus 指标", response_class=Response
+)
+def get_metrics(session: DatabaseSession):
+    return Response(prometheus_metrics(session), media_type="text/plain; version=0.0.4")
+
+
+@app.post(
+    "/tasks/{task_id}/retry",
+    status_code=202,
+    tags=["运行维护"],
+    summary="恢复过期、异常或入队失败的任务",
+    response_model=TaskResponse,
+    responses={
+        404: TASK_NOT_FOUND,
+        409: {"description": "任务正在执行或已有报告"},
+        503: {"description": "恢复入队失败，任务 ID 保留"},
+    },
+)
+def retry_task(
+    task_id: TaskId,
+    session: DatabaseSession,
+    enqueuer: Annotated[Callable[[str, str], None], Depends(get_review_enqueuer)],
+):
+    try:
+        task = prepare_recovery(session, task_id)
+    except LookupError:
+        raise HTTPException(404, "task not found") from None
+    except ValueError as error:
+        raise HTTPException(409, str(error)) from None
+    session.commit()
+    try:
+        from vendorlens.models import TaskDispatch, utcnow
+
+        dispatch = session.get(TaskDispatch, task.id)
+        enqueuer(task.id, dispatch.job_id)
+        dispatch.delivered_at = utcnow()
+        session.commit()
+    except Exception:
+        from sqlalchemy import update
+
+        changed = session.execute(
+            update(ResearchTask)
+            .where(
+                ResearchTask.id == task.id,
+                ResearchTask.status == "queued",
+            )
+            .values(status="enqueue_failed")
+        ).rowcount
+        if changed:
+            RunEventStore().append(
+                session, task.id, "run.enqueue_failed", {"error": "queue_unavailable"}
+            )
+            session.commit()
+            raise HTTPException(503, {"error": "queue_unavailable", "task_id": task.id}) from None
+    session.refresh(task)
+    return task_summary(task)

@@ -11,6 +11,7 @@ from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import END, START, StateGraph
 
 from vendorlens.coordinator import VendorEvidencePackage
+from vendorlens.evidence import validate_numeric_output
 from vendorlens.fallbacks import (
     CommitmentRuleChecker,
     DeterministicCostEngine,
@@ -79,6 +80,7 @@ class DeterministicDomainFallbackRunner:
                 evidence,
                 currency=input_data.currency,
                 comparison_months=input_data.comparison_months,
+                required_cost_categories=input_data.required_cost_categories,
             )
         else:
             result = self.commitments.evaluate(input_data.vendor_id, evidence)
@@ -96,6 +98,8 @@ class WorkflowState(TypedDict, total=False):
     required_cost_categories: list[str]
     required_commitments: list[str]
     project_context: str
+    memory_context: dict
+    skill_snapshots: list[dict]
     weights: ReviewWeights
     review_inputs: dict[str, VendorReviewInput]
     retrieval_errors: dict[str, str]
@@ -210,7 +214,7 @@ class ReviewWorkflow:
                 vendor_id=vendor_id,
                 queries_by_domain=state["queries_by_domain"],
             )
-            return package.to_review_input(
+            input_data = package.to_review_input(
                 task_id=state["task_id"],
                 requirements=state["requirements"],
                 currency=state["currency"],
@@ -219,6 +223,14 @@ class ReviewWorkflow:
                 required_commitments=state.get("required_commitments", []),
                 project_context=state.get("project_context", ""),
             )
+            from vendorlens.conversation_memory import vendor_memory
+
+            return input_data.model_copy(update={
+                "memory_context": vendor_memory(
+                    state.get("memory_context", {}), vendor_id, input_data.document_version_ids
+                ),
+                "skill_snapshots": state.get("skill_snapshots", []),
+            })
 
         inputs: dict[str, VendorReviewInput] = {}
         errors: dict[str, str] = {}
@@ -264,6 +276,10 @@ class ReviewWorkflow:
                 update={
                     "revision_domains": set(domains),
                     "revision_count": max(counts, default=0),
+                    "revision_feedback": {
+                        domain: current[vendor_id].domains[domain].missing_information
+                        for domain in domains if vendor_id in current
+                    },
                 }
             )
             try:
@@ -319,15 +335,20 @@ class ReviewWorkflow:
 
     @staticmethod
     def _validate_domains(state: WorkflowState) -> dict:
+        assessments = {
+            vendor_id: validate_numeric_output(state["review_inputs"][vendor_id], result)
+            if vendor_id in state["review_inputs"] else result
+            for vendor_id, result in state["assessments"].items()
+        }
         pending = {
             vendor_id: [
                 domain
                 for domain, assessment in result.domains.items()
                 if assessment.status is DomainAssessmentStatus.FAILED
             ]
-            for vendor_id, result in state["assessments"].items()
+            for vendor_id, result in assessments.items()
         }
-        return {"pending_domains": pending, "status": "validated"}
+        return {"assessments": assessments, "pending_domains": pending, "status": "validated"}
 
     @staticmethod
     def _route_after_validation(state: WorkflowState) -> str:
@@ -403,6 +424,12 @@ class ReviewWorkflow:
                             DomainAssessmentStatus.FAILED,
                         ):
                             raise ValueError("fallback must return degraded or failed status")
+                        candidate = dict(merged)
+                        candidate[domain] = result
+                        result = validate_numeric_output(
+                            input_data,
+                            VendorAssessment(vendor_id=vendor_id, domains=candidate),
+                        ).domains[domain]
                         if span:
                             span.status = result.status.value
                 except Exception as error:

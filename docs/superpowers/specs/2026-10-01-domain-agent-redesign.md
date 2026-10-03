@@ -1,7 +1,7 @@
 # VendorLens 供应商评审 Agent 设计
 
 日期：2026-10-01  
-状态：已确认，分阶段实施
+状态：已实现，更新至 2026-10-02
 
 ## 1. 背景与决策
 
@@ -24,7 +24,7 @@
 - 不引入 Agent 群聊、投票或领域路由模型；
 - 不为需求、成本和承诺各创建独立 Agent；
 - 不让模型修改权重、执行最终算术或覆盖确定性证据错误；
-- 不在本阶段接入真实模型、前端或完整异步 API；
+- 前端单独设计；真实模型适配器与异步 API 已接入；
 - 不提供法律意见。
 
 ## 4. Agent 契约
@@ -37,7 +37,8 @@ VendorReviewInput 包含：
 - Requirement 目录；
 - 币种、成本比较周期和必要费用类别；
 - 需要核验的交付、人员、依赖、验收、SLA 和质保条目；
-- 需要返工的领域和返工次数。
+- 需要返工的领域和返工次数；
+- 按供应商与冻结版本过滤的会话上下文，以及经过哈希校验的 Skills 快照。
 
 VendorReviewAgent 一次返回 VendorAssessment，其中必须恰好包含三个 DomainAssessment：
 
@@ -81,20 +82,20 @@ VendorReviewExecutor 校验：
 
 ## 7. 工作流
 
-目标 LangGraph：
+当前 LangGraph：
 
 ```text
 prepare_review
   → retrieve_vendor_evidence
   → analyze_vendors（Vendor 间并行）
   → validate_domains
-  → retry_failed_domains（最多 2 次）
+  → prepare_domain_revisions（最多 2 次）
   → run_domain_fallbacks
   → aggregate_scores
   → compose_report
 ```
 
-ReviewOrchestrator 为每个 Vendor 创建一个冻结任务。三家供应商形成三个并行 Agent 运行，而不是九个领域 Agent 任务。一次 Agent 调用输出三个领域结果；输出门禁按领域记录成功和失败。
+ReviewWorkflow 为每个 Vendor 创建一个冻结任务。三家供应商形成三个并行 Agent 运行，而不是九个领域 Agent 任务。一次 Agent 调用输出三个领域结果；输出门禁按领域记录成功和失败。
 
 局部返工时仍使用 VendorReviewAgent，但输入的 `revision_domains` 只标记失败领域，已验证领域结果由工作流保留。两次后仍失败的领域进入对应降级处理器：
 
@@ -126,3 +127,5 @@ ReviewOrchestrator 为每个 Vendor 创建一个冻结任务。三家供应商�
 工作流测试覆盖不同 Vendor 证据隔离、Vendor 间并行、只返工失败领域、两次失败后进入对应降级、checkpoint 恢复和最终确定性推荐。
 
 端到端使用至少三家合成供应商：综合最优、价格最低但不满足必选需求、材料不完整。结果必须淘汰第二家、限制第三家的推荐等级，并让每个事实回到版本固定的原文证据。
+
+模型健康路由选择实际服务端点，三个领域仍由同一个供应商 Agent 完成。会话记忆与 Skills 提供上下文和规则文本，不改变证据范围、确定性评分及领域级返工边界。

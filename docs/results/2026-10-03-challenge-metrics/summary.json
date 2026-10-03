@@ -1,0 +1,114 @@
+{
+  "requirement_rule_accuracy": 0.34375,
+  "requirement_rule_macro_f1": 0.29642857142857143,
+  "real_model_classification": {
+    "samples": 12,
+    "correct": 2,
+    "accuracy": 0.16666666666666666,
+    "macro_f1": 0.25,
+    "per_class": {
+      "met": {
+        "precision": 1.0,
+        "recall": 0.5,
+        "f1": 0.6666666666666666,
+        "support": 2
+      },
+      "partially_met": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0,
+        "support": 4
+      },
+      "not_met": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0,
+        "support": 2
+      },
+      "not_stated": {
+        "precision": 0.5,
+        "recall": 0.25,
+        "f1": 0.3333333333333333,
+        "support": 4
+      }
+    },
+    "cases": [
+      {
+        "gold": "met",
+        "prediction": "met"
+      },
+      {
+        "gold": "met",
+        "prediction": "not_stated"
+      },
+      {
+        "gold": "not_met",
+        "prediction": null
+      },
+      {
+        "gold": "not_met",
+        "prediction": null
+      },
+      {
+        "gold": "partially_met",
+        "prediction": null
+      },
+      {
+        "gold": "partially_met",
+        "prediction": null
+      },
+      {
+        "gold": "partially_met",
+        "prediction": null
+      },
+      {
+        "gold": "partially_met",
+        "prediction": null
+      },
+      {
+        "gold": "not_stated",
+        "prediction": "not_stated"
+      },
+      {
+        "gold": "not_stated",
+        "prediction": "not_met"
+      },
+      {
+        "gold": "not_stated",
+        "prediction": null
+      },
+      {
+        "gold": "not_stated",
+        "prediction": "partially_met"
+      }
+    ]
+  },
+  "real_three_domain_returns": 5,
+  "real_joint_checked_success": 2,
+  "real_samples": 12,
+  "real_known_tco_correct": 4,
+  "real_known_tco_total": 10,
+  "real_unknown_successful_abstentions": 0,
+  "real_unknown_total": 2,
+  "offline_cost": {
+    "known_tco_cases": 10,
+    "numeric_answers": 8,
+    "numeric_coverage": 0.8,
+    "correct_numeric_answers": 6,
+    "answer_exact_accuracy": 0.75,
+    "known_tco_exact_accuracy": 0.6,
+    "unknown_tco_cases": 4,
+    "unknown_correct_abstentions": 3,
+    "unknown_numeric_outputs": [
+      "cost-12"
+    ],
+    "wrong_numeric_outputs": [
+      "cost-05",
+      "cost-07"
+    ],
+    "unanswered_known_cases": [
+      "cost-03",
+      "cost-04"
+    ]
+  }
+}

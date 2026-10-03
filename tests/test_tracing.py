@@ -85,7 +85,7 @@ def test_model_and_tool_spans_capture_usage_not_payloads(session, recorder):
                         arguments={
                             "one_time_cost": 800000,
                             "annual_recurring_cost": 100000,
-                            "optional_cost": 0,
+                            "optional_cost": 50000,
                             "evidence_ids": ["cost-ev"],
                         },
                     )

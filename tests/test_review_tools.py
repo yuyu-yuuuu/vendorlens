@@ -54,12 +54,12 @@ def test_registry_calculates_authoritative_tco():
         "calculate_tco",
         one_time_cost=800_000,
         annual_recurring_cost=100_000,
-        optional_cost=50_000,
+        optional_cost=0,
         evidence_ids=["cost-ev"],
     )
 
     assert result["total_cost_of_ownership"] == 1_100_000
-    assert result["optional_cost"] == 50_000
+    assert result["optional_cost"] == 0
     assert registry.authoritative_cost == result
 
 
@@ -125,3 +125,35 @@ def test_registry_rejects_unknown_tool_and_invalid_arguments():
         registry.call("pick_winner")
     with pytest.raises(ReviewToolAccessError, match="invalid arguments"):
         registry.call("normalize_cost", amount=-1, period="annual")
+
+
+@pytest.mark.parametrize(("one_time", "annual", "optional"), [
+    (900000, 100000, 0), (800000, 1200000, 0), (800000, 100000, 50000),
+    (900000, 0, 0),
+])
+def test_cost_tool_rejects_unquoted_amounts_and_category_swapping(one_time, annual, optional):
+    registry = ReviewToolRegistry(review_input())
+    with pytest.raises(ReviewToolAccessError, match="cost_input_mismatch"):
+        registry.call("calculate_tco", one_time_cost=one_time,
+                      annual_recurring_cost=annual, optional_cost=optional,
+                      evidence_ids=["cost-ev"])
+    assert registry.authoritative_cost is None
+
+
+def test_normalize_cost_is_not_an_authorization_to_invent_inputs():
+    registry = ReviewToolRegistry(review_input())
+    normalized = registry.call("normalize_cost", amount=1234, period="monthly")
+    with pytest.raises(ReviewToolAccessError, match="recurring"):
+        registry.call("calculate_tco", one_time_cost=800000,
+                      annual_recurring_cost=normalized["annual_amount"], optional_cost=0,
+                      evidence_ids=["cost-ev"])
+
+
+def test_a_failed_second_tco_call_does_not_leave_stale_authority():
+    registry = ReviewToolRegistry(review_input())
+    registry.call("calculate_tco", one_time_cost=800000, annual_recurring_cost=100000,
+                  optional_cost=0, evidence_ids=["cost-ev"])
+    with pytest.raises(ReviewToolAccessError):
+        registry.call("calculate_tco", one_time_cost=1, annual_recurring_cost=0,
+                      optional_cost=0, evidence_ids=["cost-ev"])
+    assert registry.authoritative_cost is None

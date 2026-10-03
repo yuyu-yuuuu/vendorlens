@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from collections import defaultdict
 
-from vendorlens.retrieval import tokenize
+from vendorlens.cost_grounding import extract_grounded_costs
 from vendorlens.schemas import (
     CommitmentAssessment,
     CommitmentFinding,
@@ -40,7 +40,7 @@ class RequirementRuleEvaluator:
         all_evidence_ids: list[str] = []
         for requirement in requirements:
             evidence = evidence_by_requirement.get(requirement.id, [])
-            quotes = " ".join(item.quote for item in evidence)
+            quotes = " ".join(item.context_text or item.quote for item in evidence)
             status = self._status(requirement.text, quotes)
             evidence_ids = (
                 [item.id for item in evidence] if status is not RequirementStatus.NOT_STATED else []
@@ -74,23 +74,12 @@ class RequirementRuleEvaluator:
         )
 
     def _status(self, requirement: str, quotes: str) -> RequirementStatus:
-        if not quotes.strip():
-            return RequirementStatus.NOT_STATED
-        if any(marker in quotes for marker in self.negative_markers):
-            return RequirementStatus.NOT_MET
-        requirement_tokens = set(tokenize(requirement))
-        quote_tokens = set(tokenize(quotes))
-        overlap = len(requirement_tokens & quote_tokens) / max(len(requirement_tokens), 1)
-        if any(marker in quotes for marker in self.positive_markers) and overlap >= 0.2:
-            return RequirementStatus.MET
-        if overlap >= 0.2:
-            return RequirementStatus.PARTIALLY_MET
-        return RequirementStatus.NOT_STATED
+        from vendorlens.semantic_rules import requirement_response
+
+        return RequirementStatus(requirement_response(requirement, quotes)["status"])
 
 
 class DeterministicCostEngine:
-    amount_pattern = re.compile(r"(?<![\d.])([0-9]+(?:,[0-9]{3})*(?:\.[0-9]+)?)\s*(万)?\s*元")
-
     def evaluate(
         self,
         vendor_id: str,
@@ -98,55 +87,34 @@ class DeterministicCostEngine:
         *,
         currency: str = "CNY",
         comparison_months: int = 36,
+        required_cost_categories: list[str] | None = None,
     ) -> DomainAssessment:
-        if not evidence:
+        grounded = extract_grounded_costs(evidence, currency).require_categories(
+            required_cost_categories or []
+        )
+        if not grounded.items:
             return DomainAssessment(
                 domain=ReviewDomain.COST_MODELING,
                 vendor_id=vendor_id,
                 status=DomainAssessmentStatus.FAILED,
-                missing_information=["未提供成本证据"],
+                missing_information=grounded.missing if evidence else ["未提供成本证据"],
             )
-        one_time = 0.0
-        recurring = 0.0
-        optional = 0.0
-        matched_ids: list[str] = []
-        for item in evidence:
-            values = [self._amount(match) for match in self.amount_pattern.finditer(item.quote)]
-            if not values:
-                continue
-            matched_ids.append(item.id)
-            value = sum(values)
-            if any(marker in item.quote for marker in ("可选", "选配", "额外购买")):
-                optional += value
-            elif any(marker in item.quote for marker in ("每年", "年费", "年度", "/年")):
-                recurring += value
-            else:
-                one_time += value
-        missing = [] if matched_ids else ["未找到明确金额"]
         assessment = CostAssessment(
-            vendor_id=vendor_id,
-            currency=currency,
-            comparison_months=comparison_months,
-            one_time_cost=one_time,
-            recurring_cost=recurring,
-            optional_cost=optional,
-            total_cost_of_ownership=one_time + recurring * comparison_months / 12,
-            missing_costs=missing,
-            evidence_ids=matched_ids or [item.id for item in evidence],
+            **grounded.result(
+                vendor_id=vendor_id,
+                currency=currency,
+                comparison_months=comparison_months,
+            ),
+            missing_costs=grounded.missing,
         )
         return DomainAssessment(
             domain=ReviewDomain.COST_MODELING,
             vendor_id=vendor_id,
             status=DomainAssessmentStatus.DEGRADED,
             cost_assessment=assessment,
-            missing_information=missing,
-            evidence_ids=matched_ids,
+            missing_information=grounded.missing,
+            evidence_ids=assessment.evidence_ids,
         )
-
-    @staticmethod
-    def _amount(match: re.Match) -> float:
-        value = float(match.group(1).replace(",", ""))
-        return value * 10_000 if match.group(2) else value
 
 
 class CommitmentRuleChecker:
@@ -163,13 +131,18 @@ class CommitmentRuleChecker:
         grouped: dict[str, list[EvidenceItem]] = defaultdict(list)
         for item in evidence:
             for category, markers in self.categories.items():
-                if any(marker.lower() in item.quote.lower() for marker in markers):
+                if any(
+                    marker.lower() in (item.context_text or item.quote).lower()
+                    for marker in markers
+                ):
                     grouped[category].append(item)
 
         findings: list[CommitmentFinding] = []
         conflicts: list[str] = []
         for category, items in grouped.items():
-            normalized_quotes = list(dict.fromkeys(item.quote.strip() for item in items))
+            normalized_quotes = list(
+                dict.fromkeys((item.context_text or item.quote).strip() for item in items)
+            )
             conflicting = len(normalized_quotes) > 1 and self._has_distinct_numbers(
                 normalized_quotes
             )

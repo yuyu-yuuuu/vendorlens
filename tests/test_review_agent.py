@@ -125,7 +125,7 @@ def test_review_input_rejects_evidence_outside_frozen_scope(field, value, messag
 def test_single_agent_can_use_tools_from_multiple_business_sections():
     def analyzer(input_data, tools):
         requirement = tools.call("compare_requirement_response", "需求", "响应")
-        tco = tools.call("calculate_tco", 800_000, 100_000, 36)
+        tco = tools.call("calculate_tco", 800_000, 0, 36)
         draft = complete_draft(input_data, tools)
         draft.requirement_findings[0].explanation = requirement
         draft.cost_assessment.total_cost_of_ownership = tco
@@ -145,7 +145,7 @@ def test_single_agent_can_use_tools_from_multiple_business_sections():
     )
     assert (
         result.domains[ReviewDomain.COST_MODELING].cost_assessment.total_cost_of_ownership
-        == 1_100_000
+        == 800_000
     )
 
 
@@ -185,3 +185,134 @@ def test_one_missing_section_fails_without_discarding_other_sections():
     assert result.domains[ReviewDomain.COMMITMENT_VERIFICATION].status is (
         DomainAssessmentStatus.COMPLETED
     )
+
+
+@pytest.mark.parametrize("statement", [
+    "合同签署后91天交付", "90个月交付", "90工作日交付", "90%可用性", "九十一天交付",
+    "2026-10-02交付",
+])
+def test_numeric_hallucination_fails_only_commitment_domain(statement):
+    def analyzer(input_data, tools):
+        draft = complete_draft(input_data, tools)
+        draft.commitment_assessment.findings[0].statement = statement
+        return draft
+
+    result = executor(analyzer).execute(review_input())
+    assert result.domains[ReviewDomain.COMMITMENT_VERIFICATION].status is (
+        DomainAssessmentStatus.FAILED
+    )
+    assert result.domains[ReviewDomain.COMMITMENT_VERIFICATION].commitment_assessment is None
+    assert result.domains[ReviewDomain.REQUIREMENT_COMPLIANCE].status is (
+        DomainAssessmentStatus.COMPLETED
+    )
+    assert result.domains[ReviewDomain.COST_MODELING].status is DomainAssessmentStatus.COMPLETED
+
+
+def test_finding_cannot_borrow_a_number_from_another_findings_citation():
+    def analyzer(input_data, tools):
+        draft = complete_draft(input_data, tools)
+        draft.requirement_findings[0].explanation = "支持90人并发"
+        return draft
+
+    result = executor(analyzer).execute(review_input())
+    assert result.domains[ReviewDomain.REQUIREMENT_COMPLIANCE].status is (
+        DomainAssessmentStatus.FAILED
+    )
+
+
+@pytest.mark.parametrize(("field", "value"), [
+    ("one_time_cost", 880000), ("recurring_cost", 100000), ("optional_cost", 50000),
+    ("total_cost_of_ownership", 1), ("payment_terms", ["首付30%"]),
+    ("conflicts", ["另有1万美元费用"]),
+])
+def test_cost_fields_are_checked_even_for_a_custom_analyzer(field, value):
+    def analyzer(input_data, tools):
+        draft = complete_draft(input_data, tools)
+        setattr(draft.cost_assessment, field, value)
+        return draft
+
+    result = executor(analyzer).execute(review_input())
+    assert result.domains[ReviewDomain.COST_MODELING].status is DomainAssessmentStatus.FAILED
+    assert result.domains[ReviewDomain.COST_MODELING].cost_assessment is None
+
+
+def test_derived_tco_notes_are_authorized_only_with_an_explicit_derivation_label():
+    def analyzer(input_data, tools):
+        draft = complete_draft(input_data, tools)
+        draft.cost_assessment.conflicts = ["比较三年的TCO为80万元"]
+        return draft
+
+    result = executor(analyzer).execute(review_input())
+    assert result.domains[ReviewDomain.COST_MODELING].status is DomainAssessmentStatus.COMPLETED
+    assert result.domains[ReviewDomain.COST_MODELING].cost_assessment.cost_sources
+
+
+def test_parent_number_outside_child_quote_can_support_a_finding():
+    from vendorlens.evidence import source_hash
+
+    data = review_input().model_dump()
+    parent = "合同签署后90天交付。质保24个月。"
+    data["evidence"][2].update(context_text=parent, quote="合同签署后90天交付。",
+                               source_text_hash=source_hash(parent))
+
+    def analyzer(input_data, tools):
+        draft = complete_draft(input_data, tools)
+        draft.commitment_assessment.findings[0].statement = "父块说明质保两年"
+        return draft
+
+    result = executor(analyzer).execute(VendorReviewInput.model_validate(data))
+    assert result.domains[ReviewDomain.COMMITMENT_VERIFICATION].status is (
+        DomainAssessmentStatus.COMPLETED
+    )
+
+
+def test_domain_evidence_cannot_replace_canonical_content_with_same_id():
+    data = review_input().model_dump()
+    data["evidence_by_domain"] = {domain: list(data["evidence"]) for domain in ReviewDomain}
+    forged = evidence("cost-ev", "实施费用90万元")
+    data["evidence_by_domain"][ReviewDomain.COST_MODELING] = [forged]
+    with pytest.raises(ValidationError, match="canonical"):
+        VendorReviewInput.model_validate(data)
+
+
+def test_duplicate_evidence_ids_are_rejected_before_model_execution():
+    data = review_input().model_dump()
+    data["evidence"].append(data["evidence"][0])
+    with pytest.raises(ValidationError, match="unique"):
+        VendorReviewInput.model_validate(data)
+
+
+def test_known_but_cross_domain_citation_is_rejected_locally():
+    data = review_input().model_dump()
+    data["evidence_by_domain"] = {
+        domain: [data["evidence"][index]] for index, domain in enumerate(ReviewDomain)
+    }
+
+    def analyzer(input_data, tools):
+        draft = complete_draft(input_data, tools)
+        draft.commitment_assessment.findings[0].evidence_ids = ["cost-ev"]
+        return draft
+
+    result = executor(analyzer).execute(VendorReviewInput.model_validate(data))
+    failed = result.domains[ReviewDomain.COMMITMENT_VERIFICATION]
+    assert failed.status is DomainAssessmentStatus.FAILED
+    assert "domain_evidence_mismatch" in failed.missing_information
+    assert result.domains[ReviewDomain.COST_MODELING].status is DomainAssessmentStatus.COMPLETED
+
+
+def test_a_forged_cost_source_record_is_rebuilt_from_actual_citation():
+    from vendorlens.schemas import CostSourceItem
+
+    def analyzer(input_data, tools):
+        draft = complete_draft(input_data, tools)
+        draft.cost_assessment.cost_sources = [CostSourceItem(
+            evidence_id="fake", source_text="伪造80万元", start=0, end=6,
+            amount=800000, currency="CNY", period="one_time", category="one_time",
+            annual_amount=800000,
+        )]
+        return draft
+
+    result = executor(analyzer).execute(review_input())
+    source = result.domains[ReviewDomain.COST_MODELING].cost_assessment.cost_sources[0]
+    assert source.evidence_id == "cost-ev"
+    assert source.source_text == "实施费用 80 万元"

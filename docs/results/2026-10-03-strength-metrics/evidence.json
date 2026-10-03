@@ -1,0 +1,106 @@
+{
+  "cases": [
+    {
+      "id": "0-valid",
+      "attack": "valid",
+      "expected_accept": true,
+      "accepted": true,
+      "passed": true
+    },
+    {
+      "id": "0-project",
+      "attack": "project",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true
+    },
+    {
+      "id": "0-vendor",
+      "attack": "vendor",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true
+    },
+    {
+      "id": "0-version",
+      "attack": "version",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true
+    },
+    {
+      "id": "0-hash",
+      "attack": "hash",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true
+    },
+    {
+      "id": "0-quote",
+      "attack": "quote",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true
+    },
+    {
+      "id": "0-canonical",
+      "attack": "canonical",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true
+    },
+    {
+      "id": "1-valid",
+      "attack": "valid",
+      "expected_accept": true,
+      "accepted": true,
+      "passed": true
+    },
+    {
+      "id": "1-project",
+      "attack": "project",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true
+    },
+    {
+      "id": "1-vendor",
+      "attack": "vendor",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true
+    },
+    {
+      "id": "1-version",
+      "attack": "version",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true
+    },
+    {
+      "id": "1-hash",
+      "attack": "hash",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true
+    },
+    {
+      "id": "1-quote",
+      "attack": "quote",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true
+    },
+    {
+      "id": "1-canonical",
+      "attack": "canonical",
+      "expected_accept": false,
+      "accepted": false,
+      "passed": true
+    }
+  ],
+  "attack_cases": 12,
+  "attacks_rejected": 12,
+  "valid_cases": 2,
+  "valid_cases_accepted": 2
+}

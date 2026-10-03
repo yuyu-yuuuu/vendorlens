@@ -5,6 +5,7 @@ from typing import Any, Protocol
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from vendorlens.model_adapter import ModelError
 from vendorlens.schemas import (
     CommitmentAssessment,
     CostAssessment,
@@ -56,14 +57,23 @@ class VendorReviewInput(BaseModel):
     required_cost_categories: list[str] = Field(default_factory=list)
     required_commitments: list[str] = Field(default_factory=list)
     project_context: str = ""
+    memory_context: dict[str, Any] = Field(default_factory=dict)
+    skill_snapshots: list[dict[str, Any]] = Field(default_factory=list)
     revision_domains: set[ReviewDomain] = Field(default_factory=set)
     revision_count: int = Field(default=0, ge=0, le=2)
+    revision_feedback: dict[ReviewDomain, list[str]] = Field(default_factory=dict)
 
     @model_validator(mode="after")
     def validate_frozen_evidence_scope(self) -> VendorReviewInput:
+        from vendorlens.skills import validate_skill_snapshots
+
+        validate_skill_snapshots(self.skill_snapshots)
         version_ids = set(self.document_version_ids)
         if len(version_ids) != len(self.document_version_ids):
             raise ValueError("document version ids must be unique")
+        canonical = {item.id: item for item in self.evidence}
+        if len(canonical) != len(self.evidence):
+            raise ValueError("evidence ids must be unique")
         for item in self.evidence:
             if item.project_id != self.project_id:
                 raise ValueError("evidence is outside the frozen project")
@@ -75,8 +85,12 @@ class VendorReviewInput(BaseModel):
             if set(self.evidence_by_domain) != set(ReviewDomain):
                 raise ValueError("domain evidence must cover every review domain")
             grouped_ids = {item.id for items in self.evidence_by_domain.values() for item in items}
-            if grouped_ids - {item.id for item in self.evidence}:
+            if grouped_ids - set(canonical):
                 raise ValueError("domain evidence must be included in the review evidence")
+            for items in self.evidence_by_domain.values():
+                for item in items:
+                    if item != canonical[item.id]:
+                        raise ValueError("domain evidence must match the canonical evidence")
         return self
 
 
@@ -97,6 +111,10 @@ class ReviewAgentError(RuntimeError):
 
 class ReviewToolAccessError(ReviewAgentError):
     pass
+
+
+class ReviewToolGroundingError(ReviewToolAccessError):
+    """A registered cost tool's inputs are unsupported by its cited source."""
 
 
 class ReviewToolUnavailableError(ReviewAgentError):
@@ -244,16 +262,20 @@ class VendorReviewExecutor:
         self.tools = tools or {}
 
     def execute(self, input_data: VendorReviewInput) -> VendorAssessment:
+        # Revalidate nested mutable evidence even for model_copy-created retry inputs.
+        input_data = VendorReviewInput.model_validate(input_data.model_dump())
         try:
             result = self.agent.analyze(input_data, ReviewToolbox(self.tools))
-        except ReviewAgentError:
+        except (ReviewAgentError, ModelError):
             raise
         except Exception as error:
             raise ReviewAgentExecutionError(
                 f"vendor review execution failed for task {input_data.task_id}"
             ) from error
         self._validate_output(input_data, result)
-        return result
+        from vendorlens.evidence import validate_numeric_output
+
+        return validate_numeric_output(input_data, result)
 
     @staticmethod
     def _validate_output(

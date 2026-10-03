@@ -1,0 +1,657 @@
+[
+  {
+    "input": {
+      "task_id": "metric-1",
+      "project_id": "model-smoke-project",
+      "vendor_id": "smoke-vendor",
+      "document_version_ids": [
+        "model-smoke-version"
+      ],
+      "evidence": [
+        {
+          "id": "smoke-requirement-evidence",
+          "project_id": "model-smoke-project",
+          "document_version_id": "model-smoke-version",
+          "chunk_id": "chunk-smoke-requirement-evidence",
+          "quote": "支持私有化部署。",
+          "context_text": "支持私有化部署。",
+          "matched_chunk_id": null,
+          "source_text_hash": "41c61532a430e75bfd5c84174dd52e26d327283f4a193fff4d39de9b790a8c85",
+          "location": {
+            "page": 1
+          },
+          "vendor_id": "smoke-vendor"
+        },
+        {
+          "id": "smoke-cost-evidence",
+          "project_id": "model-smoke-project",
+          "document_version_id": "model-smoke-version",
+          "chunk_id": "chunk-smoke-cost-evidence",
+          "quote": "软件许可及实施一次性费用80万元；年度维保服务费10万元。",
+          "context_text": "软件许可及实施一次性费用80万元；年度维保服务费10万元。",
+          "matched_chunk_id": null,
+          "source_text_hash": "4aed34b66db5e75949290b82058c59646253603829e20dc51853d361c455cd16",
+          "location": {
+            "page": 2
+          },
+          "vendor_id": "smoke-vendor"
+        },
+        {
+          "id": "smoke-commitment-evidence",
+          "project_id": "model-smoke-project",
+          "document_version_id": "model-smoke-version",
+          "chunk_id": "chunk-smoke-commitment-evidence",
+          "quote": "合同签署后 90 天完成上线；客户需在项目启动前提供服务器和接口文档。",
+          "context_text": null,
+          "matched_chunk_id": null,
+          "source_text_hash": "1ebe980b772f10ae17688437ec34187def293be448328829f9959b47d0034af2",
+          "location": {
+            "page": 3
+          },
+          "vendor_id": "smoke-vendor"
+        }
+      ],
+      "evidence_by_domain": {
+        "requirement_compliance": [
+          {
+            "id": "smoke-requirement-evidence",
+            "project_id": "model-smoke-project",
+            "document_version_id": "model-smoke-version",
+            "chunk_id": "chunk-smoke-requirement-evidence",
+            "quote": "支持私有化部署。",
+            "context_text": "支持私有化部署。",
+            "matched_chunk_id": null,
+            "source_text_hash": "41c61532a430e75bfd5c84174dd52e26d327283f4a193fff4d39de9b790a8c85",
+            "location": {
+              "page": 1
+            },
+            "vendor_id": "smoke-vendor"
+          }
+        ],
+        "cost_modeling": [
+          {
+            "id": "smoke-cost-evidence",
+            "project_id": "model-smoke-project",
+            "document_version_id": "model-smoke-version",
+            "chunk_id": "chunk-smoke-cost-evidence",
+            "quote": "软件许可及实施一次性费用80万元；年度维保服务费10万元。",
+            "context_text": "软件许可及实施一次性费用80万元；年度维保服务费10万元。",
+            "matched_chunk_id": null,
+            "source_text_hash": "4aed34b66db5e75949290b82058c59646253603829e20dc51853d361c455cd16",
+            "location": {
+              "page": 2
+            },
+            "vendor_id": "smoke-vendor"
+          }
+        ],
+        "commitment_verification": [
+          {
+            "id": "smoke-commitment-evidence",
+            "project_id": "model-smoke-project",
+            "document_version_id": "model-smoke-version",
+            "chunk_id": "chunk-smoke-commitment-evidence",
+            "quote": "合同签署后 90 天完成上线；客户需在项目启动前提供服务器和接口文档。",
+            "context_text": null,
+            "matched_chunk_id": null,
+            "source_text_hash": "1ebe980b772f10ae17688437ec34187def293be448328829f9959b47d0034af2",
+            "location": {
+              "page": 3
+            },
+            "vendor_id": "smoke-vendor"
+          }
+        ]
+      },
+      "requirements": [
+        {
+          "id": "requirement-private-deployment",
+          "text": "系统必须支持私有化部署",
+          "mandatory": true,
+          "weight": 1.0
+        }
+      ],
+      "currency": "CNY",
+      "comparison_months": 36,
+      "required_cost_categories": [
+        "software",
+        "implementation",
+        "maintenance"
+      ],
+      "required_commitments": [
+        "delivery",
+        "dependency"
+      ],
+      "project_context": "验证 VendorLens 真实模型与工具调用链，不用于生产决策。",
+      "memory_context": {},
+      "skill_snapshots": [],
+      "revision_domains": [],
+      "revision_count": 0,
+      "revision_feedback": {}
+    },
+    "gold_requirement": "met",
+    "gold_tco": 1100000.0
+  },
+  {
+    "input": {
+      "task_id": "metric-2",
+      "project_id": "model-smoke-project",
+      "vendor_id": "smoke-vendor",
+      "document_version_ids": [
+        "model-smoke-version"
+      ],
+      "evidence": [
+        {
+          "id": "smoke-requirement-evidence",
+          "project_id": "model-smoke-project",
+          "document_version_id": "model-smoke-version",
+          "chunk_id": "chunk-smoke-requirement-evidence",
+          "quote": "不支持私有化部署。",
+          "context_text": "不支持私有化部署。",
+          "matched_chunk_id": null,
+          "source_text_hash": "dc516c3d25b8239e183741a53803be20ac141d37c658ba94d025f766fddaa65d",
+          "location": {
+            "page": 1
+          },
+          "vendor_id": "smoke-vendor"
+        },
+        {
+          "id": "smoke-cost-evidence",
+          "project_id": "model-smoke-project",
+          "document_version_id": "model-smoke-version",
+          "chunk_id": "chunk-smoke-cost-evidence",
+          "quote": "软件许可及实施一次性费用60万元；年度维保服务费8万元。",
+          "context_text": "软件许可及实施一次性费用60万元；年度维保服务费8万元。",
+          "matched_chunk_id": null,
+          "source_text_hash": "33e708b9d2003ab0044eb7213739fa90ab8c02779bb520dc8f61a6c09ecc7319",
+          "location": {
+            "page": 2
+          },
+          "vendor_id": "smoke-vendor"
+        },
+        {
+          "id": "smoke-commitment-evidence",
+          "project_id": "model-smoke-project",
+          "document_version_id": "model-smoke-version",
+          "chunk_id": "chunk-smoke-commitment-evidence",
+          "quote": "合同签署后 90 天完成上线；客户需在项目启动前提供服务器和接口文档。",
+          "context_text": null,
+          "matched_chunk_id": null,
+          "source_text_hash": "1ebe980b772f10ae17688437ec34187def293be448328829f9959b47d0034af2",
+          "location": {
+            "page": 3
+          },
+          "vendor_id": "smoke-vendor"
+        }
+      ],
+      "evidence_by_domain": {
+        "requirement_compliance": [
+          {
+            "id": "smoke-requirement-evidence",
+            "project_id": "model-smoke-project",
+            "document_version_id": "model-smoke-version",
+            "chunk_id": "chunk-smoke-requirement-evidence",
+            "quote": "不支持私有化部署。",
+            "context_text": "不支持私有化部署。",
+            "matched_chunk_id": null,
+            "source_text_hash": "dc516c3d25b8239e183741a53803be20ac141d37c658ba94d025f766fddaa65d",
+            "location": {
+              "page": 1
+            },
+            "vendor_id": "smoke-vendor"
+          }
+        ],
+        "cost_modeling": [
+          {
+            "id": "smoke-cost-evidence",
+            "project_id": "model-smoke-project",
+            "document_version_id": "model-smoke-version",
+            "chunk_id": "chunk-smoke-cost-evidence",
+            "quote": "软件许可及实施一次性费用60万元；年度维保服务费8万元。",
+            "context_text": "软件许可及实施一次性费用60万元；年度维保服务费8万元。",
+            "matched_chunk_id": null,
+            "source_text_hash": "33e708b9d2003ab0044eb7213739fa90ab8c02779bb520dc8f61a6c09ecc7319",
+            "location": {
+              "page": 2
+            },
+            "vendor_id": "smoke-vendor"
+          }
+        ],
+        "commitment_verification": [
+          {
+            "id": "smoke-commitment-evidence",
+            "project_id": "model-smoke-project",
+            "document_version_id": "model-smoke-version",
+            "chunk_id": "chunk-smoke-commitment-evidence",
+            "quote": "合同签署后 90 天完成上线；客户需在项目启动前提供服务器和接口文档。",
+            "context_text": null,
+            "matched_chunk_id": null,
+            "source_text_hash": "1ebe980b772f10ae17688437ec34187def293be448328829f9959b47d0034af2",
+            "location": {
+              "page": 3
+            },
+            "vendor_id": "smoke-vendor"
+          }
+        ]
+      },
+      "requirements": [
+        {
+          "id": "requirement-private-deployment",
+          "text": "系统必须支持私有化部署",
+          "mandatory": true,
+          "weight": 1.0
+        }
+      ],
+      "currency": "CNY",
+      "comparison_months": 24,
+      "required_cost_categories": [
+        "software",
+        "implementation",
+        "maintenance"
+      ],
+      "required_commitments": [
+        "delivery",
+        "dependency"
+      ],
+      "project_context": "验证 VendorLens 真实模型与工具调用链，不用于生产决策。",
+      "memory_context": {},
+      "skill_snapshots": [],
+      "revision_domains": [],
+      "revision_count": 0,
+      "revision_feedback": {}
+    },
+    "gold_requirement": "not_met",
+    "gold_tco": 760000.0
+  },
+  {
+    "input": {
+      "task_id": "metric-3",
+      "project_id": "model-smoke-project",
+      "vendor_id": "smoke-vendor",
+      "document_version_ids": [
+        "model-smoke-version"
+      ],
+      "evidence": [
+        {
+          "id": "smoke-requirement-evidence",
+          "project_id": "model-smoke-project",
+          "document_version_id": "model-smoke-version",
+          "chunk_id": "chunk-smoke-requirement-evidence",
+          "quote": "支持私有化部署，仅限企业版，需另行购买。",
+          "context_text": "支持私有化部署，仅限企业版，需另行购买。",
+          "matched_chunk_id": null,
+          "source_text_hash": "47faae0424d750147e2bea96e7953d1a7776de76b5e8ee7f258217ba1af290d0",
+          "location": {
+            "page": 1
+          },
+          "vendor_id": "smoke-vendor"
+        },
+        {
+          "id": "smoke-cost-evidence",
+          "project_id": "model-smoke-project",
+          "document_version_id": "model-smoke-version",
+          "chunk_id": "chunk-smoke-cost-evidence",
+          "quote": "软件许可及实施一次性费用100万元；年度维保服务费12万元。",
+          "context_text": "软件许可及实施一次性费用100万元；年度维保服务费12万元。",
+          "matched_chunk_id": null,
+          "source_text_hash": "3248f1c7b72021cf0ed2bc78704a36226af3302b845ec00fbb90635137c4ec3b",
+          "location": {
+            "page": 2
+          },
+          "vendor_id": "smoke-vendor"
+        },
+        {
+          "id": "smoke-commitment-evidence",
+          "project_id": "model-smoke-project",
+          "document_version_id": "model-smoke-version",
+          "chunk_id": "chunk-smoke-commitment-evidence",
+          "quote": "合同签署后 90 天完成上线；客户需在项目启动前提供服务器和接口文档。",
+          "context_text": null,
+          "matched_chunk_id": null,
+          "source_text_hash": "1ebe980b772f10ae17688437ec34187def293be448328829f9959b47d0034af2",
+          "location": {
+            "page": 3
+          },
+          "vendor_id": "smoke-vendor"
+        }
+      ],
+      "evidence_by_domain": {
+        "requirement_compliance": [
+          {
+            "id": "smoke-requirement-evidence",
+            "project_id": "model-smoke-project",
+            "document_version_id": "model-smoke-version",
+            "chunk_id": "chunk-smoke-requirement-evidence",
+            "quote": "支持私有化部署，仅限企业版，需另行购买。",
+            "context_text": "支持私有化部署，仅限企业版，需另行购买。",
+            "matched_chunk_id": null,
+            "source_text_hash": "47faae0424d750147e2bea96e7953d1a7776de76b5e8ee7f258217ba1af290d0",
+            "location": {
+              "page": 1
+            },
+            "vendor_id": "smoke-vendor"
+          }
+        ],
+        "cost_modeling": [
+          {
+            "id": "smoke-cost-evidence",
+            "project_id": "model-smoke-project",
+            "document_version_id": "model-smoke-version",
+            "chunk_id": "chunk-smoke-cost-evidence",
+            "quote": "软件许可及实施一次性费用100万元；年度维保服务费12万元。",
+            "context_text": "软件许可及实施一次性费用100万元；年度维保服务费12万元。",
+            "matched_chunk_id": null,
+            "source_text_hash": "3248f1c7b72021cf0ed2bc78704a36226af3302b845ec00fbb90635137c4ec3b",
+            "location": {
+              "page": 2
+            },
+            "vendor_id": "smoke-vendor"
+          }
+        ],
+        "commitment_verification": [
+          {
+            "id": "smoke-commitment-evidence",
+            "project_id": "model-smoke-project",
+            "document_version_id": "model-smoke-version",
+            "chunk_id": "chunk-smoke-commitment-evidence",
+            "quote": "合同签署后 90 天完成上线；客户需在项目启动前提供服务器和接口文档。",
+            "context_text": null,
+            "matched_chunk_id": null,
+            "source_text_hash": "1ebe980b772f10ae17688437ec34187def293be448328829f9959b47d0034af2",
+            "location": {
+              "page": 3
+            },
+            "vendor_id": "smoke-vendor"
+          }
+        ]
+      },
+      "requirements": [
+        {
+          "id": "requirement-private-deployment",
+          "text": "系统必须支持私有化部署",
+          "mandatory": true,
+          "weight": 1.0
+        }
+      ],
+      "currency": "CNY",
+      "comparison_months": 12,
+      "required_cost_categories": [
+        "software",
+        "implementation",
+        "maintenance"
+      ],
+      "required_commitments": [
+        "delivery",
+        "dependency"
+      ],
+      "project_context": "验证 VendorLens 真实模型与工具调用链，不用于生产决策。",
+      "memory_context": {},
+      "skill_snapshots": [],
+      "revision_domains": [],
+      "revision_count": 0,
+      "revision_feedback": {}
+    },
+    "gold_requirement": "partially_met",
+    "gold_tco": 1120000.0
+  },
+  {
+    "input": {
+      "task_id": "metric-4",
+      "project_id": "model-smoke-project",
+      "vendor_id": "smoke-vendor",
+      "document_version_ids": [
+        "model-smoke-version"
+      ],
+      "evidence": [
+        {
+          "id": "smoke-requirement-evidence",
+          "project_id": "model-smoke-project",
+          "document_version_id": "model-smoke-version",
+          "chunk_id": "chunk-smoke-requirement-evidence",
+          "quote": "仅介绍报价与交付安排，部署模式待提供。",
+          "context_text": "仅介绍报价与交付安排，部署模式待提供。",
+          "matched_chunk_id": null,
+          "source_text_hash": "38a07e13bb819788d6297b21832b3bfa55abc9339ec694acd4ab365e86df15bf",
+          "location": {
+            "page": 1
+          },
+          "vendor_id": "smoke-vendor"
+        },
+        {
+          "id": "smoke-cost-evidence",
+          "project_id": "model-smoke-project",
+          "document_version_id": "model-smoke-version",
+          "chunk_id": "chunk-smoke-cost-evidence",
+          "quote": "软件许可及实施一次性费用50万元；年度维保服务费5万元。",
+          "context_text": "软件许可及实施一次性费用50万元；年度维保服务费5万元。",
+          "matched_chunk_id": null,
+          "source_text_hash": "2cd02428ce913e60c0455c808381046632735bfc661596607729046e3e0b48ec",
+          "location": {
+            "page": 2
+          },
+          "vendor_id": "smoke-vendor"
+        },
+        {
+          "id": "smoke-commitment-evidence",
+          "project_id": "model-smoke-project",
+          "document_version_id": "model-smoke-version",
+          "chunk_id": "chunk-smoke-commitment-evidence",
+          "quote": "合同签署后 90 天完成上线；客户需在项目启动前提供服务器和接口文档。",
+          "context_text": null,
+          "matched_chunk_id": null,
+          "source_text_hash": "1ebe980b772f10ae17688437ec34187def293be448328829f9959b47d0034af2",
+          "location": {
+            "page": 3
+          },
+          "vendor_id": "smoke-vendor"
+        }
+      ],
+      "evidence_by_domain": {
+        "requirement_compliance": [
+          {
+            "id": "smoke-requirement-evidence",
+            "project_id": "model-smoke-project",
+            "document_version_id": "model-smoke-version",
+            "chunk_id": "chunk-smoke-requirement-evidence",
+            "quote": "仅介绍报价与交付安排，部署模式待提供。",
+            "context_text": "仅介绍报价与交付安排，部署模式待提供。",
+            "matched_chunk_id": null,
+            "source_text_hash": "38a07e13bb819788d6297b21832b3bfa55abc9339ec694acd4ab365e86df15bf",
+            "location": {
+              "page": 1
+            },
+            "vendor_id": "smoke-vendor"
+          }
+        ],
+        "cost_modeling": [
+          {
+            "id": "smoke-cost-evidence",
+            "project_id": "model-smoke-project",
+            "document_version_id": "model-smoke-version",
+            "chunk_id": "chunk-smoke-cost-evidence",
+            "quote": "软件许可及实施一次性费用50万元；年度维保服务费5万元。",
+            "context_text": "软件许可及实施一次性费用50万元；年度维保服务费5万元。",
+            "matched_chunk_id": null,
+            "source_text_hash": "2cd02428ce913e60c0455c808381046632735bfc661596607729046e3e0b48ec",
+            "location": {
+              "page": 2
+            },
+            "vendor_id": "smoke-vendor"
+          }
+        ],
+        "commitment_verification": [
+          {
+            "id": "smoke-commitment-evidence",
+            "project_id": "model-smoke-project",
+            "document_version_id": "model-smoke-version",
+            "chunk_id": "chunk-smoke-commitment-evidence",
+            "quote": "合同签署后 90 天完成上线；客户需在项目启动前提供服务器和接口文档。",
+            "context_text": null,
+            "matched_chunk_id": null,
+            "source_text_hash": "1ebe980b772f10ae17688437ec34187def293be448328829f9959b47d0034af2",
+            "location": {
+              "page": 3
+            },
+            "vendor_id": "smoke-vendor"
+          }
+        ]
+      },
+      "requirements": [
+        {
+          "id": "requirement-private-deployment",
+          "text": "系统必须支持私有化部署",
+          "mandatory": true,
+          "weight": 1.0
+        }
+      ],
+      "currency": "CNY",
+      "comparison_months": 48,
+      "required_cost_categories": [
+        "software",
+        "implementation",
+        "maintenance"
+      ],
+      "required_commitments": [
+        "delivery",
+        "dependency"
+      ],
+      "project_context": "验证 VendorLens 真实模型与工具调用链，不用于生产决策。",
+      "memory_context": {},
+      "skill_snapshots": [],
+      "revision_domains": [],
+      "revision_count": 0,
+      "revision_feedback": {}
+    },
+    "gold_requirement": "not_stated",
+    "gold_tco": 700000.0
+  },
+  {
+    "input": {
+      "task_id": "metric-5",
+      "project_id": "model-smoke-project",
+      "vendor_id": "smoke-vendor",
+      "document_version_ids": [
+        "model-smoke-version"
+      ],
+      "evidence": [
+        {
+          "id": "smoke-requirement-evidence",
+          "project_id": "model-smoke-project",
+          "document_version_id": "model-smoke-version",
+          "chunk_id": "chunk-smoke-requirement-evidence",
+          "quote": "不支持离线运行，但支持私有化部署。",
+          "context_text": "不支持离线运行，但支持私有化部署。",
+          "matched_chunk_id": null,
+          "source_text_hash": "4b30d9365a8733956d9fed725d5dff0b8b1d0c4ef19e91caec7e7b4be00cc5e7",
+          "location": {
+            "page": 1
+          },
+          "vendor_id": "smoke-vendor"
+        },
+        {
+          "id": "smoke-cost-evidence",
+          "project_id": "model-smoke-project",
+          "document_version_id": "model-smoke-version",
+          "chunk_id": "chunk-smoke-cost-evidence",
+          "quote": "软件许可及实施一次性费用20万元；年度维保服务费2万元。",
+          "context_text": "软件许可及实施一次性费用20万元；年度维保服务费2万元。",
+          "matched_chunk_id": null,
+          "source_text_hash": "bc911a122e610f450fb0c6bae0ff9dfee828eb95ff2757aa265f1ff0af02a1fb",
+          "location": {
+            "page": 2
+          },
+          "vendor_id": "smoke-vendor"
+        },
+        {
+          "id": "smoke-commitment-evidence",
+          "project_id": "model-smoke-project",
+          "document_version_id": "model-smoke-version",
+          "chunk_id": "chunk-smoke-commitment-evidence",
+          "quote": "合同签署后 90 天完成上线；客户需在项目启动前提供服务器和接口文档。",
+          "context_text": null,
+          "matched_chunk_id": null,
+          "source_text_hash": "1ebe980b772f10ae17688437ec34187def293be448328829f9959b47d0034af2",
+          "location": {
+            "page": 3
+          },
+          "vendor_id": "smoke-vendor"
+        }
+      ],
+      "evidence_by_domain": {
+        "requirement_compliance": [
+          {
+            "id": "smoke-requirement-evidence",
+            "project_id": "model-smoke-project",
+            "document_version_id": "model-smoke-version",
+            "chunk_id": "chunk-smoke-requirement-evidence",
+            "quote": "不支持离线运行，但支持私有化部署。",
+            "context_text": "不支持离线运行，但支持私有化部署。",
+            "matched_chunk_id": null,
+            "source_text_hash": "4b30d9365a8733956d9fed725d5dff0b8b1d0c4ef19e91caec7e7b4be00cc5e7",
+            "location": {
+              "page": 1
+            },
+            "vendor_id": "smoke-vendor"
+          }
+        ],
+        "cost_modeling": [
+          {
+            "id": "smoke-cost-evidence",
+            "project_id": "model-smoke-project",
+            "document_version_id": "model-smoke-version",
+            "chunk_id": "chunk-smoke-cost-evidence",
+            "quote": "软件许可及实施一次性费用20万元；年度维保服务费2万元。",
+            "context_text": "软件许可及实施一次性费用20万元；年度维保服务费2万元。",
+            "matched_chunk_id": null,
+            "source_text_hash": "bc911a122e610f450fb0c6bae0ff9dfee828eb95ff2757aa265f1ff0af02a1fb",
+            "location": {
+              "page": 2
+            },
+            "vendor_id": "smoke-vendor"
+          }
+        ],
+        "commitment_verification": [
+          {
+            "id": "smoke-commitment-evidence",
+            "project_id": "model-smoke-project",
+            "document_version_id": "model-smoke-version",
+            "chunk_id": "chunk-smoke-commitment-evidence",
+            "quote": "合同签署后 90 天完成上线；客户需在项目启动前提供服务器和接口文档。",
+            "context_text": null,
+            "matched_chunk_id": null,
+            "source_text_hash": "1ebe980b772f10ae17688437ec34187def293be448328829f9959b47d0034af2",
+            "location": {
+              "page": 3
+            },
+            "vendor_id": "smoke-vendor"
+          }
+        ]
+      },
+      "requirements": [
+        {
+          "id": "requirement-private-deployment",
+          "text": "系统必须支持私有化部署",
+          "mandatory": true,
+          "weight": 1.0
+        }
+      ],
+      "currency": "CNY",
+      "comparison_months": 18,
+      "required_cost_categories": [
+        "software",
+        "implementation",
+        "maintenance"
+      ],
+      "required_commitments": [
+        "delivery",
+        "dependency"
+      ],
+      "project_context": "验证 VendorLens 真实模型与工具调用链，不用于生产决策。",
+      "memory_context": {},
+      "skill_snapshots": [],
+      "revision_domains": [],
+      "revision_count": 0,
+      "revision_feedback": {}
+    },
+    "gold_requirement": "met",
+    "gold_tco": 230000.0
+  }
+]

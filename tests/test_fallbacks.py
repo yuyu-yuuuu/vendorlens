@@ -105,3 +105,27 @@ def test_fallback_without_required_input_fails_cleanly():
     assert requirement_result.missing_information == ["未提供需求目录"]
     assert cost_result.status is DomainAssessmentStatus.FAILED
     assert cost_result.missing_information == ["未提供成本证据"]
+
+
+def test_fallback_does_not_relabel_cny_as_usd_or_treat_monthly_as_one_time():
+    foreign = DeterministicCostEngine().evaluate(
+        "vendor-a", [evidence("cny", "实施费用100元")], currency="USD",
+    )
+    assert foreign.status is DomainAssessmentStatus.FAILED
+    assert foreign.cost_assessment is None
+    monthly = DeterministicCostEngine().evaluate(
+        "vendor-a", [evidence("monthly", "月费1000元")], comparison_months=18,
+    )
+    assert monthly.cost_assessment.recurring_cost == 12000
+    assert monthly.cost_assessment.total_cost_of_ownership == 18000
+
+
+def test_fallback_marks_partial_costs_incomplete_instead_of_guessing():
+    result = DeterministicCostEngine().evaluate(
+        "vendor-a", [evidence("known", "实施费用100元"),
+                     evidence("unknown", "可选每年200元")],
+    )
+    assert result.status is DomainAssessmentStatus.DEGRADED
+    assert result.cost_assessment.total_cost_of_ownership == 100
+    assert result.cost_assessment.complete is False
+    assert result.missing_information

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from enum import StrEnum
-from typing import Any
+from hashlib import sha256
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -56,9 +57,25 @@ class EvidenceItem(BaseModel):
     document_version_id: str
     chunk_id: str
     quote: str = Field(min_length=1)
+    context_text: str | None = Field(
+        default=None, min_length=1, description="完整父块原文，用于理解限定条件；不是子块引用"
+    )
+    matched_chunk_id: str | None = Field(
+        default=None, min_length=1, description="命中的子块 ID；独立索引的表格行可与 chunk_id 相同"
+    )
     source_text_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
     location: dict[str, Any]
     vendor_id: str | None = None
+
+    @model_validator(mode="after")
+    def validate_parent_context(self) -> EvidenceItem:
+        # 旧快照没有父块全文，不能凭子块重建父块，也不能用子块哈希代替父块哈希。
+        if self.context_text is not None:
+            if sha256(self.context_text.encode("utf-8")).hexdigest() != self.source_text_hash:
+                raise ValueError("context hash must match source_text_hash")
+            if self.quote not in self.context_text:
+                raise ValueError("quote must occur in the parent context")
+        return self
 
 
 class Claim(BaseModel):
@@ -157,14 +174,30 @@ class RequirementItem(BaseModel):
     weight: float = Field(default=1.0, gt=0)
 
 
+class CostSourceItem(BaseModel):
+    """A fee occurrence anchored to the cited parent (or legacy quote)."""
+
+    evidence_id: str
+    source_text: str = Field(min_length=1)
+    start: int = Field(ge=0)
+    end: int = Field(gt=0)
+    amount: float = Field(ge=0, allow_inf_nan=False)
+    currency: str
+    period: Literal["one_time", "monthly", "annual"]
+    category: Literal["one_time", "recurring", "optional"]
+    business_categories: list[str] = Field(default_factory=list)
+    annual_amount: float = Field(ge=0, allow_inf_nan=False)
+
+
 class CostAssessment(BaseModel):
     vendor_id: str
     currency: str = Field(min_length=3, max_length=3)
     comparison_months: int = Field(gt=0)
-    one_time_cost: float = Field(ge=0)
-    recurring_cost: float = Field(ge=0)
-    optional_cost: float = Field(ge=0)
-    total_cost_of_ownership: float = Field(ge=0)
+    one_time_cost: float = Field(ge=0, allow_inf_nan=False)
+    recurring_cost: float = Field(ge=0, allow_inf_nan=False)
+    optional_cost: float = Field(ge=0, allow_inf_nan=False)
+    total_cost_of_ownership: float = Field(ge=0, allow_inf_nan=False)
+    cost_sources: list[CostSourceItem] = Field(default_factory=list)
     payment_terms: list[str] = Field(default_factory=list)
     missing_costs: list[str] = Field(default_factory=list)
     conflicts: list[str] = Field(default_factory=list)

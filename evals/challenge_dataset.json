@@ -1,0 +1,981 @@
+{
+  "dataset_version": "vendorlens-challenge-v1",
+  "origin": "编码代理编写的固定合成挑战集；未独立人工标注；非生产数据；根据已知边界设计，非盲测。",
+  "label_policy": "met=明确满足；not_met=明确无法满足；partially_met=部分满足、条件支持或冲突需澄清；not_stated=未回答。费用仅在可确定完整比较范围TCO时有数值，未知为null；小计不等于完整TCO。",
+  "requirements": [
+    {
+      "id": "req-01",
+      "category": "paraphrase",
+      "requirement": "系统必须支持私有化部署",
+      "text": "全部组件可安装于客户自有机房，业务数据无需离开内网。",
+      "gold": "met",
+      "rationale": "客户机房安装与内网留存明确满足本地部署。"
+    },
+    {
+      "id": "req-02",
+      "category": "paraphrase",
+      "requirement": "支持离线运行",
+      "text": "断开外网后仍可完成录入、审批和查询，许可证在本地校验。",
+      "gold": "met",
+      "rationale": "明确断网可运行。"
+    },
+    {
+      "id": "req-03",
+      "category": "paraphrase",
+      "requirement": "提供单点登录",
+      "text": "已对接企业统一身份平台，员工用现有账号进入应用，无须再次输入口令。",
+      "gold": "met",
+      "rationale": "统一认证且无需二次登录。"
+    },
+    {
+      "id": "req-04",
+      "category": "paraphrase",
+      "requirement": "支持审计日志",
+      "text": "每次管理员配置变更均记录操作者、发生时间和修改前后的值，并保留两年。",
+      "gold": "met",
+      "rationale": "明确审计记录内容。"
+    },
+    {
+      "id": "req-05",
+      "category": "numeric",
+      "requirement": "响应时间不超过2秒",
+      "text": "常用查询在正常负载下为1.5秒。",
+      "gold": "met",
+      "rationale": "在已声明正常负载下满足上限。"
+    },
+    {
+      "id": "req-06",
+      "category": "direct",
+      "requirement": "支持数据导出",
+      "text": "支持数据导出，格式为CSV和XLSX。",
+      "gold": "met",
+      "rationale": "明确支持。"
+    },
+    {
+      "id": "req-07",
+      "category": "scope",
+      "requirement": "支持私有化部署",
+      "text": "不支持离线运行，但支持私有化部署。",
+      "gold": "met",
+      "rationale": "否定对象是另一能力。"
+    },
+    {
+      "id": "req-08",
+      "category": "parent",
+      "requirement": "支持审计日志",
+      "text": "支持审计日志。管理员无法删除日志，保留期为两年。",
+      "gold": "met",
+      "rationale": "补充描述未限制支持。",
+      "quote": "支持审计日志。"
+    },
+    {
+      "id": "req-09",
+      "category": "paraphrase",
+      "requirement": "支持私有化部署",
+      "text": "本产品仅采用厂商云端交付，客户机房安装方案不提供。",
+      "gold": "not_met",
+      "rationale": "明确云端唯一交付。"
+    },
+    {
+      "id": "req-10",
+      "category": "negation",
+      "requirement": "支持离线运行",
+      "text": "离线运行不可用；每次操作均需在线访问授权服务。",
+      "gold": "not_met",
+      "rationale": "明确不可离线。"
+    },
+    {
+      "id": "req-11",
+      "category": "paraphrase",
+      "requirement": "支持数据导出",
+      "text": "所有数据只能在网页内查看，无法下载为文件。",
+      "gold": "not_met",
+      "rationale": "明确不允许文件输出。"
+    },
+    {
+      "id": "req-12",
+      "category": "numeric",
+      "requirement": "响应时间不超过2秒",
+      "text": "响应时间在常规负载下为5秒，暂无优化计划。",
+      "gold": "not_met",
+      "rationale": "数值超过上限。"
+    },
+    {
+      "id": "req-13",
+      "category": "compound",
+      "requirement": "同时支持中文和英文界面",
+      "text": "中文界面支持，英文界面不支持。",
+      "gold": "partially_met",
+      "rationale": "复合需求只满足一部分。"
+    },
+    {
+      "id": "req-14",
+      "category": "compound",
+      "requirement": "支持数据导出和自动备份",
+      "text": "支持数据导出。自动备份不支持，只能手工复制。",
+      "gold": "partially_met",
+      "rationale": "导出满足，自动备份不满足。"
+    },
+    {
+      "id": "req-15",
+      "category": "edition",
+      "requirement": "标准版支持单点登录",
+      "text": "单点登录仅限企业版，标准版没有该功能。",
+      "gold": "not_met",
+      "rationale": "指定版本不具备能力。"
+    },
+    {
+      "id": "req-16",
+      "category": "scope",
+      "requirement": "支持私有化部署",
+      "text": "客户需求书：必须支持私有化部署。供应商响应：不支持私有化部署。",
+      "gold": "not_met",
+      "rationale": "需求书不能当成供应商能力。"
+    },
+    {
+      "id": "req-17",
+      "category": "condition",
+      "requirement": "支持私有化部署",
+      "text": "支持私有化部署，仅限企业版，需另行购买。",
+      "gold": "partially_met",
+      "rationale": "存在版本和额外采购限制。"
+    },
+    {
+      "id": "req-18",
+      "category": "future",
+      "requirement": "支持自动备份",
+      "text": "自动备份计划在下一年度发布，当前版本只能手工备份。",
+      "gold": "partially_met",
+      "rationale": "未来承诺不能作为当前完全满足。"
+    },
+    {
+      "id": "req-19",
+      "category": "numeric",
+      "requirement": "支持2000个并发用户",
+      "text": "并发用户上限为500，提升到2000需额外扩容。",
+      "gold": "partially_met",
+      "rationale": "购买扩容前无法达到目标。"
+    },
+    {
+      "id": "req-20",
+      "category": "condition",
+      "requirement": "支持离线运行",
+      "text": "支持离线运行，但每隔7天必须联网刷新授权。",
+      "gold": "partially_met",
+      "rationale": "离线有时长限制。"
+    },
+    {
+      "id": "req-21",
+      "category": "parent",
+      "requirement": "支持数据导出",
+      "text": "支持数据导出。该能力仅限管理员，普通用户无法使用。",
+      "gold": "partially_met",
+      "rationale": "父段包含角色限制。",
+      "quote": "支持数据导出。"
+    },
+    {
+      "id": "req-22",
+      "category": "contradiction",
+      "requirement": "支持审计日志",
+      "text": "方案正文称支持审计日志；附件兼容性表标为不支持审计日志。",
+      "gold": "partially_met",
+      "rationale": "同一材料冲突需澄清，不视作完全支持。"
+    },
+    {
+      "id": "req-23",
+      "category": "compound",
+      "requirement": "支持每日备份并保留30天",
+      "text": "支持每日备份，但只能保留7天。",
+      "gold": "partially_met",
+      "rationale": "保留时长不满足。"
+    },
+    {
+      "id": "req-24",
+      "category": "condition",
+      "requirement": "支持接口调用",
+      "text": "接口调用支持。调用频率上限为每分钟60次，超过上限须另付费。",
+      "gold": "partially_met",
+      "rationale": "调用存在限额与费用条件。"
+    },
+    {
+      "id": "req-25",
+      "category": "missing",
+      "requirement": "支持私有化部署",
+      "text": "本节介绍项目实施团队及售后联系电话，部署方案将在澄清后补充。",
+      "gold": "not_stated",
+      "rationale": "未给出能力判断。"
+    },
+    {
+      "id": "req-26",
+      "category": "missing",
+      "requirement": "支持审计日志",
+      "text": "审计日志：待确认。",
+      "gold": "not_stated",
+      "rationale": "待确认不等于支持。"
+    },
+    {
+      "id": "req-27",
+      "category": "scope",
+      "requirement": "支持数据导出",
+      "text": "采购方要求支持数据导出，供应商本节仅提供人员名单。",
+      "gold": "not_stated",
+      "rationale": "仅有采购方要求。"
+    },
+    {
+      "id": "req-28",
+      "category": "missing",
+      "requirement": "支持单点登录",
+      "text": "单点登录事项需进一步沟通，本次材料未作答。",
+      "gold": "not_stated",
+      "rationale": "未回答。"
+    },
+    {
+      "id": "req-29",
+      "category": "scope",
+      "requirement": "支持自动备份",
+      "text": "培训支持远程开展；自动备份功能未在材料中描述。",
+      "gold": "not_stated",
+      "rationale": "培训支持与目标功能无关。"
+    },
+    {
+      "id": "req-30",
+      "category": "numeric",
+      "requirement": "响应时间不超过2秒",
+      "text": "响应时间指标需以验收阶段实测为准，本次未提供测量值。",
+      "gold": "not_stated",
+      "rationale": "没有性能测量值。"
+    },
+    {
+      "id": "req-31",
+      "category": "scope",
+      "requirement": "支持离线运行",
+      "text": "离线运行是采购方列出的验收项，供应商仅提交价格表。",
+      "gold": "not_stated",
+      "rationale": "只描述验收要求。"
+    },
+    {
+      "id": "req-32",
+      "category": "missing",
+      "requirement": "支持接口调用",
+      "text": "接口调用配置见附件B，但本次提交缺少附件B。",
+      "gold": "not_stated",
+      "rationale": "引用缺失资料不能确认。"
+    }
+  ],
+  "costs": [
+    {
+      "id": "cost-01",
+      "category": "simple",
+      "text": "软件及实施一次性费用80万元；年度维保服务费10万元。",
+      "currency": "CNY",
+      "months": 36,
+      "gold_tco": 1100000,
+      "rationale": "800000+100000×3"
+    },
+    {
+      "id": "cost-02",
+      "category": "monthly",
+      "text": "一次性实施费用6万元；托管服务费每月2000元。",
+      "currency": "CNY",
+      "months": 18,
+      "gold_tco": 96000,
+      "rationale": "60000+2000×18"
+    },
+    {
+      "id": "cost-03",
+      "category": "quantity",
+      "text": "硬件单价2万元/台，采购3台，一次性付款。",
+      "currency": "CNY",
+      "months": 12,
+      "gold_tco": 60000,
+      "rationale": "20000×3；未注明其他费用，比较范围仅该项"
+    },
+    {
+      "id": "cost-04",
+      "category": "tax",
+      "text": "软件许可一次性未税金额10万元，增值税率13%，另无周期性费用。",
+      "currency": "CNY",
+      "months": 12,
+      "gold_tco": 113000,
+      "rationale": "100000×1.13"
+    },
+    {
+      "id": "cost-05",
+      "category": "quarterly",
+      "text": "维保费每季度3万元，软件许可一次性费用8万元。",
+      "currency": "CNY",
+      "months": 24,
+      "gold_tco": 320000,
+      "rationale": "80000+30000×8"
+    },
+    {
+      "id": "cost-06",
+      "category": "bundle",
+      "text": "实施费用一次性20万元；三年维保打包费用9万元，覆盖完整36个月。",
+      "currency": "CNY",
+      "months": 36,
+      "gold_tco": 290000,
+      "rationale": "200000+90000"
+    },
+    {
+      "id": "cost-07",
+      "category": "discount",
+      "text": "软件许可一次性费用20万元；确认一次性折扣2万元，签约净支付18万元。",
+      "currency": "CNY",
+      "months": 12,
+      "gold_tco": 180000,
+      "rationale": "明确净支付180000，不重复累加"
+    },
+    {
+      "id": "cost-08",
+      "category": "included",
+      "text": "软件许可及实施一次性费用30万元，已包含前两年维保；第三年维保费用5万元。",
+      "currency": "CNY",
+      "months": 36,
+      "gold_tco": 350000,
+      "rationale": "300000+50000"
+    },
+    {
+      "id": "cost-09",
+      "category": "optional",
+      "text": "软件许可一次性费用10万元；可选培训一次性费用2万元。",
+      "currency": "CNY",
+      "months": 12,
+      "gold_tco": 100000,
+      "rationale": "可选费用不进入基础TCO"
+    },
+    {
+      "id": "cost-10",
+      "category": "simple",
+      "text": "软件许可一次性费用12500元；每年维保费用1500元。",
+      "currency": "CNY",
+      "months": 24,
+      "gold_tco": 15500,
+      "rationale": "12500+1500×2"
+    },
+    {
+      "id": "cost-11",
+      "category": "uncertain",
+      "text": "软件许可预计10至15万元，维保另计。",
+      "currency": "CNY",
+      "months": 24,
+      "gold_tco": null,
+      "rationale": "范围报价且维保缺价，无法算出唯一TCO"
+    },
+    {
+      "id": "cost-12",
+      "category": "uncertain",
+      "text": "实施费用一次性5万元；维保费另行商议。",
+      "currency": "CNY",
+      "months": 24,
+      "gold_tco": null,
+      "rationale": "仅可计算小计，完整TCO未知"
+    },
+    {
+      "id": "cost-13",
+      "category": "uncertain",
+      "text": "软件费用以美元结算，报价1000美元，比较币种为人民币，汇率待定。",
+      "currency": "CNY",
+      "months": 12,
+      "gold_tco": null,
+      "rationale": "换汇条件缺失"
+    },
+    {
+      "id": "cost-14",
+      "category": "uncertain",
+      "text": "总价20万元，其中包含多少年维保尚未确认。",
+      "currency": "CNY",
+      "months": 36,
+      "gold_tco": null,
+      "rationale": "周期缺失，完整TCO未知"
+    }
+  ],
+  "chunks": [
+    {
+      "id": "local",
+      "text": "交付选项：全部组件安装在采购方机房，数据库与文件存储均位于客户内网。",
+      "metadata": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "cloud",
+      "text": "默认云端租户位于厂商数据中心，客户端只需要浏览器；机房版另见交付选项。",
+      "metadata": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "offline",
+      "text": "断网模式：已缓存的表单仍可提交并排队，连接恢复后同步；连续断网超过七天须更新许可证。",
+      "metadata": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "auth",
+      "text": "企业身份接入采用SAML 2.0，员工使用企业统一账号，无需单独登录应用。",
+      "metadata": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "audit",
+      "text": "管理操作记录写入只追加的事件库，保存操作者、时间及变更前后值，保存期限两年。",
+      "metadata": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "backup",
+      "text": "灾备策略：每日凌晨生成快照，快照保留30天，可恢复到任一保留的快照点。",
+      "metadata": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "export",
+      "text": "管理员可将业务表下载为CSV；普通用户仅可在线浏览。批量下载需审批。",
+      "metadata": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "locale",
+      "text": "操作页面提供简体中文和英语，邮件模板还可配置繁体中文。",
+      "metadata": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "capacity",
+      "text": "单节点承载500并发；横向增加到四个节点后可承载2000并发会话。",
+      "metadata": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "latency",
+      "text": "压测条件为500并发与百万行记录，查询平均1.5秒，95分位为3秒。",
+      "metadata": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "fee",
+      "text": "软件许可与实施一次性80万元，维保每年10万元，不含服务器采购。",
+      "metadata": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "hardware",
+      "text": "采购方提供三台服务器，服务器配置与费用由采购方自行负责。",
+      "metadata": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "delivery",
+      "text": "自合同签署起90天内完成上线；前提是采购方在启动前提供账号、服务器与接口文档。",
+      "metadata": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "training",
+      "text": "安排两次管理员培训，每次半天；新增培训按单独订单结算。",
+      "metadata": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "support",
+      "text": "技术支持工作日9至18点响应，严重故障可使用全天候热线。",
+      "metadata": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "api",
+      "text": "开放接口使用OAuth2鉴权，标准套餐每分钟60次；扩容额度需增购。",
+      "metadata": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "delete",
+      "text": "用户关闭账户后30日清除业务数据，操作事件记录按照既定保存期限留存。",
+      "metadata": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "encrypt",
+      "text": "传输通道使用TLS，磁盘数据使用AES加密，密钥由客户自有密钥系统管理。",
+      "metadata": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "migration",
+      "text": "历史数据可通过批量CSV导入，导入后运行字段校验，异常记录形成清单。",
+      "metadata": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "mobile",
+      "text": "移动端提供审批与浏览，表格批量下载需在桌面浏览器中执行。",
+      "metadata": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "sla",
+      "text": "服务可用性按自然月统计，约定为99.9%；计划维护窗口不计入不可用时间。",
+      "metadata": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "upgrade",
+      "text": "升级前先备份数据，新版本在测试环境验证后滚动更新，失败时回滚。",
+      "metadata": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "search",
+      "text": "用户可按时间与业务编号筛选记录，当前不提供全文模糊检索。",
+      "metadata": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "notice",
+      "text": "通知可经邮件与企业消息发送，短信需要采购第三方通道。",
+      "metadata": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "other-local",
+      "text": "交付选项：全部组件安装在采购方机房，数据库与文件存储均位于客户内网。",
+      "metadata": {
+        "project_id": "other",
+        "vendor_id": "vendor-b",
+        "version": 1
+      }
+    },
+    {
+      "id": "other-cloud",
+      "text": "默认云端租户位于厂商数据中心，客户端只需要浏览器；机房版另见交付选项。",
+      "metadata": {
+        "project_id": "other",
+        "vendor_id": "vendor-b",
+        "version": 1
+      }
+    },
+    {
+      "id": "other-offline",
+      "text": "断网模式：已缓存的表单仍可提交并排队，连接恢复后同步；连续断网超过七天须更新许可证。",
+      "metadata": {
+        "project_id": "other",
+        "vendor_id": "vendor-b",
+        "version": 1
+      }
+    },
+    {
+      "id": "other-auth",
+      "text": "企业身份接入采用SAML 2.0，员工使用企业统一账号，无需单独登录应用。",
+      "metadata": {
+        "project_id": "other",
+        "vendor_id": "vendor-b",
+        "version": 1
+      }
+    },
+    {
+      "id": "other-audit",
+      "text": "管理操作记录写入只追加的事件库，保存操作者、时间及变更前后值，保存期限两年。",
+      "metadata": {
+        "project_id": "other",
+        "vendor_id": "vendor-b",
+        "version": 1
+      }
+    },
+    {
+      "id": "other-backup",
+      "text": "灾备策略：每日凌晨生成快照，快照保留30天，可恢复到任一保留的快照点。",
+      "metadata": {
+        "project_id": "other",
+        "vendor_id": "vendor-b",
+        "version": 1
+      }
+    }
+  ],
+  "queries": [
+    {
+      "id": "query-01",
+      "category": "paraphrase",
+      "text": "如果公司的安全规定要求资料不能离开自己的机房，方案能怎么落地？",
+      "relevant": [
+        "local"
+      ],
+      "filters": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "query-02",
+      "category": "paraphrase",
+      "text": "员工是否要记住一个额外的应用密码？",
+      "relevant": [
+        "auth"
+      ],
+      "filters": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "query-03",
+      "category": "paraphrase",
+      "text": "发生误删时，可以找回多久以前的状态？",
+      "relevant": [
+        "backup"
+      ],
+      "filters": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "query-04",
+      "category": "paraphrase",
+      "text": "谁改过配置，事后能查到吗，记录留多久？",
+      "relevant": [
+        "audit"
+      ],
+      "filters": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "query-05",
+      "category": "scope",
+      "text": "普通员工能把整张业务表拿到本地吗？",
+      "relevant": [
+        "export"
+      ],
+      "filters": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "query-06",
+      "category": "multi",
+      "text": "没有网络一周后还能继续使用吗，需要做什么？",
+      "relevant": [
+        "offline"
+      ],
+      "filters": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "query-07",
+      "category": "multi",
+      "text": "三年使用预算除了厂商的软件与服务，还需要我们准备什么资源？",
+      "relevant": [
+        "fee",
+        "hardware"
+      ],
+      "filters": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "query-08",
+      "category": "multi",
+      "text": "上线时间怎么计算，客户在开工前有哪些责任？",
+      "relevant": [
+        "delivery",
+        "hardware"
+      ],
+      "filters": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "query-09",
+      "category": "numeric",
+      "text": "两千人同时使用时，现有单节点是否够用？",
+      "relevant": [
+        "capacity"
+      ],
+      "filters": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "query-10",
+      "category": "numeric",
+      "text": "查询95分位能保证不超过两秒吗？",
+      "relevant": [
+        "latency"
+      ],
+      "filters": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "query-11",
+      "category": "condition",
+      "text": "夜间发生严重故障应该通过哪个渠道求助？",
+      "relevant": [
+        "support"
+      ],
+      "filters": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "query-12",
+      "category": "condition",
+      "text": "申请注销后，业务资料和操作记录会一起立刻删除吗？",
+      "relevant": [
+        "delete",
+        "audit"
+      ],
+      "filters": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "query-13",
+      "category": "paraphrase",
+      "text": "外部系统怎样获得访问凭据，调用超额怎么办？",
+      "relevant": [
+        "api"
+      ],
+      "filters": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "query-14",
+      "category": "scope",
+      "text": "手机里可以把整个表批量下载吗？",
+      "relevant": [
+        "mobile",
+        "export"
+      ],
+      "filters": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "query-15",
+      "category": "paraphrase",
+      "text": "历史表格入库出错后怎样定位问题数据？",
+      "relevant": [
+        "migration"
+      ],
+      "filters": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "query-16",
+      "category": "multi",
+      "text": "从网络传输到落盘的数据保护及密钥控制由谁负责？",
+      "relevant": [
+        "encrypt"
+      ],
+      "filters": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "query-17",
+      "category": "direct",
+      "text": "服务可用性按什么周期统计，计划维护计入吗？",
+      "relevant": [
+        "sla"
+      ],
+      "filters": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "query-18",
+      "category": "paraphrase",
+      "text": "发送手机短信是否属于应用自带的通道？",
+      "relevant": [
+        "notice"
+      ],
+      "filters": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "query-19",
+      "category": "direct",
+      "text": "升级失败怎样恢复？",
+      "relevant": [
+        "upgrade"
+      ],
+      "filters": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    },
+    {
+      "id": "query-20",
+      "category": "paraphrase",
+      "text": "能否用一段模糊文本找到业务记录？",
+      "relevant": [
+        "search"
+      ],
+      "filters": {
+        "project_id": "challenge",
+        "vendor_id": "vendor-a",
+        "version": 2
+      }
+    }
+  ],
+  "model_case_pairs": [
+    [
+      1,
+      1
+    ],
+    [
+      2,
+      2
+    ],
+    [
+      9,
+      3
+    ],
+    [
+      10,
+      4
+    ],
+    [
+      13,
+      5
+    ],
+    [
+      17,
+      6
+    ],
+    [
+      18,
+      7
+    ],
+    [
+      21,
+      8
+    ],
+    [
+      25,
+      9
+    ],
+    [
+      26,
+      10
+    ],
+    [
+      27,
+      11
+    ],
+    [
+      28,
+      12
+    ]
+  ]
+}

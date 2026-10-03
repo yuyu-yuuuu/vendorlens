@@ -276,3 +276,66 @@ def test_default_cost_fallback_uses_only_cost_domain_evidence():
     assert result.cost_assessment is not None
     assert result.cost_assessment.total_cost_of_ownership == 800_000
     assert result.evidence_ids == ["cost-vendor-a"]
+
+
+def test_actual_executor_numeric_failure_retries_only_cost_then_uses_grounded_fallback():
+    from vendorlens.review_agent import VendorReviewAgent, VendorReviewDraft, VendorReviewExecutor
+
+    calls = []
+
+    def analyzer(data, tools):
+        calls.append(data)
+        result = completed_assessment(data.vendor_id)
+        cost = result.domains[ReviewDomain.COST_MODELING].cost_assessment
+        cost.one_time_cost = 999999
+        cost.total_cost_of_ownership = 999999
+        return VendorReviewDraft(
+            requirement_findings=result.domains[
+                ReviewDomain.REQUIREMENT_COMPLIANCE
+            ].requirement_findings,
+            cost_assessment=cost,
+            commitment_assessment=result.domains[
+                ReviewDomain.COMMITMENT_VERIFICATION
+            ].commitment_assessment,
+        )
+
+    workflow = ReviewWorkflow(Retriever(), VendorReviewExecutor(VendorReviewAgent(analyzer)))
+    result = workflow.graph.invoke(initial_state(["vendor-a"]),
+                                   {"configurable": {"thread_id": "numeric-retry"}})
+    assert len(calls) == 3
+    assert calls[1].revision_domains == {ReviewDomain.COST_MODELING}
+    assert calls[2].revision_count == 2
+    assert "cost_input_mismatch:one_time" in calls[1].revision_feedback[ReviewDomain.COST_MODELING]
+    cost = result["assessments"]["vendor-a"].domains[ReviewDomain.COST_MODELING]
+    assert cost.status is DomainAssessmentStatus.DEGRADED
+    assert cost.cost_assessment.total_cost_of_ownership == 800000
+    assert cost.cost_assessment.cost_sources[0].evidence_id == "cost-vendor-a"
+    assert result["status"] == "partially_completed"
+    assert result["assessments"]["vendor-a"].domains[
+        ReviewDomain.REQUIREMENT_COMPLIANCE
+    ].revision_count == 0
+
+
+def test_custom_executor_and_fallback_cannot_bypass_the_numeric_gate():
+    class UngroundedExecutor:
+        def execute(self, data):
+            result = completed_assessment(data.vendor_id)
+            cost = result.domains[ReviewDomain.COST_MODELING].cost_assessment
+            cost.total_cost_of_ownership = 1
+            return result
+
+    class UngroundedFallback:
+        def run(self, data, domain):
+            result = completed_assessment(data.vendor_id).domains[domain]
+            result.status = DomainAssessmentStatus.DEGRADED
+            result.cost_assessment.total_cost_of_ownership = 1
+            return result
+
+    result = ReviewWorkflow(Retriever(), UngroundedExecutor(), UngroundedFallback()).graph.invoke(
+        initial_state(["vendor-a"]), {"configurable": {"thread_id": "numeric-bypass"}},
+    )
+    cost = result["assessments"]["vendor-a"].domains[ReviewDomain.COST_MODELING]
+    assert cost.status is DomainAssessmentStatus.FAILED
+    assert cost.cost_assessment is None
+    assert result["revision_counts"]["vendor-a:cost_modeling"] == 2
+    assert result["status"] == "partially_completed"

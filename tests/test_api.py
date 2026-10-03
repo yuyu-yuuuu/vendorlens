@@ -38,12 +38,14 @@ def test_openapi_documents_existing_routes_and_response_contracts():
     response = TestClient(app).get("/openapi.json")
     assert response.status_code == 200
     schema = response.json()
-    assert len(schema["paths"]) == 6
+    assert {"/projects", "/metrics", "/tasks/{task_id}/retry"} <= set(schema["paths"])
     assert {tag["name"] for tag in schema["tags"]} == {
         "健康检查",
         "评审任务",
         "进度事件",
         "执行追踪",
+        "项目与资料管理",
+        "运行维护",
     }
     post = schema["paths"]["/projects/{project_id}/tasks"]["post"]
     assert post["summary"] == "创建并入队供应商评审任务"

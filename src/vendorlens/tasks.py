@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from contextlib import contextmanager
+from datetime import timedelta
 from time import monotonic
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
+from vendorlens.config import get_settings
 from vendorlens.events import RunEventStore
 from vendorlens.models import (
     AnalysisReport,
@@ -18,8 +20,10 @@ from vendorlens.models import (
     ReviewConfig,
     TraceSpan,
     Vendor,
+    new_id,
     utcnow,
 )
+from vendorlens.recovery import LeaseHeartbeat, TaskLeaseLost, own_task
 from vendorlens.schemas import RequirementItem, ReviewDomain, ReviewWeights
 from vendorlens.tracing import TraceRecorder
 from vendorlens.workflow import ReviewWorkflow
@@ -43,6 +47,11 @@ class ReviewTaskRequest(BaseModel):
     vendor_ids: list[str] = Field(
         min_length=1, max_length=20, description="同一项目内 1-20 个供应商 ID，不能重复"
     )
+    session_id: str | None = Field(default=None, min_length=1, max_length=36)
+    user_id: str = Field(default="local", min_length=1, max_length=100)
+    industry: str = Field(default="general", min_length=1, max_length=80)
+    comparison_months: int | None = Field(default=None, gt=0, le=1200)
+    currency: str | None = Field(default=None, pattern=r"^[A-Z]{3}$")
     queries_by_domain: dict[ReviewDomain, list[str]] | None = Field(
         default=None,
         description="可省略以使用默认查询；提供时必须覆盖三个领域，"
@@ -96,6 +105,21 @@ def create_review_task(
     if not requirements:
         raise ValueError("project requires a requirement catalog before review")
     config = session.scalar(select(ReviewConfig).where(ReviewConfig.project_id == project_id))
+    from vendorlens.conversation_memory import ConversationMemory
+    from vendorlens.skills import skill_manager
+
+    memory = ConversationMemory()
+    memory_context = {}
+    conversation = None
+    if request.session_id:
+        conversation = memory.scoped_session(
+            session, request.session_id, project_id, request.user_id
+        )
+        memory_context = memory.context(
+            session, conversation, request.objective, request.vendor_ids
+        )
+    preferences = memory_context.get("preferences", {})
+    skills = skill_manager(get_settings().skills_root).select(request.industry, request.objective)
     weights = (
         ReviewWeights()
         if config is None
@@ -120,12 +144,21 @@ def create_review_task(
             for r in requirements
         ],
         "queries_by_domain": {domain.value: values for domain, values in queries.items()},
-        "currency": config.currency if config else "CNY",
-        "comparison_months": config.comparison_months if config else 36,
-        "required_cost_categories": ["software", "implementation", "maintenance"],
+        "currency": request.currency or (config.currency if config else (
+            preferences.get("currency", "CNY"))),
+        "comparison_months": request.comparison_months or (config.comparison_months if config else (
+            preferences.get("comparison_months", 36))),
+        "required_cost_categories": config.required_cost_categories
+        if config
+        else ["software", "implementation", "maintenance"],
         "required_commitments": config.commitment_checklist if config else [],
         "project_context": f"{project.description}\n评审目标：{request.objective}",
         "weights": weights.model_dump(mode="json"),
+        "memory_context": memory_context,
+        "skill_snapshots": skills,
+        "industry": request.industry,
+        "conversation": {"session_id": conversation.id, "user_id": conversation.user_id}
+        if conversation else None,
     }
     if snapshot["comparison_months"] <= 0:
         raise ValueError("comparison months must be positive")
@@ -134,7 +167,12 @@ def create_review_task(
     )
     session.add(task)
     session.flush()
+    if conversation:
+        memory.append(session, conversation, "user", request.objective, task_id=task.id)
     RunEventStore().append(session, task.id, "run.queued", {"run_id": task.run_id})
+    from vendorlens.outbox import schedule
+
+    schedule(session, task)
     return task
 
 
@@ -160,33 +198,25 @@ def build_runtime_workflow(session_factory):
 
     import httpx
 
-    from vendorlens.checkpoint import postgres_checkpointer
-    from vendorlens.config import get_settings
+    from vendorlens.checkpoint import postgres_checkpointer, sqlite_checkpointer
     from vendorlens.coordinator import DatabaseRetrievalCoordinator
-    from vendorlens.indexes import (
-        ChromaVectorIndex,
-        DatabaseParentRetriever,
-        PersistentBM25Index,
-        PersistentHybridRetriever,
-    )
-    from vendorlens.model_analyzer import build_vendor_review_executor
+    from vendorlens.indexes import DatabaseParentRetriever, PersistentHybridRetriever
+    from vendorlens.model_routing import RoutedVendorReviewExecutor
+    from vendorlens.retrieval_runtime import retrieval_components
 
     settings = get_settings()
     with ExitStack() as stack:
-        saver = (
-            stack.enter_context(postgres_checkpointer(settings.database_url))
+        saver = stack.enter_context(
+            postgres_checkpointer(settings.database_url)
             if settings.database_url.startswith("postgresql")
-            else None
+            else sqlite_checkpointer(settings.storage_root / "checkpoints.sqlite")
         )
-        retriever = DatabaseParentRetriever(
-            PersistentHybridRetriever(
-                PersistentBM25Index(settings.storage_root / "indexes" / "bm25.json"),
-                ChromaVectorIndex.from_url(settings.chroma_url),
-            )
-        )
+        bm25, vector, reranker = retrieval_components(settings)
+        retriever = DatabaseParentRetriever(PersistentHybridRetriever(bm25, vector, reranker))
         yield ReviewWorkflow(
             DatabaseRetrievalCoordinator(session_factory, retriever),
-            build_vendor_review_executor(settings, client=stack.enter_context(httpx.Client())),
+            RoutedVendorReviewExecutor(session_factory, settings,
+                                       client=stack.enter_context(httpx.Client())),
             checkpointer=saver,
         )
 
@@ -194,16 +224,23 @@ def build_runtime_workflow(session_factory):
 def run_review_task(task_id: str, session_factory: Callable[[], Session], workflow_factory) -> bool:
     """Claim once; persist a report and its terminal event in one transaction.
 
-    Hard-killed workers require explicit recovery (not automatic replay).
+    Interrupted workers resume from a persistent checkpoint under a new fenced lease.
     Never persist exception text, prompts or provider credentials in progress/Trace.
     """
     events = RunEventStore()
     started = monotonic()
+    owner = new_id()
+    lease_seconds = get_settings().task_lease_seconds
     with session_factory() as session:
         claimed = session.execute(
             update(ResearchTask)
             .where(ResearchTask.id == task_id, ResearchTask.status == "queued")
-            .values(status="running")
+            .values(
+                status="running",
+                lease_owner=owner,
+                lease_expires_at=utcnow() + timedelta(seconds=lease_seconds),
+                attempt=ResearchTask.attempt + 1,
+            )
         ).rowcount
         if not claimed:
             session.rollback()
@@ -211,6 +248,7 @@ def run_review_task(task_id: str, session_factory: Callable[[], Session], workfl
         task = session.get(ResearchTask, task_id)
         snapshot = dict(task.request_snapshot)
         run_id = task.run_id
+        resume = task.resume_requested
         trace = TraceSpan(trace_id=task.trace_id, name="vendor_review", kind="workflow")
         session.add(trace)
         events.append(session, task_id, "run.started", {"run_id": run_id})
@@ -228,10 +266,22 @@ def run_review_task(task_id: str, session_factory: Callable[[], Session], workfl
         }
         state["weights"] = ReviewWeights.model_validate(snapshot["weights"])
         recorder = TraceRecorder(session_factory, run_trace_id, trace_id)
-        with recorder.activate(), workflow_factory(session_factory) as workflow:
+        with (
+            LeaseHeartbeat(session_factory, task_id, owner, lease_seconds),
+            recorder.activate(),
+            workflow_factory(session_factory) as workflow,
+        ):
+            from vendorlens.checkpoint import FencedCheckpointSaver
+
+            workflow.graph.checkpointer = FencedCheckpointSaver(
+                workflow.graph.checkpointer, session_factory, task_id, owner
+            )
             config = {"configurable": {"thread_id": run_id}}
-            for update_data in workflow.graph.stream(state, config, stream_mode="updates"):
+            checkpoint = workflow.graph.get_state(config)
+            graph_input = None if resume and checkpoint.values else state
+            for update_data in workflow.graph.stream(graph_input, config, stream_mode="updates"):
                 with session_factory() as session:
+                    own_task(session, task_id, owner)
                     for node, values in update_data.items():
                         events.append(
                             session,
@@ -245,22 +295,32 @@ def run_review_task(task_id: str, session_factory: Callable[[], Session], workfl
                     session.commit()
             result = workflow.graph.get_state(config).values
         with session_factory() as session:
-            task = session.get(ResearchTask, task_id)
+            task = own_task(session, task_id, owner)
             for vendor_id, assessment in result["assessments"].items():
                 for domain, item in assessment.domains.items():
+                    payload = item.model_dump(mode="json")
+                    review_input = result.get("review_inputs", {}).get(vendor_id)
+                    payload["source_evidence"] = [
+                        evidence.model_dump(mode="json")
+                        for evidence in (review_input.evidence if review_input else [])
+                        if evidence.id in item.evidence_ids
+                    ]
                     session.add(
                         DomainAssessmentRecord(
                             task_id=task_id,
                             vendor_id=vendor_id,
                             domain=domain.value,
                             status=item.status.value,
-                            payload=item.model_dump(mode="json"),
+                            payload=payload,
                             missing_information=item.missing_information,
                             conflicts=item.conflicts,
                             revision_count=item.revision_count,
                         )
                     )
             task.status = result["status"]
+            task.lease_owner = None
+            task.lease_expires_at = None
+            task.resume_requested = False
             session.add(
                 AnalysisReport(
                     task_id=task_id,
@@ -268,13 +328,23 @@ def run_review_task(task_id: str, session_factory: Callable[[], Session], workfl
                     content=result["report"].model_dump(mode="json"),
                 )
             )
+            from vendorlens.conversation_memory import ConversationMemory
+
+            ConversationMemory().record_result(session, task, result)
             _finish_trace(session, trace_id, task.status, started)
             events.append(session, task_id, "run.finished", {"status": task.status})
             session.commit()
+    except TaskLeaseLost:
+        return False
     except Exception as error:
         with session_factory() as session:
-            task = session.get(ResearchTask, task_id)
+            try:
+                task = own_task(session, task_id, owner)
+            except TaskLeaseLost:
+                return False
             task.status = "failed"
+            task.lease_owner = None
+            task.lease_expires_at = None
             _finish_trace(session, trace_id, "failed", started)
             session.get(TraceSpan, trace_id).error = type(error).__name__
             events.append(session, task_id, "run.failed", {"error": "review_execution_failed"})

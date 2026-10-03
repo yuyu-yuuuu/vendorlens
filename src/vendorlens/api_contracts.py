@@ -19,6 +19,8 @@ class HealthResponse(BaseModel):
 
 
 class TaskResponse(BaseModel):
+    attempt: int = Field(default=0, ge=0, description="成功领取过的执行次数")
+    lease_expires_at: datetime | None = Field(default=None, description="运行心跳租约到期时间")
     task_id: str = Field(description="业务任务 ID，用于查询状态、报告、事件和 Trace")
     run_id: str = Field(description="RQ job_id 与 LangGraph checkpoint thread_id")
     trace_id: str = Field(description="关联本次执行的所有 TraceSpan")
@@ -38,6 +40,11 @@ class ReportResponse(BaseModel):
 
 
 class TraceSummary(BaseModel):
+    priced_calls: int = Field(default=0, ge=0)
+    cost_complete: bool = False
+    estimated_costs: dict[str, float] = Field(
+        default_factory=dict, description="按配置单价估算、按币种分组，非账单"
+    )
     model_calls: int = Field(ge=0, description="记录到的模型请求数，包含失败请求")
     tool_calls: int = Field(ge=0, description="记录到的工具调用尝试数，包含失败调用")
     usage_reported_calls: int = Field(ge=0, description="返回完整 Token usage 的模型请求数")

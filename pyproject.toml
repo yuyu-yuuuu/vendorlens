@@ -14,6 +14,7 @@ dependencies = [
   "httpx>=0.28,<1",
   "langgraph>=1.0,<2",
   "langgraph-checkpoint-postgres>=3.0,<4",
+  "langgraph-checkpoint-sqlite>=3.0,<4",
   "openpyxl>=3.1,<4",
   "psycopg[binary]>=3.2,<4",
   "pydantic-settings>=2.7,<3",
@@ -28,6 +29,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+retrieval = ["sentence-transformers>=5.1,<6"]
 dev = [
   "pytest>=8.3,<9",
   "pytest-cov>=6,<7",
@@ -35,6 +37,8 @@ dev = [
 ]
 
 [project.scripts]
+vendorlens-backend-demo = "vendorlens.backend_demo:main"
+vendorlens-recover = "vendorlens.recovery:main"
 vendorlens-eval-retrieval = "vendorlens.eval_cli:main"
 vendorlens-model-smoke = "vendorlens.model_smoke:main"
 

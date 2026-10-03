@@ -54,6 +54,7 @@ services:
     ports: ["8000:8000"]
     volumes:
       - files_data:/data/files
+      - ./skills:/app/skills:ro
     depends_on:
       postgres: {condition: service_healthy}
       redis: {condition: service_healthy}
@@ -69,10 +70,25 @@ services:
     command: ["python", "-m", "vendorlens.worker"]
     volumes:
       - files_data:/data/files
+      - ./skills:/app/skills:ro
     depends_on:
       postgres: {condition: service_healthy}
       redis: {condition: service_healthy}
       chroma: {condition: service_healthy}
+
+  recovery:
+    build:
+      context: .
+      dockerfile: services/worker/Dockerfile
+    env_file:
+      - path: .env
+        required: false
+    command: ["python", "-m", "vendorlens.recovery", "--watch"]
+    volumes:
+      - files_data:/data/files
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
 
 volumes:
   postgres_data:

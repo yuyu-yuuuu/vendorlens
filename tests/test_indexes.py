@@ -125,3 +125,11 @@ def test_persistent_hybrid_retrieval_expands_child_to_database_parent(session, t
     assert "含税总报价 88 万元" in hits[0].parent.text
     assert hits[0].parent.metadata["text_hash"]
     assert hits[0].parent.metadata["version_id"] == result.version_id
+
+
+def test_two_bm25_writers_reload_under_lock_instead_of_losing_another_version(tmp_path):
+    path = tmp_path / "shared.json"
+    first, stale = PersistentBM25Index(path), PersistentBM25Index(path)
+    first.replace_version("v1", [chunks()[0]])
+    stale.replace_version("v2", [chunks()[1]])
+    assert {hit.chunk_id for hit in first.search("供应商", top_k=5)} == {"c1", "c2"}

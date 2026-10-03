@@ -1,0 +1,885 @@
+{
+  "cases": [
+    {
+      "id": "metric-1",
+      "gold_requirement": "met",
+      "gold_tco": 1100000.0,
+      "result": {
+        "vendor_id": "smoke-vendor",
+        "domains": {
+          "requirement_compliance": {
+            "domain": "requirement_compliance",
+            "vendor_id": "smoke-vendor",
+            "status": "completed",
+            "requirement_findings": [
+              {
+                "vendor_id": "smoke-vendor",
+                "requirement_id": "requirement-private-deployment",
+                "mandatory": true,
+                "weight": 1.0,
+                "status": "met",
+                "explanation": "证据 smoke-requirement-evidence 的原文（quote 与 context_text 一致，均为「支持私有化部署。」）明确声明支持私有化部署，直接满足「系统必须支持私有化部署」的强制要求。",
+                "evidence_ids": [
+                  "smoke-requirement-evidence"
+                ],
+                "confidence": 0.95
+              }
+            ],
+            "cost_assessment": null,
+            "commitment_assessment": null,
+            "missing_information": [],
+            "conflicts": [],
+            "evidence_ids": [
+              "smoke-requirement-evidence"
+            ],
+            "revision_count": 0
+          },
+          "cost_modeling": {
+            "domain": "cost_modeling",
+            "vendor_id": "smoke-vendor",
+            "status": "completed",
+            "requirement_findings": [],
+            "cost_assessment": {
+              "vendor_id": "smoke-vendor",
+              "currency": "CNY",
+              "comparison_months": 36,
+              "one_time_cost": 800000.0,
+              "recurring_cost": 100000.0,
+              "optional_cost": 0.0,
+              "total_cost_of_ownership": 1100000.0,
+              "cost_sources": [
+                {
+                  "evidence_id": "smoke-cost-evidence",
+                  "source_text": "软件许可及实施一次性费用80万元",
+                  "start": 0,
+                  "end": 16,
+                  "amount": 800000.0,
+                  "currency": "CNY",
+                  "period": "one_time",
+                  "category": "one_time",
+                  "business_categories": [
+                    "software",
+                    "implementation"
+                  ],
+                  "annual_amount": 800000.0
+                },
+                {
+                  "evidence_id": "smoke-cost-evidence",
+                  "source_text": "年度维保服务费10万元",
+                  "start": 17,
+                  "end": 28,
+                  "amount": 100000.0,
+                  "currency": "CNY",
+                  "period": "annual",
+                  "category": "recurring",
+                  "business_categories": [
+                    "maintenance"
+                  ],
+                  "annual_amount": 100000.0
+                }
+              ],
+              "payment_terms": [],
+              "missing_costs": [],
+              "conflicts": [],
+              "evidence_ids": [
+                "smoke-cost-evidence"
+              ]
+            },
+            "commitment_assessment": null,
+            "missing_information": [],
+            "conflicts": [],
+            "evidence_ids": [
+              "smoke-cost-evidence"
+            ],
+            "revision_count": 0
+          },
+          "commitment_verification": {
+            "domain": "commitment_verification",
+            "vendor_id": "smoke-vendor",
+            "status": "completed",
+            "requirement_findings": [],
+            "cost_assessment": null,
+            "commitment_assessment": {
+              "vendor_id": "smoke-vendor",
+              "findings": [
+                {
+                  "category": "delivery",
+                  "statement": "证据 smoke-commitment-evidence 原文承诺「合同签署后 90 天完成上线」，明确了上线交付时间表；该 evidence 的 context_text 为 null，故仅依据 quote 判定，未见关于交付的其他限定条件。",
+                  "status": "verified",
+                  "evidence_ids": [
+                    "smoke-commitment-evidence"
+                  ]
+                },
+                {
+                  "category": "dependency",
+                  "statement": "证据 smoke-commitment-evidence 原文声明「客户需在项目启动前提供服务器和接口文档」，即实施上线依赖客户先行提供服务器与接口文档；该 evidence 的 context_text 为 null，无法补充其他依赖条款。",
+                  "status": "verified",
+                  "evidence_ids": [
+                    "smoke-commitment-evidence"
+                  ]
+                }
+              ],
+              "missing_information": [
+                "未提供交付里程碑的分阶段时间点或验收标准",
+                "未说明客户未按时提供服务器和接口文档时的责任划分与顺延安排"
+              ],
+              "conflicts": []
+            },
+            "missing_information": [
+              "未提供交付里程碑的分阶段时间点或验收标准",
+              "未说明客户未按时提供服务器和接口文档时的责任划分与顺延安排"
+            ],
+            "conflicts": [],
+            "evidence_ids": [
+              "smoke-commitment-evidence"
+            ],
+            "revision_count": 0
+          }
+        }
+      },
+      "requirement_prediction": "met",
+      "tco": 1100000.0,
+      "completed_domains": 3,
+      "requirement_passed": true,
+      "cost_passed": true,
+      "all_domains_passed": true,
+      "duration_ms": 3154.1210419964045,
+      "http_calls": 2
+    },
+    {
+      "id": "metric-2",
+      "gold_requirement": "not_met",
+      "gold_tco": 760000.0,
+      "result": {
+        "vendor_id": "smoke-vendor",
+        "domains": {
+          "requirement_compliance": {
+            "domain": "requirement_compliance",
+            "vendor_id": "smoke-vendor",
+            "status": "completed",
+            "requirement_findings": [
+              {
+                "vendor_id": "smoke-vendor",
+                "requirement_id": "requirement-private-deployment",
+                "mandatory": true,
+                "weight": 1.0,
+                "status": "not_met",
+                "explanation": "证据 smoke-requirement-evidence 的原文（quote 与 context_text 均为「不支持私有化部署。」）明确表示该系统不支持私有化部署，与「系统必须支持私有化部署」的强制要求直接冲突，故判定为 not_met。",
+                "evidence_ids": [
+                  "smoke-requirement-evidence"
+                ],
+                "confidence": 0.95
+              }
+            ],
+            "cost_assessment": null,
+            "commitment_assessment": null,
+            "missing_information": [],
+            "conflicts": [],
+            "evidence_ids": [
+              "smoke-requirement-evidence"
+            ],
+            "revision_count": 0
+          },
+          "cost_modeling": {
+            "domain": "cost_modeling",
+            "vendor_id": "smoke-vendor",
+            "status": "completed",
+            "requirement_findings": [],
+            "cost_assessment": {
+              "vendor_id": "smoke-vendor",
+              "currency": "CNY",
+              "comparison_months": 24,
+              "one_time_cost": 600000.0,
+              "recurring_cost": 80000.0,
+              "optional_cost": 0.0,
+              "total_cost_of_ownership": 760000.0,
+              "cost_sources": [
+                {
+                  "evidence_id": "smoke-cost-evidence",
+                  "source_text": "软件许可及实施一次性费用60万元",
+                  "start": 0,
+                  "end": 16,
+                  "amount": 600000.0,
+                  "currency": "CNY",
+                  "period": "one_time",
+                  "category": "one_time",
+                  "business_categories": [
+                    "software",
+                    "implementation"
+                  ],
+                  "annual_amount": 600000.0
+                },
+                {
+                  "evidence_id": "smoke-cost-evidence",
+                  "source_text": "年度维保服务费8万元",
+                  "start": 17,
+                  "end": 27,
+                  "amount": 80000.0,
+                  "currency": "CNY",
+                  "period": "annual",
+                  "category": "recurring",
+                  "business_categories": [
+                    "maintenance"
+                  ],
+                  "annual_amount": 80000.0
+                }
+              ],
+              "payment_terms": [],
+              "missing_costs": [],
+              "conflicts": [],
+              "evidence_ids": [
+                "smoke-cost-evidence"
+              ]
+            },
+            "commitment_assessment": null,
+            "missing_information": [],
+            "conflicts": [],
+            "evidence_ids": [
+              "smoke-cost-evidence"
+            ],
+            "revision_count": 0
+          },
+          "commitment_verification": {
+            "domain": "commitment_verification",
+            "vendor_id": "smoke-vendor",
+            "status": "completed",
+            "requirement_findings": [],
+            "cost_assessment": null,
+            "commitment_assessment": {
+              "vendor_id": "smoke-vendor",
+              "findings": [
+                {
+                  "category": "delivery",
+                  "statement": "合同签署后 90 天完成上线，构成明确的交付时间承诺。",
+                  "status": "verified",
+                  "evidence_ids": [
+                    "smoke-commitment-evidence"
+                  ]
+                },
+                {
+                  "category": "dependency",
+                  "statement": "客户需在项目启动前提供服务器和接口文档，即上线交付依赖客户先提供服务器与接口文档的前提条件。",
+                  "status": "verified",
+                  "evidence_ids": [
+                    "smoke-commitment-evidence"
+                  ]
+                }
+              ],
+              "missing_information": [],
+              "conflicts": []
+            },
+            "missing_information": [],
+            "conflicts": [],
+            "evidence_ids": [
+              "smoke-commitment-evidence"
+            ],
+            "revision_count": 0
+          }
+        }
+      },
+      "requirement_prediction": "not_met",
+      "tco": 760000.0,
+      "completed_domains": 3,
+      "requirement_passed": true,
+      "cost_passed": true,
+      "all_domains_passed": true,
+      "duration_ms": 2476.416958961636,
+      "http_calls": 2
+    },
+    {
+      "id": "metric-3",
+      "gold_requirement": "partially_met",
+      "gold_tco": 1120000.0,
+      "result": {
+        "vendor_id": "smoke-vendor",
+        "domains": {
+          "requirement_compliance": {
+            "domain": "requirement_compliance",
+            "vendor_id": "smoke-vendor",
+            "status": "completed",
+            "requirement_findings": [
+              {
+                "vendor_id": "smoke-vendor",
+                "requirement_id": "requirement-private-deployment",
+                "mandatory": true,
+                "weight": 1.0,
+                "status": "partially_met",
+                "explanation": "证据原文为“支持私有化部署，仅限企业版，需另行购买。”，表明私有化部署能力存在，但受限定条件约束：仅企业版提供且需额外付费购买，因此为部分满足而非无条件满足。该结论仅基于该证据的引文与其父块文本（二者一致），无其他原文支持。",
+                "evidence_ids": [
+                  "smoke-requirement-evidence"
+                ],
+                "confidence": 0.8
+              }
+            ],
+            "cost_assessment": null,
+            "commitment_assessment": null,
+            "missing_information": [],
+            "conflicts": [],
+            "evidence_ids": [
+              "smoke-requirement-evidence"
+            ],
+            "revision_count": 0
+          },
+          "cost_modeling": {
+            "domain": "cost_modeling",
+            "vendor_id": "smoke-vendor",
+            "status": "completed",
+            "requirement_findings": [],
+            "cost_assessment": {
+              "vendor_id": "smoke-vendor",
+              "currency": "CNY",
+              "comparison_months": 12,
+              "one_time_cost": 1000000.0,
+              "recurring_cost": 120000.0,
+              "optional_cost": 0.0,
+              "total_cost_of_ownership": 1120000.0,
+              "cost_sources": [
+                {
+                  "evidence_id": "smoke-cost-evidence",
+                  "source_text": "软件许可及实施一次性费用100万元",
+                  "start": 0,
+                  "end": 17,
+                  "amount": 1000000.0,
+                  "currency": "CNY",
+                  "period": "one_time",
+                  "category": "one_time",
+                  "business_categories": [
+                    "software",
+                    "implementation"
+                  ],
+                  "annual_amount": 1000000.0
+                },
+                {
+                  "evidence_id": "smoke-cost-evidence",
+                  "source_text": "年度维保服务费12万元",
+                  "start": 18,
+                  "end": 29,
+                  "amount": 120000.0,
+                  "currency": "CNY",
+                  "period": "annual",
+                  "category": "recurring",
+                  "business_categories": [
+                    "maintenance"
+                  ],
+                  "annual_amount": 120000.0
+                }
+              ],
+              "payment_terms": [],
+              "missing_costs": [],
+              "conflicts": [],
+              "evidence_ids": [
+                "smoke-cost-evidence"
+              ]
+            },
+            "commitment_assessment": null,
+            "missing_information": [],
+            "conflicts": [],
+            "evidence_ids": [
+              "smoke-cost-evidence"
+            ],
+            "revision_count": 0
+          },
+          "commitment_verification": {
+            "domain": "commitment_verification",
+            "vendor_id": "smoke-vendor",
+            "status": "failed",
+            "requirement_findings": [],
+            "cost_assessment": null,
+            "commitment_assessment": null,
+            "missing_information": [
+              "numeric_fact_mismatch:commitment[0]"
+            ],
+            "conflicts": [],
+            "evidence_ids": [],
+            "revision_count": 0
+          }
+        }
+      },
+      "requirement_prediction": "partially_met",
+      "tco": 1120000.0,
+      "completed_domains": 2,
+      "requirement_passed": true,
+      "cost_passed": true,
+      "all_domains_passed": false,
+      "duration_ms": 6226.2880420312285,
+      "http_calls": 3
+    },
+    {
+      "id": "metric-4",
+      "gold_requirement": "not_stated",
+      "gold_tco": 700000.0,
+      "result": {
+        "vendor_id": "smoke-vendor",
+        "domains": {
+          "requirement_compliance": {
+            "domain": "requirement_compliance",
+            "vendor_id": "smoke-vendor",
+            "status": "completed",
+            "requirement_findings": [
+              {
+                "vendor_id": "smoke-vendor",
+                "requirement_id": "requirement-private-deployment",
+                "mandatory": true,
+                "weight": 1.0,
+                "status": "not_met",
+                "explanation": "证据 smoke-requirement-evidence 的原文为“仅介绍报价与交付安排，部署模式待提供。”，明确表明部署模式尚未提供，因此未对“系统必须支持私有化部署”这一强制要求给出实质性响应；该证据仅说明文档只涵盖报价与交付安排。",
+                "evidence_ids": [
+                  "smoke-requirement-evidence"
+                ],
+                "confidence": 0.9
+              }
+            ],
+            "cost_assessment": null,
+            "commitment_assessment": null,
+            "missing_information": [],
+            "conflicts": [],
+            "evidence_ids": [
+              "smoke-requirement-evidence"
+            ],
+            "revision_count": 0
+          },
+          "cost_modeling": {
+            "domain": "cost_modeling",
+            "vendor_id": "smoke-vendor",
+            "status": "completed",
+            "requirement_findings": [],
+            "cost_assessment": {
+              "vendor_id": "smoke-vendor",
+              "currency": "CNY",
+              "comparison_months": 48,
+              "one_time_cost": 500000.0,
+              "recurring_cost": 50000.0,
+              "optional_cost": 0.0,
+              "total_cost_of_ownership": 700000.0,
+              "cost_sources": [
+                {
+                  "evidence_id": "smoke-cost-evidence",
+                  "source_text": "软件许可及实施一次性费用50万元",
+                  "start": 0,
+                  "end": 16,
+                  "amount": 500000.0,
+                  "currency": "CNY",
+                  "period": "one_time",
+                  "category": "one_time",
+                  "business_categories": [
+                    "software",
+                    "implementation"
+                  ],
+                  "annual_amount": 500000.0
+                },
+                {
+                  "evidence_id": "smoke-cost-evidence",
+                  "source_text": "年度维保服务费5万元",
+                  "start": 17,
+                  "end": 27,
+                  "amount": 50000.0,
+                  "currency": "CNY",
+                  "period": "annual",
+                  "category": "recurring",
+                  "business_categories": [
+                    "maintenance"
+                  ],
+                  "annual_amount": 50000.0
+                }
+              ],
+              "payment_terms": [],
+              "missing_costs": [],
+              "conflicts": [],
+              "evidence_ids": [
+                "smoke-cost-evidence"
+              ]
+            },
+            "commitment_assessment": null,
+            "missing_information": [],
+            "conflicts": [],
+            "evidence_ids": [
+              "smoke-cost-evidence"
+            ],
+            "revision_count": 0
+          },
+          "commitment_verification": {
+            "domain": "commitment_verification",
+            "vendor_id": "smoke-vendor",
+            "status": "completed",
+            "requirement_findings": [],
+            "cost_assessment": null,
+            "commitment_assessment": {
+              "vendor_id": "smoke-vendor",
+              "findings": [
+                {
+                  "category": "delivery",
+                  "statement": "证据原文载明“合同签署后 90 天完成上线”，即合同签署后 90 天内完成上线的交付承诺。",
+                  "status": "verified",
+                  "evidence_ids": [
+                    "smoke-commitment-evidence"
+                  ]
+                },
+                {
+                  "category": "dependency",
+                  "statement": "证据原文载明“客户需在项目启动前提供服务器和接口文档”，即交付以客户在项目启动前提供服务器和接口文档为前提条件。",
+                  "status": "verified",
+                  "evidence_ids": [
+                    "smoke-commitment-evidence"
+                  ]
+                }
+              ],
+              "missing_information": [],
+              "conflicts": []
+            },
+            "missing_information": [],
+            "conflicts": [],
+            "evidence_ids": [
+              "smoke-commitment-evidence"
+            ],
+            "revision_count": 0
+          }
+        }
+      },
+      "requirement_prediction": "not_met",
+      "tco": 700000.0,
+      "completed_domains": 3,
+      "requirement_passed": false,
+      "cost_passed": true,
+      "all_domains_passed": true,
+      "duration_ms": 4249.8474169988185,
+      "http_calls": 3
+    },
+    {
+      "id": "metric-5",
+      "gold_requirement": "met",
+      "gold_tco": 230000.0,
+      "result": {
+        "vendor_id": "smoke-vendor",
+        "domains": {
+          "requirement_compliance": {
+            "domain": "requirement_compliance",
+            "vendor_id": "smoke-vendor",
+            "status": "completed",
+            "requirement_findings": [
+              {
+                "vendor_id": "smoke-vendor",
+                "requirement_id": "requirement-private-deployment",
+                "mandatory": true,
+                "weight": 1.0,
+                "status": "met",
+                "explanation": "证据原文为「不支持离线运行，但支持私有化部署。」(smoke-requirement-evidence)，明确声明支持私有化部署，满足“系统必须支持私有化部署”的要求；需注意同一原文同时说明不支持离线运行，即私有化部署不等于离线可用，该限定条件不改变部署方式支持的结论。",
+                "evidence_ids": [
+                  "smoke-requirement-evidence"
+                ],
+                "confidence": 0.9
+              }
+            ],
+            "cost_assessment": null,
+            "commitment_assessment": null,
+            "missing_information": [],
+            "conflicts": [],
+            "evidence_ids": [
+              "smoke-requirement-evidence"
+            ],
+            "revision_count": 0
+          },
+          "cost_modeling": {
+            "domain": "cost_modeling",
+            "vendor_id": "smoke-vendor",
+            "status": "completed",
+            "requirement_findings": [],
+            "cost_assessment": {
+              "vendor_id": "smoke-vendor",
+              "currency": "CNY",
+              "comparison_months": 18,
+              "one_time_cost": 200000.0,
+              "recurring_cost": 20000.0,
+              "optional_cost": 0.0,
+              "total_cost_of_ownership": 230000.0,
+              "cost_sources": [
+                {
+                  "evidence_id": "smoke-cost-evidence",
+                  "source_text": "软件许可及实施一次性费用20万元",
+                  "start": 0,
+                  "end": 16,
+                  "amount": 200000.0,
+                  "currency": "CNY",
+                  "period": "one_time",
+                  "category": "one_time",
+                  "business_categories": [
+                    "software",
+                    "implementation"
+                  ],
+                  "annual_amount": 200000.0
+                },
+                {
+                  "evidence_id": "smoke-cost-evidence",
+                  "source_text": "年度维保服务费2万元",
+                  "start": 17,
+                  "end": 27,
+                  "amount": 20000.0,
+                  "currency": "CNY",
+                  "period": "annual",
+                  "category": "recurring",
+                  "business_categories": [
+                    "maintenance"
+                  ],
+                  "annual_amount": 20000.0
+                }
+              ],
+              "payment_terms": [],
+              "missing_costs": [],
+              "conflicts": [],
+              "evidence_ids": [
+                "smoke-cost-evidence"
+              ]
+            },
+            "commitment_assessment": null,
+            "missing_information": [],
+            "conflicts": [],
+            "evidence_ids": [
+              "smoke-cost-evidence"
+            ],
+            "revision_count": 0
+          },
+          "commitment_verification": {
+            "domain": "commitment_verification",
+            "vendor_id": "smoke-vendor",
+            "status": "completed",
+            "requirement_findings": [],
+            "cost_assessment": null,
+            "commitment_assessment": {
+              "vendor_id": "smoke-vendor",
+              "findings": [
+                {
+                  "category": "delivery",
+                  "statement": "证据原文为「合同签署后 90 天完成上线」(smoke-commitment-evidence)，提供明确的交付时间承诺（合同签署后 90 天上线）。",
+                  "status": "verified",
+                  "evidence_ids": [
+                    "smoke-commitment-evidence"
+                  ]
+                },
+                {
+                  "category": "dependency",
+                  "statement": "证据原文为「客户需在项目启动前提供服务器和接口文档」(smoke-commitment-evidence)，明确客户侧前置依赖（服务器与接口文档），该依赖构成上线时间承诺的前提条件。",
+                  "status": "verified",
+                  "evidence_ids": [
+                    "smoke-commitment-evidence"
+                  ]
+                }
+              ],
+              "missing_information": [],
+              "conflicts": []
+            },
+            "missing_information": [],
+            "conflicts": [],
+            "evidence_ids": [
+              "smoke-commitment-evidence"
+            ],
+            "revision_count": 0
+          }
+        }
+      },
+      "requirement_prediction": "met",
+      "tco": 230000.0,
+      "completed_domains": 3,
+      "requirement_passed": true,
+      "cost_passed": true,
+      "all_domains_passed": true,
+      "duration_ms": 5131.118000019342,
+      "http_calls": 3
+    }
+  ],
+  "http": [
+    {
+      "latency_ms": 794.1547918599099,
+      "status_code": 200,
+      "usage": {
+        "prompt_tokens": 2400,
+        "completion_tokens": 97,
+        "total_tokens": 2497,
+        "prompt_tokens_details": {
+          "cached_tokens": 2176
+        },
+        "prompt_cache_hit_tokens": 2176,
+        "prompt_cache_miss_tokens": 224
+      },
+      "tool_call_count": 1
+    },
+    {
+      "latency_ms": 2350.6147088482976,
+      "status_code": 200,
+      "usage": {
+        "prompt_tokens": 3510,
+        "completion_tokens": 556,
+        "total_tokens": 4066,
+        "prompt_tokens_details": {
+          "cached_tokens": 3328
+        },
+        "prompt_cache_hit_tokens": 3328,
+        "prompt_cache_miss_tokens": 182
+      },
+      "tool_call_count": 0
+    },
+    {
+      "latency_ms": 592.3174160998315,
+      "status_code": 200,
+      "usage": {
+        "prompt_tokens": 2401,
+        "completion_tokens": 97,
+        "total_tokens": 2498,
+        "prompt_tokens_details": {
+          "cached_tokens": 2176
+        },
+        "prompt_cache_hit_tokens": 2176,
+        "prompt_cache_miss_tokens": 225
+      },
+      "tool_call_count": 1
+    },
+    {
+      "latency_ms": 1875.3334160428494,
+      "status_code": 200,
+      "usage": {
+        "prompt_tokens": 3510,
+        "completion_tokens": 481,
+        "total_tokens": 3991,
+        "prompt_tokens_details": {
+          "cached_tokens": 3328
+        },
+        "prompt_cache_hit_tokens": 3328,
+        "prompt_cache_miss_tokens": 182
+      },
+      "tool_call_count": 0
+    },
+    {
+      "latency_ms": 937.9796669818461,
+      "status_code": 200,
+      "usage": {
+        "prompt_tokens": 2423,
+        "completion_tokens": 98,
+        "total_tokens": 2521,
+        "prompt_tokens_details": {
+          "cached_tokens": 2176
+        },
+        "prompt_cache_hit_tokens": 2176,
+        "prompt_cache_miss_tokens": 247
+      },
+      "tool_call_count": 1
+    },
+    {
+      "latency_ms": 1444.9095828458667,
+      "status_code": 200,
+      "usage": {
+        "prompt_tokens": 3537,
+        "completion_tokens": 283,
+        "total_tokens": 3820,
+        "prompt_tokens_details": {
+          "cached_tokens": 3328
+        },
+        "prompt_cache_hit_tokens": 3328,
+        "prompt_cache_miss_tokens": 209
+      },
+      "tool_call_count": 6
+    },
+    {
+      "latency_ms": 3834.045749856159,
+      "status_code": 200,
+      "usage": {
+        "prompt_tokens": 4245,
+        "completion_tokens": 870,
+        "total_tokens": 5115,
+        "prompt_tokens_details": {
+          "cached_tokens": 3712
+        },
+        "prompt_cache_hit_tokens": 3712,
+        "prompt_cache_miss_tokens": 533
+      },
+      "tool_call_count": 0
+    },
+    {
+      "latency_ms": 605.856291949749,
+      "status_code": 200,
+      "usage": {
+        "prompt_tokens": 2410,
+        "completion_tokens": 97,
+        "total_tokens": 2507,
+        "prompt_tokens_details": {
+          "cached_tokens": 2176
+        },
+        "prompt_cache_hit_tokens": 2176,
+        "prompt_cache_miss_tokens": 234
+      },
+      "tool_call_count": 1
+    },
+    {
+      "latency_ms": 1415.2173749171197,
+      "status_code": 200,
+      "usage": {
+        "prompt_tokens": 3519,
+        "completion_tokens": 246,
+        "total_tokens": 3765,
+        "prompt_tokens_details": {
+          "cached_tokens": 3328
+        },
+        "prompt_cache_hit_tokens": 3328,
+        "prompt_cache_miss_tokens": 191
+      },
+      "tool_call_count": 5
+    },
+    {
+      "latency_ms": 2218.9850001595914,
+      "status_code": 200,
+      "usage": {
+        "prompt_tokens": 4024,
+        "completion_tokens": 485,
+        "total_tokens": 4509,
+        "prompt_tokens_details": {
+          "cached_tokens": 3712
+        },
+        "prompt_cache_hit_tokens": 3712,
+        "prompt_cache_miss_tokens": 312
+      },
+      "tool_call_count": 0
+    },
+    {
+      "latency_ms": 1148.707333020866,
+      "status_code": 200,
+      "usage": {
+        "prompt_tokens": 2421,
+        "completion_tokens": 97,
+        "total_tokens": 2518,
+        "prompt_tokens_details": {
+          "cached_tokens": 2176
+        },
+        "prompt_cache_hit_tokens": 2176,
+        "prompt_cache_miss_tokens": 245
+      },
+      "tool_call_count": 1
+    },
+    {
+      "latency_ms": 1572.8432920295745,
+      "status_code": 200,
+      "usage": {
+        "prompt_tokens": 3530,
+        "completion_tokens": 267,
+        "total_tokens": 3797,
+        "prompt_tokens_details": {
+          "cached_tokens": 3328
+        },
+        "prompt_cache_hit_tokens": 3328,
+        "prompt_cache_miss_tokens": 202
+      },
+      "tool_call_count": 6
+    },
+    {
+      "latency_ms": 2398.1928748544306,
+      "status_code": 200,
+      "usage": {
+        "prompt_tokens": 4171,
+        "completion_tokens": 516,
+        "total_tokens": 4687,
+        "prompt_tokens_details": {
+          "cached_tokens": 3712
+        },
+        "prompt_cache_hit_tokens": 3712,
+        "prompt_cache_miss_tokens": 459
+      },
+      "tool_call_count": 0
+    }
+  ]
+}

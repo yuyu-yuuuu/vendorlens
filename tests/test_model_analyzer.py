@@ -6,7 +6,6 @@ from pydantic import SecretStr
 from vendorlens.config import Settings
 from vendorlens.model_adapter import (
     ModelConfigurationError,
-    ModelProtocolError,
     ModelResponse,
     ModelToolCall,
 )
@@ -34,7 +33,7 @@ def evidence(item_id, quote):
 
 def review_input():
     req = evidence("req-ev", "支持私有化部署")
-    cost = evidence("cost-ev", "实施费用 80 万元")
+    cost = evidence("cost-ev", "实施费用 80 万元，年度维保费 10 万元，可选培训费 5 万元")
     commit = evidence("commit-ev", "90 天交付")
     return VendorReviewInput(
         task_id="task-1",
@@ -151,8 +150,12 @@ def test_analyzer_marks_revision_domains_in_prompt():
 def test_analyzer_rejects_cost_result_without_authoritative_tco_tool():
     chat_model = SequenceModel([ModelResponse(content=json.dumps(final_draft()))])
 
-    with pytest.raises(ModelProtocolError, match="calculate_tco"):
-        VendorReviewModelAnalyzer(chat_model)(review_input(), None)
+    draft = VendorReviewModelAnalyzer(chat_model)(review_input(), None)
+
+    assert draft.cost_assessment is None
+    assert "calculate_tco" in draft.domain_errors[ReviewDomain.COST_MODELING]
+    assert draft.requirement_findings
+    assert draft.commitment_assessment is not None
 
 
 def test_analyzer_stops_infinite_tool_loop():
@@ -204,3 +207,101 @@ def test_executor_factory_configures_deepseek_non_thinking_mode():
         "thinking": {"type": "disabled"},
         "response_format": {"type": "json_object"},
     }
+
+
+def tco_response(one_time=800000, recurring=100000, optional=50000, call_id="cost-call"):
+    return ModelResponse(
+        tool_calls=[
+            ModelToolCall(
+                id=call_id,
+                name="calculate_tco",
+                arguments={
+                    "one_time_cost": one_time,
+                    "annual_recurring_cost": recurring,
+                    "optional_cost": optional,
+                    "evidence_ids": ["cost-ev"],
+                },
+            )
+        ]
+    )
+
+
+def test_unsupported_tool_input_returns_error_and_only_cost_fails():
+    from vendorlens.review_agent import VendorReviewAgent, VendorReviewExecutor
+    from vendorlens.schemas import DomainAssessmentStatus
+
+    model = SequenceModel(
+        [
+            tco_response(one_time=999999),
+            ModelResponse(content=json.dumps(final_draft())),
+        ]
+    )
+    runner = VendorReviewExecutor(VendorReviewAgent(VendorReviewModelAnalyzer(model)))
+    result = runner.execute(review_input())
+    cost = result.domains[ReviewDomain.COST_MODELING]
+    assert cost.status is DomainAssessmentStatus.FAILED
+    assert cost.cost_assessment is None
+    assert "cost_input_mismatch" in cost.missing_information[0]
+    assert result.domains[ReviewDomain.REQUIREMENT_COMPLIANCE].status is (
+        DomainAssessmentStatus.COMPLETED
+    )
+    assert result.domains[ReviewDomain.COMMITMENT_VERIFICATION].status is (
+        DomainAssessmentStatus.COMPLETED
+    )
+    tool_error = json.loads(model.requests[-1]["messages"][-1]["content"])
+    assert tool_error["retryable"] is True
+    assert tool_error["error"] == "cost_input_mismatch:one_time"
+    assert model.requests[-1]["tool_choice"] == "auto"
+    assert "mark cost_modeling as failed" in tool_error["instruction"]
+
+
+def test_model_can_repair_grounding_failure_inside_tool_loop():
+    model = SequenceModel(
+        [
+            tco_response(one_time=999999),
+            tco_response(call_id="repaired"),
+            ModelResponse(content=json.dumps(final_draft())),
+        ]
+    )
+    draft = VendorReviewModelAnalyzer(model)(review_input(), None)
+    assert draft.cost_assessment.total_cost_of_ownership == 1100000
+    assert len(draft.cost_assessment.cost_sources) == 3
+
+
+def test_revision_prompt_contains_concrete_gate_failure():
+    data = review_input().model_copy(
+        update={
+            "revision_domains": {ReviewDomain.COMMITMENT_VERIFICATION},
+            "revision_count": 1,
+            "revision_feedback": {
+                ReviewDomain.COMMITMENT_VERIFICATION: ["numeric_fact_mismatch:commitment[0]"],
+            },
+        }
+    )
+    messages = VendorReviewModelAnalyzer._messages(data)
+    assert "numeric_fact_mismatch:commitment[0]" in messages[1]["content"]
+
+
+def test_tool_access_rejection_is_returned_without_executing_or_echoing_arguments():
+    model = SequenceModel(
+        [
+            ModelResponse(
+                tool_calls=[
+                    ModelToolCall(
+                        id="bad",
+                        name="compare_requirement_response",
+                        arguments={
+                            "requirement_id": "private-other-project-id",
+                            "evidence_ids": ["foreign"],
+                        },
+                    )
+                ]
+            ),
+            ModelResponse(content=json.dumps(final_draft())),
+        ]
+    )
+    draft = VendorReviewModelAnalyzer(model)(review_input(), None)
+    feedback = json.loads(model.requests[-1]["messages"][-1]["content"])
+    assert feedback["error"] == "tool_access_denied"
+    assert "private" not in json.dumps(feedback)
+    assert draft.cost_assessment is None  # The rejected tool cannot authorize any cost.

@@ -1,0 +1,3374 @@
+{
+  "dataset_version": "strength-metrics-v1",
+  "origin": "agent-authored synthetic fixtures; not human-labeled production data",
+  "requirement_template_count": 4,
+  "requirements": [
+    {
+      "id": "r001",
+      "requirement": "系统必须支持私有化部署",
+      "text": "本系统明确支持私有化部署。",
+      "gold": "met"
+    },
+    {
+      "id": "r002",
+      "requirement": "系统必须支持私有化部署",
+      "text": "当前产品不支持私有化部署。",
+      "gold": "not_met"
+    },
+    {
+      "id": "r003",
+      "requirement": "系统必须支持私有化部署",
+      "text": "本产品支持私有化部署，仅限企业版，需另行购买。",
+      "gold": "partially_met"
+    },
+    {
+      "id": "r004",
+      "requirement": "系统必须支持私有化部署",
+      "text": "此处仅说明项目组织安排与联系方式。",
+      "gold": "not_stated"
+    },
+    {
+      "id": "r005",
+      "requirement": "系统必须支持离线运行",
+      "text": "本系统明确支持离线运行。",
+      "gold": "met"
+    },
+    {
+      "id": "r006",
+      "requirement": "系统必须支持离线运行",
+      "text": "当前产品不支持离线运行。",
+      "gold": "not_met"
+    },
+    {
+      "id": "r007",
+      "requirement": "系统必须支持离线运行",
+      "text": "本产品支持离线运行，仅限企业版，需另行购买。",
+      "gold": "partially_met"
+    },
+    {
+      "id": "r008",
+      "requirement": "系统必须支持离线运行",
+      "text": "此处仅说明项目组织安排与联系方式。",
+      "gold": "not_stated"
+    },
+    {
+      "id": "r009",
+      "requirement": "系统必须支持多语言界面",
+      "text": "本系统明确支持多语言界面。",
+      "gold": "met"
+    },
+    {
+      "id": "r010",
+      "requirement": "系统必须支持多语言界面",
+      "text": "当前产品不支持多语言界面。",
+      "gold": "not_met"
+    },
+    {
+      "id": "r011",
+      "requirement": "系统必须支持多语言界面",
+      "text": "本产品支持多语言界面，仅限企业版，需另行购买。",
+      "gold": "partially_met"
+    },
+    {
+      "id": "r012",
+      "requirement": "系统必须支持多语言界面",
+      "text": "此处仅说明项目组织安排与联系方式。",
+      "gold": "not_stated"
+    },
+    {
+      "id": "r013",
+      "requirement": "系统必须支持单点登录",
+      "text": "本系统明确支持单点登录。",
+      "gold": "met"
+    },
+    {
+      "id": "r014",
+      "requirement": "系统必须支持单点登录",
+      "text": "当前产品不支持单点登录。",
+      "gold": "not_met"
+    },
+    {
+      "id": "r015",
+      "requirement": "系统必须支持单点登录",
+      "text": "本产品支持单点登录，仅限企业版，需另行购买。",
+      "gold": "partially_met"
+    },
+    {
+      "id": "r016",
+      "requirement": "系统必须支持单点登录",
+      "text": "此处仅说明项目组织安排与联系方式。",
+      "gold": "not_stated"
+    },
+    {
+      "id": "r017",
+      "requirement": "系统必须支持数据导出",
+      "text": "本系统明确支持数据导出。",
+      "gold": "met"
+    },
+    {
+      "id": "r018",
+      "requirement": "系统必须支持数据导出",
+      "text": "当前产品不支持数据导出。",
+      "gold": "not_met"
+    },
+    {
+      "id": "r019",
+      "requirement": "系统必须支持数据导出",
+      "text": "本产品支持数据导出，仅限企业版，需另行购买。",
+      "gold": "partially_met"
+    },
+    {
+      "id": "r020",
+      "requirement": "系统必须支持数据导出",
+      "text": "此处仅说明项目组织安排与联系方式。",
+      "gold": "not_stated"
+    },
+    {
+      "id": "r021",
+      "requirement": "系统必须支持审计日志",
+      "text": "本系统明确支持审计日志。",
+      "gold": "met"
+    },
+    {
+      "id": "r022",
+      "requirement": "系统必须支持审计日志",
+      "text": "当前产品不支持审计日志。",
+      "gold": "not_met"
+    },
+    {
+      "id": "r023",
+      "requirement": "系统必须支持审计日志",
+      "text": "本产品支持审计日志，仅限企业版，需另行购买。",
+      "gold": "partially_met"
+    },
+    {
+      "id": "r024",
+      "requirement": "系统必须支持审计日志",
+      "text": "此处仅说明项目组织安排与联系方式。",
+      "gold": "not_stated"
+    },
+    {
+      "id": "r025",
+      "requirement": "系统必须支持角色权限",
+      "text": "本系统明确支持角色权限。",
+      "gold": "met"
+    },
+    {
+      "id": "r026",
+      "requirement": "系统必须支持角色权限",
+      "text": "当前产品不支持角色权限。",
+      "gold": "not_met"
+    },
+    {
+      "id": "r027",
+      "requirement": "系统必须支持角色权限",
+      "text": "本产品支持角色权限，仅限企业版，需另行购买。",
+      "gold": "partially_met"
+    },
+    {
+      "id": "r028",
+      "requirement": "系统必须支持角色权限",
+      "text": "此处仅说明项目组织安排与联系方式。",
+      "gold": "not_stated"
+    },
+    {
+      "id": "r029",
+      "requirement": "系统必须支持接口集成",
+      "text": "本系统明确支持接口集成。",
+      "gold": "met"
+    },
+    {
+      "id": "r030",
+      "requirement": "系统必须支持接口集成",
+      "text": "当前产品不支持接口集成。",
+      "gold": "not_met"
+    },
+    {
+      "id": "r031",
+      "requirement": "系统必须支持接口集成",
+      "text": "本产品支持接口集成，仅限企业版，需另行购买。",
+      "gold": "partially_met"
+    },
+    {
+      "id": "r032",
+      "requirement": "系统必须支持接口集成",
+      "text": "此处仅说明项目组织安排与联系方式。",
+      "gold": "not_stated"
+    },
+    {
+      "id": "r033",
+      "requirement": "系统必须支持增量备份",
+      "text": "本系统明确支持增量备份。",
+      "gold": "met"
+    },
+    {
+      "id": "r034",
+      "requirement": "系统必须支持增量备份",
+      "text": "当前产品不支持增量备份。",
+      "gold": "not_met"
+    },
+    {
+      "id": "r035",
+      "requirement": "系统必须支持增量备份",
+      "text": "本产品支持增量备份，仅限企业版，需另行购买。",
+      "gold": "partially_met"
+    },
+    {
+      "id": "r036",
+      "requirement": "系统必须支持增量备份",
+      "text": "此处仅说明项目组织安排与联系方式。",
+      "gold": "not_stated"
+    },
+    {
+      "id": "r037",
+      "requirement": "系统必须支持移动端访问",
+      "text": "本系统明确支持移动端访问。",
+      "gold": "met"
+    },
+    {
+      "id": "r038",
+      "requirement": "系统必须支持移动端访问",
+      "text": "当前产品不支持移动端访问。",
+      "gold": "not_met"
+    },
+    {
+      "id": "r039",
+      "requirement": "系统必须支持移动端访问",
+      "text": "本产品支持移动端访问，仅限企业版，需另行购买。",
+      "gold": "partially_met"
+    },
+    {
+      "id": "r040",
+      "requirement": "系统必须支持移动端访问",
+      "text": "此处仅说明项目组织安排与联系方式。",
+      "gold": "not_stated"
+    },
+    {
+      "id": "r041",
+      "requirement": "系统必须支持数据加密",
+      "text": "本系统明确支持数据加密。",
+      "gold": "met"
+    },
+    {
+      "id": "r042",
+      "requirement": "系统必须支持数据加密",
+      "text": "当前产品不支持数据加密。",
+      "gold": "not_met"
+    },
+    {
+      "id": "r043",
+      "requirement": "系统必须支持数据加密",
+      "text": "本产品支持数据加密，仅限企业版，需另行购买。",
+      "gold": "partially_met"
+    },
+    {
+      "id": "r044",
+      "requirement": "系统必须支持数据加密",
+      "text": "此处仅说明项目组织安排与联系方式。",
+      "gold": "not_stated"
+    },
+    {
+      "id": "r045",
+      "requirement": "系统必须支持容灾切换",
+      "text": "本系统明确支持容灾切换。",
+      "gold": "met"
+    },
+    {
+      "id": "r046",
+      "requirement": "系统必须支持容灾切换",
+      "text": "当前产品不支持容灾切换。",
+      "gold": "not_met"
+    },
+    {
+      "id": "r047",
+      "requirement": "系统必须支持容灾切换",
+      "text": "本产品支持容灾切换，仅限企业版，需另行购买。",
+      "gold": "partially_met"
+    },
+    {
+      "id": "r048",
+      "requirement": "系统必须支持容灾切换",
+      "text": "此处仅说明项目组织安排与联系方式。",
+      "gold": "not_stated"
+    },
+    {
+      "id": "r049",
+      "requirement": "支持私有化部署",
+      "text": "不支持离线运行，但支持私有化部署。",
+      "gold": "met"
+    },
+    {
+      "id": "r050",
+      "requirement": "支持单点登录",
+      "text": "支持数据导出，但不支持单点登录。",
+      "gold": "not_met"
+    },
+    {
+      "id": "r051",
+      "requirement": "支持私有化部署",
+      "text": "支持私有化部署。该能力仅限企业版，需另行购买部署许可。",
+      "quote": "支持私有化部署。",
+      "gold": "partially_met"
+    },
+    {
+      "id": "r052",
+      "requirement": "支持多语言界面",
+      "text": "当前支持多语言界面。但是离线运行尚未支持。",
+      "gold": "met"
+    }
+  ],
+  "costs": [
+    {
+      "id": "c001",
+      "text": "软件及实施一次性80万元；年度维保10万元",
+      "months": 36,
+      "gold_tco": 1100000,
+      "currency": "CNY"
+    },
+    {
+      "id": "c002",
+      "text": "实施费用1万元；月费1000元",
+      "months": 18,
+      "gold_tco": 28000,
+      "currency": "CNY"
+    },
+    {
+      "id": "c003",
+      "text": "许可费2万美元；年度维护1000美元",
+      "months": 24,
+      "gold_tco": 22000,
+      "currency": "USD"
+    },
+    {
+      "id": "c004",
+      "text": "软件10万元；可选培训2万元",
+      "months": 36,
+      "gold_tco": 100000,
+      "currency": "CNY"
+    },
+    {
+      "id": "c005",
+      "text": "实施费用0元；年度维护0元",
+      "months": 36,
+      "gold_tco": 0,
+      "currency": "CNY"
+    },
+    {
+      "id": "c006",
+      "text": "软件费用1万元；实施费用1万元",
+      "months": 36,
+      "gold_tco": 20000,
+      "currency": "CNY"
+    },
+    {
+      "id": "c007",
+      "text": "实施80万元。年度维保10万元。",
+      "months": 12,
+      "gold_tco": 900000,
+      "currency": "CNY"
+    },
+    {
+      "id": "c008",
+      "text": "软件许可300元；月费20元",
+      "months": 1,
+      "gold_tco": 320,
+      "currency": "CNY"
+    },
+    {
+      "id": "c009",
+      "text": "部署费用1000元；年费120元",
+      "months": 6,
+      "gold_tco": 1060,
+      "currency": "CNY"
+    },
+    {
+      "id": "c010",
+      "text": "软件许可100欧元；年费10欧元",
+      "months": 36,
+      "gold_tco": 130,
+      "currency": "EUR"
+    },
+    {
+      "id": "c011",
+      "text": "实施费用1,000元；年费200元",
+      "months": 36,
+      "gold_tco": 1600,
+      "currency": "CNY"
+    },
+    {
+      "id": "c012",
+      "text": "月费100元",
+      "months": 120,
+      "gold_tco": 12000,
+      "currency": "CNY"
+    },
+    {
+      "id": "c013",
+      "text": "约80万元",
+      "months": 36,
+      "gold_tco": null,
+      "currency": "CNY"
+    },
+    {
+      "id": "c014",
+      "text": "总价10万元",
+      "months": 36,
+      "gold_tco": null,
+      "currency": "CNY"
+    },
+    {
+      "id": "c015",
+      "text": "单价100元每台",
+      "months": 36,
+      "gold_tco": null,
+      "currency": "CNY"
+    },
+    {
+      "id": "c016",
+      "text": "未税100元",
+      "months": 36,
+      "gold_tco": null,
+      "currency": "CNY"
+    },
+    {
+      "id": "c017",
+      "text": "每季度100元",
+      "months": 36,
+      "gold_tco": null,
+      "currency": "CNY"
+    },
+    {
+      "id": "c018",
+      "text": "3年费用10万元",
+      "months": 36,
+      "gold_tco": null,
+      "currency": "CNY"
+    },
+    {
+      "id": "c019",
+      "text": "折扣100元",
+      "months": 36,
+      "gold_tco": null,
+      "currency": "CNY"
+    },
+    {
+      "id": "c020",
+      "text": "USD 100元",
+      "months": 36,
+      "gold_tco": null,
+      "currency": "CNY"
+    },
+    {
+      "id": "c021",
+      "text": "实施1万美元",
+      "months": 36,
+      "gold_tco": null,
+      "currency": "CNY"
+    },
+    {
+      "id": "c022",
+      "text": "可选每年100元",
+      "months": 36,
+      "gold_tco": null,
+      "currency": "CNY"
+    },
+    {
+      "id": "c023",
+      "text": "软件80万元及实施10万元",
+      "months": 36,
+      "gold_tco": null,
+      "currency": "CNY"
+    },
+    {
+      "id": "c024",
+      "text": "实施费用1e6元",
+      "months": 36,
+      "gold_tco": null,
+      "currency": "CNY"
+    }
+  ],
+  "chunks": [
+    {
+      "id": "p0-v0-f0-ver1",
+      "text": "供应商0的私有化部署旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "0",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v0-f0-ver2",
+      "text": "供应商0的私有化部署方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "0",
+        "version": 2
+      }
+    },
+    {
+      "id": "p0-v0-f1-ver1",
+      "text": "供应商0的离线运行旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "0",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v0-f1-ver2",
+      "text": "供应商0的离线运行方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "0",
+        "version": 2
+      }
+    },
+    {
+      "id": "p0-v0-f2-ver1",
+      "text": "供应商0的多语言界面旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "0",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v0-f2-ver2",
+      "text": "供应商0的多语言界面方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "0",
+        "version": 2
+      }
+    },
+    {
+      "id": "p0-v0-f3-ver1",
+      "text": "供应商0的单点登录旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "0",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v0-f3-ver2",
+      "text": "供应商0的单点登录方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "0",
+        "version": 2
+      }
+    },
+    {
+      "id": "p0-v0-f4-ver1",
+      "text": "供应商0的数据导出旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "0",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v0-f4-ver2",
+      "text": "供应商0的数据导出方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "0",
+        "version": 2
+      }
+    },
+    {
+      "id": "p0-v0-f5-ver1",
+      "text": "供应商0的审计日志旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "0",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v0-f5-ver2",
+      "text": "供应商0的审计日志方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "0",
+        "version": 2
+      }
+    },
+    {
+      "id": "p0-v0-f6-ver1",
+      "text": "供应商0的角色权限旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "0",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v0-f6-ver2",
+      "text": "供应商0的角色权限方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "0",
+        "version": 2
+      }
+    },
+    {
+      "id": "p0-v0-f7-ver1",
+      "text": "供应商0的接口集成旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "0",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v0-f7-ver2",
+      "text": "供应商0的接口集成方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "0",
+        "version": 2
+      }
+    },
+    {
+      "id": "p0-v1-f0-ver1",
+      "text": "供应商1的私有化部署旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "1",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v1-f0-ver2",
+      "text": "供应商1的私有化部署方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "1",
+        "version": 2
+      }
+    },
+    {
+      "id": "p0-v1-f1-ver1",
+      "text": "供应商1的离线运行旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "1",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v1-f1-ver2",
+      "text": "供应商1的离线运行方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "1",
+        "version": 2
+      }
+    },
+    {
+      "id": "p0-v1-f2-ver1",
+      "text": "供应商1的多语言界面旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "1",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v1-f2-ver2",
+      "text": "供应商1的多语言界面方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "1",
+        "version": 2
+      }
+    },
+    {
+      "id": "p0-v1-f3-ver1",
+      "text": "供应商1的单点登录旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "1",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v1-f3-ver2",
+      "text": "供应商1的单点登录方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "1",
+        "version": 2
+      }
+    },
+    {
+      "id": "p0-v1-f4-ver1",
+      "text": "供应商1的数据导出旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "1",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v1-f4-ver2",
+      "text": "供应商1的数据导出方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "1",
+        "version": 2
+      }
+    },
+    {
+      "id": "p0-v1-f5-ver1",
+      "text": "供应商1的审计日志旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "1",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v1-f5-ver2",
+      "text": "供应商1的审计日志方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "1",
+        "version": 2
+      }
+    },
+    {
+      "id": "p0-v1-f6-ver1",
+      "text": "供应商1的角色权限旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "1",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v1-f6-ver2",
+      "text": "供应商1的角色权限方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "1",
+        "version": 2
+      }
+    },
+    {
+      "id": "p0-v1-f7-ver1",
+      "text": "供应商1的接口集成旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "1",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v1-f7-ver2",
+      "text": "供应商1的接口集成方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "1",
+        "version": 2
+      }
+    },
+    {
+      "id": "p0-v2-f0-ver1",
+      "text": "供应商2的私有化部署旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "2",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v2-f0-ver2",
+      "text": "供应商2的私有化部署方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "2",
+        "version": 2
+      }
+    },
+    {
+      "id": "p0-v2-f1-ver1",
+      "text": "供应商2的离线运行旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "2",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v2-f1-ver2",
+      "text": "供应商2的离线运行方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "2",
+        "version": 2
+      }
+    },
+    {
+      "id": "p0-v2-f2-ver1",
+      "text": "供应商2的多语言界面旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "2",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v2-f2-ver2",
+      "text": "供应商2的多语言界面方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "2",
+        "version": 2
+      }
+    },
+    {
+      "id": "p0-v2-f3-ver1",
+      "text": "供应商2的单点登录旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "2",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v2-f3-ver2",
+      "text": "供应商2的单点登录方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "2",
+        "version": 2
+      }
+    },
+    {
+      "id": "p0-v2-f4-ver1",
+      "text": "供应商2的数据导出旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "2",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v2-f4-ver2",
+      "text": "供应商2的数据导出方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "2",
+        "version": 2
+      }
+    },
+    {
+      "id": "p0-v2-f5-ver1",
+      "text": "供应商2的审计日志旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "2",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v2-f5-ver2",
+      "text": "供应商2的审计日志方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "2",
+        "version": 2
+      }
+    },
+    {
+      "id": "p0-v2-f6-ver1",
+      "text": "供应商2的角色权限旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "2",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v2-f6-ver2",
+      "text": "供应商2的角色权限方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "2",
+        "version": 2
+      }
+    },
+    {
+      "id": "p0-v2-f7-ver1",
+      "text": "供应商2的接口集成旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "2",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v2-f7-ver2",
+      "text": "供应商2的接口集成方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "2",
+        "version": 2
+      }
+    },
+    {
+      "id": "p0-v3-f0-ver1",
+      "text": "供应商3的私有化部署旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "3",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v3-f0-ver2",
+      "text": "供应商3的私有化部署方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "3",
+        "version": 2
+      }
+    },
+    {
+      "id": "p0-v3-f1-ver1",
+      "text": "供应商3的离线运行旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "3",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v3-f1-ver2",
+      "text": "供应商3的离线运行方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "3",
+        "version": 2
+      }
+    },
+    {
+      "id": "p0-v3-f2-ver1",
+      "text": "供应商3的多语言界面旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "3",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v3-f2-ver2",
+      "text": "供应商3的多语言界面方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "3",
+        "version": 2
+      }
+    },
+    {
+      "id": "p0-v3-f3-ver1",
+      "text": "供应商3的单点登录旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "3",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v3-f3-ver2",
+      "text": "供应商3的单点登录方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "3",
+        "version": 2
+      }
+    },
+    {
+      "id": "p0-v3-f4-ver1",
+      "text": "供应商3的数据导出旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "3",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v3-f4-ver2",
+      "text": "供应商3的数据导出方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "3",
+        "version": 2
+      }
+    },
+    {
+      "id": "p0-v3-f5-ver1",
+      "text": "供应商3的审计日志旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "3",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v3-f5-ver2",
+      "text": "供应商3的审计日志方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "3",
+        "version": 2
+      }
+    },
+    {
+      "id": "p0-v3-f6-ver1",
+      "text": "供应商3的角色权限旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "3",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v3-f6-ver2",
+      "text": "供应商3的角色权限方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "3",
+        "version": 2
+      }
+    },
+    {
+      "id": "p0-v3-f7-ver1",
+      "text": "供应商3的接口集成旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "0",
+        "vendor": "3",
+        "version": 1
+      }
+    },
+    {
+      "id": "p0-v3-f7-ver2",
+      "text": "供应商3的接口集成方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "0",
+        "vendor": "3",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v0-f0-ver1",
+      "text": "供应商0的私有化部署旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "0",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v0-f0-ver2",
+      "text": "供应商0的私有化部署方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "0",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v0-f1-ver1",
+      "text": "供应商0的离线运行旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "0",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v0-f1-ver2",
+      "text": "供应商0的离线运行方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "0",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v0-f2-ver1",
+      "text": "供应商0的多语言界面旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "0",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v0-f2-ver2",
+      "text": "供应商0的多语言界面方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "0",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v0-f3-ver1",
+      "text": "供应商0的单点登录旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "0",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v0-f3-ver2",
+      "text": "供应商0的单点登录方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "0",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v0-f4-ver1",
+      "text": "供应商0的数据导出旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "0",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v0-f4-ver2",
+      "text": "供应商0的数据导出方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "0",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v0-f5-ver1",
+      "text": "供应商0的审计日志旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "0",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v0-f5-ver2",
+      "text": "供应商0的审计日志方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "0",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v0-f6-ver1",
+      "text": "供应商0的角色权限旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "0",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v0-f6-ver2",
+      "text": "供应商0的角色权限方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "0",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v0-f7-ver1",
+      "text": "供应商0的接口集成旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "0",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v0-f7-ver2",
+      "text": "供应商0的接口集成方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "0",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v1-f0-ver1",
+      "text": "供应商1的私有化部署旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "1",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v1-f0-ver2",
+      "text": "供应商1的私有化部署方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "1",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v1-f1-ver1",
+      "text": "供应商1的离线运行旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "1",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v1-f1-ver2",
+      "text": "供应商1的离线运行方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "1",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v1-f2-ver1",
+      "text": "供应商1的多语言界面旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "1",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v1-f2-ver2",
+      "text": "供应商1的多语言界面方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "1",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v1-f3-ver1",
+      "text": "供应商1的单点登录旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "1",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v1-f3-ver2",
+      "text": "供应商1的单点登录方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "1",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v1-f4-ver1",
+      "text": "供应商1的数据导出旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "1",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v1-f4-ver2",
+      "text": "供应商1的数据导出方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "1",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v1-f5-ver1",
+      "text": "供应商1的审计日志旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "1",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v1-f5-ver2",
+      "text": "供应商1的审计日志方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "1",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v1-f6-ver1",
+      "text": "供应商1的角色权限旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "1",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v1-f6-ver2",
+      "text": "供应商1的角色权限方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "1",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v1-f7-ver1",
+      "text": "供应商1的接口集成旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "1",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v1-f7-ver2",
+      "text": "供应商1的接口集成方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "1",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v2-f0-ver1",
+      "text": "供应商2的私有化部署旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "2",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v2-f0-ver2",
+      "text": "供应商2的私有化部署方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "2",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v2-f1-ver1",
+      "text": "供应商2的离线运行旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "2",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v2-f1-ver2",
+      "text": "供应商2的离线运行方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "2",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v2-f2-ver1",
+      "text": "供应商2的多语言界面旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "2",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v2-f2-ver2",
+      "text": "供应商2的多语言界面方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "2",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v2-f3-ver1",
+      "text": "供应商2的单点登录旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "2",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v2-f3-ver2",
+      "text": "供应商2的单点登录方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "2",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v2-f4-ver1",
+      "text": "供应商2的数据导出旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "2",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v2-f4-ver2",
+      "text": "供应商2的数据导出方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "2",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v2-f5-ver1",
+      "text": "供应商2的审计日志旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "2",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v2-f5-ver2",
+      "text": "供应商2的审计日志方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "2",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v2-f6-ver1",
+      "text": "供应商2的角色权限旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "2",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v2-f6-ver2",
+      "text": "供应商2的角色权限方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "2",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v2-f7-ver1",
+      "text": "供应商2的接口集成旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "2",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v2-f7-ver2",
+      "text": "供应商2的接口集成方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "2",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v3-f0-ver1",
+      "text": "供应商3的私有化部署旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "3",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v3-f0-ver2",
+      "text": "供应商3的私有化部署方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "3",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v3-f1-ver1",
+      "text": "供应商3的离线运行旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "3",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v3-f1-ver2",
+      "text": "供应商3的离线运行方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "3",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v3-f2-ver1",
+      "text": "供应商3的多语言界面旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "3",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v3-f2-ver2",
+      "text": "供应商3的多语言界面方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "3",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v3-f3-ver1",
+      "text": "供应商3的单点登录旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "3",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v3-f3-ver2",
+      "text": "供应商3的单点登录方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "3",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v3-f4-ver1",
+      "text": "供应商3的数据导出旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "3",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v3-f4-ver2",
+      "text": "供应商3的数据导出方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "3",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v3-f5-ver1",
+      "text": "供应商3的审计日志旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "3",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v3-f5-ver2",
+      "text": "供应商3的审计日志方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "3",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v3-f6-ver1",
+      "text": "供应商3的角色权限旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "3",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v3-f6-ver2",
+      "text": "供应商3的角色权限方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "3",
+        "version": 2
+      }
+    },
+    {
+      "id": "p1-v3-f7-ver1",
+      "text": "供应商3的接口集成旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "1",
+        "vendor": "3",
+        "version": 1
+      }
+    },
+    {
+      "id": "p1-v3-f7-ver2",
+      "text": "供应商3的接口集成方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "1",
+        "vendor": "3",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v0-f0-ver1",
+      "text": "供应商0的私有化部署旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "0",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v0-f0-ver2",
+      "text": "供应商0的私有化部署方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "0",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v0-f1-ver1",
+      "text": "供应商0的离线运行旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "0",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v0-f1-ver2",
+      "text": "供应商0的离线运行方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "0",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v0-f2-ver1",
+      "text": "供应商0的多语言界面旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "0",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v0-f2-ver2",
+      "text": "供应商0的多语言界面方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "0",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v0-f3-ver1",
+      "text": "供应商0的单点登录旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "0",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v0-f3-ver2",
+      "text": "供应商0的单点登录方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "0",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v0-f4-ver1",
+      "text": "供应商0的数据导出旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "0",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v0-f4-ver2",
+      "text": "供应商0的数据导出方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "0",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v0-f5-ver1",
+      "text": "供应商0的审计日志旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "0",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v0-f5-ver2",
+      "text": "供应商0的审计日志方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "0",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v0-f6-ver1",
+      "text": "供应商0的角色权限旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "0",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v0-f6-ver2",
+      "text": "供应商0的角色权限方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "0",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v0-f7-ver1",
+      "text": "供应商0的接口集成旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "0",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v0-f7-ver2",
+      "text": "供应商0的接口集成方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "0",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v1-f0-ver1",
+      "text": "供应商1的私有化部署旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "1",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v1-f0-ver2",
+      "text": "供应商1的私有化部署方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "1",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v1-f1-ver1",
+      "text": "供应商1的离线运行旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "1",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v1-f1-ver2",
+      "text": "供应商1的离线运行方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "1",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v1-f2-ver1",
+      "text": "供应商1的多语言界面旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "1",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v1-f2-ver2",
+      "text": "供应商1的多语言界面方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "1",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v1-f3-ver1",
+      "text": "供应商1的单点登录旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "1",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v1-f3-ver2",
+      "text": "供应商1的单点登录方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "1",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v1-f4-ver1",
+      "text": "供应商1的数据导出旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "1",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v1-f4-ver2",
+      "text": "供应商1的数据导出方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "1",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v1-f5-ver1",
+      "text": "供应商1的审计日志旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "1",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v1-f5-ver2",
+      "text": "供应商1的审计日志方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "1",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v1-f6-ver1",
+      "text": "供应商1的角色权限旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "1",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v1-f6-ver2",
+      "text": "供应商1的角色权限方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "1",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v1-f7-ver1",
+      "text": "供应商1的接口集成旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "1",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v1-f7-ver2",
+      "text": "供应商1的接口集成方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "1",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v2-f0-ver1",
+      "text": "供应商2的私有化部署旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "2",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v2-f0-ver2",
+      "text": "供应商2的私有化部署方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "2",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v2-f1-ver1",
+      "text": "供应商2的离线运行旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "2",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v2-f1-ver2",
+      "text": "供应商2的离线运行方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "2",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v2-f2-ver1",
+      "text": "供应商2的多语言界面旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "2",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v2-f2-ver2",
+      "text": "供应商2的多语言界面方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "2",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v2-f3-ver1",
+      "text": "供应商2的单点登录旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "2",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v2-f3-ver2",
+      "text": "供应商2的单点登录方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "2",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v2-f4-ver1",
+      "text": "供应商2的数据导出旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "2",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v2-f4-ver2",
+      "text": "供应商2的数据导出方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "2",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v2-f5-ver1",
+      "text": "供应商2的审计日志旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "2",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v2-f5-ver2",
+      "text": "供应商2的审计日志方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "2",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v2-f6-ver1",
+      "text": "供应商2的角色权限旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "2",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v2-f6-ver2",
+      "text": "供应商2的角色权限方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "2",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v2-f7-ver1",
+      "text": "供应商2的接口集成旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "2",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v2-f7-ver2",
+      "text": "供应商2的接口集成方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "2",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v3-f0-ver1",
+      "text": "供应商3的私有化部署旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "3",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v3-f0-ver2",
+      "text": "供应商3的私有化部署方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "3",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v3-f1-ver1",
+      "text": "供应商3的离线运行旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "3",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v3-f1-ver2",
+      "text": "供应商3的离线运行方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "3",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v3-f2-ver1",
+      "text": "供应商3的多语言界面旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "3",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v3-f2-ver2",
+      "text": "供应商3的多语言界面方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "3",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v3-f3-ver1",
+      "text": "供应商3的单点登录旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "3",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v3-f3-ver2",
+      "text": "供应商3的单点登录方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "3",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v3-f4-ver1",
+      "text": "供应商3的数据导出旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "3",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v3-f4-ver2",
+      "text": "供应商3的数据导出方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "3",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v3-f5-ver1",
+      "text": "供应商3的审计日志旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "3",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v3-f5-ver2",
+      "text": "供应商3的审计日志方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "3",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v3-f6-ver1",
+      "text": "供应商3的角色权限旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "3",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v3-f6-ver2",
+      "text": "供应商3的角色权限方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "3",
+        "version": 2
+      }
+    },
+    {
+      "id": "p2-v3-f7-ver1",
+      "text": "供应商3的接口集成旧版方案不支持本地交付。",
+      "metadata": {
+        "project": "2",
+        "vendor": "3",
+        "version": 1
+      }
+    },
+    {
+      "id": "p2-v3-f7-ver2",
+      "text": "供应商3的接口集成方案明确支持本地交付；本条为第2版。",
+      "metadata": {
+        "project": "2",
+        "vendor": "3",
+        "version": 2
+      }
+    }
+  ],
+  "queries": [
+    {
+      "id": "q001",
+      "text": "私有化部署是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "0",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v0-f0-ver2"
+      ]
+    },
+    {
+      "id": "q002",
+      "text": "离线运行是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "0",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v0-f1-ver2"
+      ]
+    },
+    {
+      "id": "q003",
+      "text": "多语言界面是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "0",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v0-f2-ver2"
+      ]
+    },
+    {
+      "id": "q004",
+      "text": "单点登录是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "0",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v0-f3-ver2"
+      ]
+    },
+    {
+      "id": "q005",
+      "text": "数据导出是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "0",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v0-f4-ver2"
+      ]
+    },
+    {
+      "id": "q006",
+      "text": "审计日志是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "0",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v0-f5-ver2"
+      ]
+    },
+    {
+      "id": "q007",
+      "text": "角色权限是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "0",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v0-f6-ver2"
+      ]
+    },
+    {
+      "id": "q008",
+      "text": "接口集成是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "0",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v0-f7-ver2"
+      ]
+    },
+    {
+      "id": "q009",
+      "text": "私有化部署是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "1",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v1-f0-ver2"
+      ]
+    },
+    {
+      "id": "q010",
+      "text": "离线运行是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "1",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v1-f1-ver2"
+      ]
+    },
+    {
+      "id": "q011",
+      "text": "多语言界面是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "1",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v1-f2-ver2"
+      ]
+    },
+    {
+      "id": "q012",
+      "text": "单点登录是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "1",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v1-f3-ver2"
+      ]
+    },
+    {
+      "id": "q013",
+      "text": "数据导出是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "1",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v1-f4-ver2"
+      ]
+    },
+    {
+      "id": "q014",
+      "text": "审计日志是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "1",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v1-f5-ver2"
+      ]
+    },
+    {
+      "id": "q015",
+      "text": "角色权限是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "1",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v1-f6-ver2"
+      ]
+    },
+    {
+      "id": "q016",
+      "text": "接口集成是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "1",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v1-f7-ver2"
+      ]
+    },
+    {
+      "id": "q017",
+      "text": "私有化部署是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "2",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v2-f0-ver2"
+      ]
+    },
+    {
+      "id": "q018",
+      "text": "离线运行是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "2",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v2-f1-ver2"
+      ]
+    },
+    {
+      "id": "q019",
+      "text": "多语言界面是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "2",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v2-f2-ver2"
+      ]
+    },
+    {
+      "id": "q020",
+      "text": "单点登录是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "2",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v2-f3-ver2"
+      ]
+    },
+    {
+      "id": "q021",
+      "text": "数据导出是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "2",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v2-f4-ver2"
+      ]
+    },
+    {
+      "id": "q022",
+      "text": "审计日志是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "2",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v2-f5-ver2"
+      ]
+    },
+    {
+      "id": "q023",
+      "text": "角色权限是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "2",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v2-f6-ver2"
+      ]
+    },
+    {
+      "id": "q024",
+      "text": "接口集成是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "2",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v2-f7-ver2"
+      ]
+    },
+    {
+      "id": "q025",
+      "text": "私有化部署是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "3",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v3-f0-ver2"
+      ]
+    },
+    {
+      "id": "q026",
+      "text": "离线运行是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "3",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v3-f1-ver2"
+      ]
+    },
+    {
+      "id": "q027",
+      "text": "多语言界面是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "3",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v3-f2-ver2"
+      ]
+    },
+    {
+      "id": "q028",
+      "text": "单点登录是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "3",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v3-f3-ver2"
+      ]
+    },
+    {
+      "id": "q029",
+      "text": "数据导出是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "3",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v3-f4-ver2"
+      ]
+    },
+    {
+      "id": "q030",
+      "text": "审计日志是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "3",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v3-f5-ver2"
+      ]
+    },
+    {
+      "id": "q031",
+      "text": "角色权限是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "3",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v3-f6-ver2"
+      ]
+    },
+    {
+      "id": "q032",
+      "text": "接口集成是否支持本地交付",
+      "filters": {
+        "project": "0",
+        "vendor": "3",
+        "version": 2
+      },
+      "relevant": [
+        "p0-v3-f7-ver2"
+      ]
+    },
+    {
+      "id": "q033",
+      "text": "私有化部署是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "0",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v0-f0-ver2"
+      ]
+    },
+    {
+      "id": "q034",
+      "text": "离线运行是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "0",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v0-f1-ver2"
+      ]
+    },
+    {
+      "id": "q035",
+      "text": "多语言界面是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "0",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v0-f2-ver2"
+      ]
+    },
+    {
+      "id": "q036",
+      "text": "单点登录是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "0",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v0-f3-ver2"
+      ]
+    },
+    {
+      "id": "q037",
+      "text": "数据导出是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "0",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v0-f4-ver2"
+      ]
+    },
+    {
+      "id": "q038",
+      "text": "审计日志是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "0",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v0-f5-ver2"
+      ]
+    },
+    {
+      "id": "q039",
+      "text": "角色权限是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "0",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v0-f6-ver2"
+      ]
+    },
+    {
+      "id": "q040",
+      "text": "接口集成是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "0",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v0-f7-ver2"
+      ]
+    },
+    {
+      "id": "q041",
+      "text": "私有化部署是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "1",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v1-f0-ver2"
+      ]
+    },
+    {
+      "id": "q042",
+      "text": "离线运行是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "1",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v1-f1-ver2"
+      ]
+    },
+    {
+      "id": "q043",
+      "text": "多语言界面是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "1",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v1-f2-ver2"
+      ]
+    },
+    {
+      "id": "q044",
+      "text": "单点登录是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "1",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v1-f3-ver2"
+      ]
+    },
+    {
+      "id": "q045",
+      "text": "数据导出是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "1",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v1-f4-ver2"
+      ]
+    },
+    {
+      "id": "q046",
+      "text": "审计日志是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "1",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v1-f5-ver2"
+      ]
+    },
+    {
+      "id": "q047",
+      "text": "角色权限是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "1",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v1-f6-ver2"
+      ]
+    },
+    {
+      "id": "q048",
+      "text": "接口集成是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "1",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v1-f7-ver2"
+      ]
+    },
+    {
+      "id": "q049",
+      "text": "私有化部署是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "2",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v2-f0-ver2"
+      ]
+    },
+    {
+      "id": "q050",
+      "text": "离线运行是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "2",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v2-f1-ver2"
+      ]
+    },
+    {
+      "id": "q051",
+      "text": "多语言界面是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "2",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v2-f2-ver2"
+      ]
+    },
+    {
+      "id": "q052",
+      "text": "单点登录是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "2",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v2-f3-ver2"
+      ]
+    },
+    {
+      "id": "q053",
+      "text": "数据导出是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "2",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v2-f4-ver2"
+      ]
+    },
+    {
+      "id": "q054",
+      "text": "审计日志是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "2",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v2-f5-ver2"
+      ]
+    },
+    {
+      "id": "q055",
+      "text": "角色权限是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "2",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v2-f6-ver2"
+      ]
+    },
+    {
+      "id": "q056",
+      "text": "接口集成是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "2",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v2-f7-ver2"
+      ]
+    },
+    {
+      "id": "q057",
+      "text": "私有化部署是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "3",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v3-f0-ver2"
+      ]
+    },
+    {
+      "id": "q058",
+      "text": "离线运行是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "3",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v3-f1-ver2"
+      ]
+    },
+    {
+      "id": "q059",
+      "text": "多语言界面是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "3",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v3-f2-ver2"
+      ]
+    },
+    {
+      "id": "q060",
+      "text": "单点登录是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "3",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v3-f3-ver2"
+      ]
+    },
+    {
+      "id": "q061",
+      "text": "数据导出是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "3",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v3-f4-ver2"
+      ]
+    },
+    {
+      "id": "q062",
+      "text": "审计日志是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "3",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v3-f5-ver2"
+      ]
+    },
+    {
+      "id": "q063",
+      "text": "角色权限是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "3",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v3-f6-ver2"
+      ]
+    },
+    {
+      "id": "q064",
+      "text": "接口集成是否支持本地交付",
+      "filters": {
+        "project": "1",
+        "vendor": "3",
+        "version": 2
+      },
+      "relevant": [
+        "p1-v3-f7-ver2"
+      ]
+    },
+    {
+      "id": "q065",
+      "text": "私有化部署是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "0",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v0-f0-ver2"
+      ]
+    },
+    {
+      "id": "q066",
+      "text": "离线运行是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "0",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v0-f1-ver2"
+      ]
+    },
+    {
+      "id": "q067",
+      "text": "多语言界面是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "0",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v0-f2-ver2"
+      ]
+    },
+    {
+      "id": "q068",
+      "text": "单点登录是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "0",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v0-f3-ver2"
+      ]
+    },
+    {
+      "id": "q069",
+      "text": "数据导出是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "0",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v0-f4-ver2"
+      ]
+    },
+    {
+      "id": "q070",
+      "text": "审计日志是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "0",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v0-f5-ver2"
+      ]
+    },
+    {
+      "id": "q071",
+      "text": "角色权限是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "0",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v0-f6-ver2"
+      ]
+    },
+    {
+      "id": "q072",
+      "text": "接口集成是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "0",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v0-f7-ver2"
+      ]
+    },
+    {
+      "id": "q073",
+      "text": "私有化部署是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "1",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v1-f0-ver2"
+      ]
+    },
+    {
+      "id": "q074",
+      "text": "离线运行是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "1",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v1-f1-ver2"
+      ]
+    },
+    {
+      "id": "q075",
+      "text": "多语言界面是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "1",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v1-f2-ver2"
+      ]
+    },
+    {
+      "id": "q076",
+      "text": "单点登录是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "1",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v1-f3-ver2"
+      ]
+    },
+    {
+      "id": "q077",
+      "text": "数据导出是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "1",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v1-f4-ver2"
+      ]
+    },
+    {
+      "id": "q078",
+      "text": "审计日志是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "1",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v1-f5-ver2"
+      ]
+    },
+    {
+      "id": "q079",
+      "text": "角色权限是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "1",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v1-f6-ver2"
+      ]
+    },
+    {
+      "id": "q080",
+      "text": "接口集成是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "1",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v1-f7-ver2"
+      ]
+    },
+    {
+      "id": "q081",
+      "text": "私有化部署是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "2",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v2-f0-ver2"
+      ]
+    },
+    {
+      "id": "q082",
+      "text": "离线运行是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "2",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v2-f1-ver2"
+      ]
+    },
+    {
+      "id": "q083",
+      "text": "多语言界面是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "2",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v2-f2-ver2"
+      ]
+    },
+    {
+      "id": "q084",
+      "text": "单点登录是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "2",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v2-f3-ver2"
+      ]
+    },
+    {
+      "id": "q085",
+      "text": "数据导出是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "2",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v2-f4-ver2"
+      ]
+    },
+    {
+      "id": "q086",
+      "text": "审计日志是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "2",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v2-f5-ver2"
+      ]
+    },
+    {
+      "id": "q087",
+      "text": "角色权限是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "2",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v2-f6-ver2"
+      ]
+    },
+    {
+      "id": "q088",
+      "text": "接口集成是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "2",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v2-f7-ver2"
+      ]
+    },
+    {
+      "id": "q089",
+      "text": "私有化部署是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "3",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v3-f0-ver2"
+      ]
+    },
+    {
+      "id": "q090",
+      "text": "离线运行是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "3",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v3-f1-ver2"
+      ]
+    },
+    {
+      "id": "q091",
+      "text": "多语言界面是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "3",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v3-f2-ver2"
+      ]
+    },
+    {
+      "id": "q092",
+      "text": "单点登录是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "3",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v3-f3-ver2"
+      ]
+    },
+    {
+      "id": "q093",
+      "text": "数据导出是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "3",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v3-f4-ver2"
+      ]
+    },
+    {
+      "id": "q094",
+      "text": "审计日志是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "3",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v3-f5-ver2"
+      ]
+    },
+    {
+      "id": "q095",
+      "text": "角色权限是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "3",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v3-f6-ver2"
+      ]
+    },
+    {
+      "id": "q096",
+      "text": "接口集成是否支持本地交付",
+      "filters": {
+        "project": "2",
+        "vendor": "3",
+        "version": 2
+      },
+      "relevant": [
+        "p2-v3-f7-ver2"
+      ]
+    }
+  ]
+}

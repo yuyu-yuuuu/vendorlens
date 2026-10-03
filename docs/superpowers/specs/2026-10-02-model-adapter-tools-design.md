@@ -5,13 +5,13 @@
 
 ## 1. 背景与决策
 
-VendorLens 已完成单 `VendorReviewAgent` 契约、Vendor 级证据隔离、领域级返工与确定性降级，但当前分析器仍是测试替身，`ReviewToolbox` 也只有工具名称白名单。下一步把真实模型接入现有 Agent，同时保留现有结构化输出门禁，不引入第二个 Agent、Judge Agent 或低分转交机制。
+VendorLens 已完成单 `VendorReviewAgent` 契约、Vendor 级证据隔离、领域级返工与确定性降级，已接入正式模型分析器和工具注册表，将真实模型接入现有 Agent，同时保留现有结构化输出门禁，不引入第二个 Agent、Judge Agent 或低分转交机制。
 
 模型接入采用 OpenAI 兼容的 Chat Completions 接口。运行时只依赖统一的 `base_url`、`api_key` 和 `model` 配置，因此既可连接 OpenAI，也可连接实现相同协议的服务。适配器通过 `httpx` 调用 `/chat/completions`，业务代码不直接依赖具体供应商 SDK；测试使用内存假模型或假 HTTP 传输，不发送网络请求。
 
 所选模型必须支持 Chat Completions 的 `tools`/`tool_calls`。仅支持 Responses API 工具调用的模型不在本阶段兼容范围内，适配器应给出明确的协议或配置错误，而不是静默退化。
 
-本阶段只实现模型适配器、提示输入、领域工具注册和相应测试。RQ Worker、任务 REST API、SSE 与 Trace 接线属于后续阶段。
+本阶段只实现模型适配器、提示输入、领域工具注册和相应测试。RQ Worker、任务 REST API、SSE 与 Trace 已完成接线。
 
 ## 2. 目标与非目标
 
@@ -28,14 +28,14 @@ VendorLens 已完成单 `VendorReviewAgent` 契约、Vendor 级证据隔离、�
 - 不增加领域 Agent、Judge Agent、Agent 评分或 Agent 间转交；
 - 不允许模型搜索当前冻结证据包之外的数据；
 - 不让模型自行计算最终 TCO、供应商总分或推荐结论；
-- 不在本阶段实现流式对话、网页搜索、Worker/API/SSE/Trace；
+- 不提供流式开放对话和网页搜索；
 - 不在测试中调用真实模型或消耗模型额度。
 
 ## 3. 组件边界
 
 ### 3.1 `ChatModel` 协议
 
-新增供应商无关的 `ChatModel` 协议。它接收已经脱敏的系统指令、业务输入和可用工具定义，返回结构化响应及工具调用请求。协议不暴露 HTTP、SDK 或供应商专有对象给 Agent 层。
+新增供应商无关的 `ChatModel` 协议。它接收受控的系统指令、业务输入和可用工具定义，返回结构化响应及工具调用请求。协议不暴露 HTTP、SDK 或供应商专有对象给 Agent 层。
 
 模型响应统一包含：
 
@@ -49,7 +49,7 @@ VendorLens 已完成单 `VendorReviewAgent` 契约、Vendor 级证据隔离、�
 该适配器负责：
 
 - 使用 `base_url`、`api_key`、`model`、超时和最大工具循环次数发起请求；
-- 使用 OpenAI 兼容的 Chat Completions 消息与 `tools`/`tool_calls` 字段，不依赖供应商专有扩展；
+- 使用 OpenAI 兼容的 Chat Completions 消息与 `tools`/`tool_calls` 字段，通用协议为主，并支持显式供应商请求选项；
 - 将 VendorLens 工具定义转换为兼容接口的 function tool schema；
 - 解析工具调用和最终 JSON；
 - 将网络超时、鉴权失败、限流、无效 JSON 和循环超限转换为类型明确的模型异常；
@@ -72,7 +72,7 @@ VendorReviewInput
   -> VendorReviewExecutor 做最终输出门禁
 ```
 
-模型上下文只包含当前输入包的项目背景、Requirement 目录、领域配置和证据摘要。返工时明确给出 `revision_domains`、返工次数及上一次失败原因，要求模型只重做指定领域。
+模型上下文只包含当前输入包的项目背景、Requirement 目录、领域配置、证据上下文、任务冻结的 Skills 及过滤后的会话记忆。返工时明确给出 `revision_domains`、返工次数及上一次失败原因，要求模型只重做指定领域。
 
 工具循环设置有限上限；超过上限视为本次 Agent 执行失败，并由现有工作流决定是否返工或降级。
 
@@ -90,7 +90,7 @@ VendorReviewInput
 
 - `extract_cost_items`：从指定证据中提取金额候选、币种、周期和费用类别；
 - `normalize_cost`：按冻结币种与比较周期归一化已确认费用项；
-- `calculate_tco`：使用确定性算术计算一次性、持续、可选费用及 TCO；
+- `calculate_tco`：使用确定性算术计算一次性、持续费用及基础 TCO，可选费用单列；
 - `compare_cost_items`：检测重复、遗漏和相互冲突的费用项。
 
 模型负责把文本费用映射到业务类别，但不得覆盖 `calculate_tco` 返回的算术结果。
@@ -144,6 +144,8 @@ VendorReviewInput
 
 完成标准：真实适配器可由配置创建，单 Agent 可通过正式工具生成符合现有 Schema 的三个领域结果，测试不需要网络和密钥，且未改变确定性推荐规则。
 
-## 8. 后续接线
+## 8. 运行时接线
 
-本阶段完成后，下一阶段将构造好的 `VendorReviewExecutor` 注入 RQ Job，由任务 API 创建 `ResearchTask` 并立即返回 `run_id`，运行过程写入持久化事件和 Trace，SSE 使用 `Last-Event-ID` 恢复。该接线不改变本文定义的模型和工具边界。
+`RoutedVendorReviewExecutor` 已注入 RQ 工作流。路由器在供应商尝试开始时选择端点，包装实际模型请求收集耗时和完整 usage 的估算费用；同一工具循环固定端点。领域输出失败反馈到质量指标，类型明确的模型异常保留到路由层，以区分限流等故障。失败端点冷却后通过单次租约探测恢复。
+
+端点数组使用 `VENDORLENS_MODEL_ENDPOINTS` 配置；未设置时兼容原有单端点 MODEL_* 配置。路由记录不保存密钥、模型正文或原始异常文本。会话记忆不能作为当前事实证据，Skills 不能修改工具权限与确定性门禁。

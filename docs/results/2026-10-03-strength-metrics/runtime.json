@@ -1,0 +1,49 @@
+{
+  "memory": {
+    "sessions": 20,
+    "messages": 320,
+    "compression_correct": 20,
+    "compression_threshold": 16,
+    "retained_messages": 6,
+    "configured_ttl_seconds": 86400,
+    "append_16_messages_latency": {
+      "samples": 20,
+      "mean_ms": 5.234122846741229,
+      "p50_ms": 5.16185408923775,
+      "p95_ms": 5.989250028505921
+    },
+    "recent_read_latency": {
+      "samples": 200,
+      "mean_ms": 0.4640097636729479,
+      "p50_ms": 0.3664580872282386,
+      "p95_ms": 0.8002498652786016
+    },
+    "redis_verified": true,
+    "observed_ttl_min": 86400,
+    "observed_ttl_max": 86400
+  },
+  "skills": {
+    "valid_updates": 50,
+    "valid_update_success": 50,
+    "invalid_updates": 50,
+    "previous_generation_retained": 50,
+    "reload_latency": {
+      "samples": 50,
+      "mean_ms": 0.08352584205567837,
+      "p50_ms": 0.06777106318622828,
+      "p95_ms": 0.15125004574656487
+    }
+  },
+  "routing": {
+    "scenarios": 20,
+    "passed": 20,
+    "injected_rate_limits": 60,
+    "mode": "simulated faults, real HealthRouter and SQLite, no remote endpoint calls",
+    "switch_decision_latency": {
+      "samples": 20,
+      "mean_ms": 1.3380374410189688,
+      "p50_ms": 1.309896120801568,
+      "p95_ms": 1.5449589118361473
+    }
+  }
+}

@@ -12,6 +12,9 @@ from vendorlens.models import TraceSpan, utcnow
 
 _active_recorder: ContextVar[TraceRecorder | None] = ContextVar("trace_recorder", default=None)
 ALLOWED_ATTRIBUTES = {
+    "endpoint_id",
+    "route_attempt_id",
+    "probe",
     "vendor_id",
     "revision_count",
     "evidence_count",
@@ -29,6 +32,10 @@ ALLOWED_ATTRIBUTES = {
     "completion_tokens",
     "total_tokens",
     "domain",
+    "estimated_cost",
+    "price_currency",
+    "input_price_per_million",
+    "output_price_per_million",
 }
 
 
@@ -89,12 +96,13 @@ class TraceRecorder:
             self._parent.reset(token)
             with self.session_factory() as session:
                 row = session.get(TraceSpan, handle.id)
-                row.status = handle.status
-                row.attributes = safe_attributes(handle.attributes)
-                row.error = error_type
-                row.ended_at = utcnow()
-                row.duration_ms = int((monotonic() - started) * 1000)
-                session.commit()
+                if row.status == "running":
+                    row.status = handle.status
+                    row.attributes = safe_attributes(handle.attributes)
+                    row.error = error_type
+                    row.ended_at = utcnow()
+                    row.duration_ms = int((monotonic() - started) * 1000)
+                    session.commit()
 
 
 def get_active_trace() -> TraceRecorder | None:

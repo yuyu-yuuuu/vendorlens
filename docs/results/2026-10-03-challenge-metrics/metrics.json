@@ -1,0 +1,3523 @@
+{
+  "started_at": "2026-10-03T13:10:17.331828+00:00",
+  "dataset_sha256": "d821787398818a13d2052a903d8a8f8c03bcfb7a41702923453844ab3af87362",
+  "model_inputs_sha256": "d99b4de5aef136209f2a1aab62ecaa70bd28c5f2ab7d82c9b4f12d396cb38c23",
+  "dataset_version": "vendorlens-challenge-v1",
+  "origin": "编码代理编写的固定合成挑战集；未独立人工标注；非生产数据；根据已知边界设计，非盲测。",
+  "label_policy": "met=明确满足；not_met=明确无法满足；partially_met=部分满足、条件支持或冲突需澄清；not_stated=未回答。费用仅在可确定完整比较范围TCO时有数值，未知为null；小计不等于完整TCO。",
+  "code_hashes": {
+    "src/vendorlens/__init__.py": "f30a42e1d884b9356f13ba32ae62b23a190c1bb00c54c008014e1b2e1a0a5433",
+    "src/vendorlens/api.py": "434db5cbd9363b803f8a5b0b1ddfa645d95be0980980d07e1d644c8c2e734f10",
+    "src/vendorlens/api_contracts.py": "19ac25aff7d43938008428eaf9aaa8ed62ce6579d3bba20bc9ae5197926f7e0e",
+    "src/vendorlens/auth.py": "3e05d0f47fb08ded67c41ceee882e109ae4b6db0dc3b1b054461a5b80a9f8c01",
+    "src/vendorlens/backend_demo.py": "905822f6bafd82ce950de4c8530f11a45fbff370b85dab677c51d1134b14aea7",
+    "src/vendorlens/challenge_eval.py": "49a9dd6698a8f95b87811c6c5b8386da9bd6dc02dca31fcc8e5b9283d95a520c",
+    "src/vendorlens/checkpoint.py": "d9f8d76e5d7304c8136bd557c306c4d161464e692d322d7a7a77458ee6bfbce5",
+    "src/vendorlens/config.py": "b4794a8d5277a48ecae6564fe8a7cd84a215b6bff024ee2b532d644ad0320398",
+    "src/vendorlens/conversation_memory.py": "b06d0010f1f894248158fc9e6e1d26d49e1789bc645bf7e40b216b65cd340c0b",
+    "src/vendorlens/coordinator.py": "ac121ffd41f945b601347eae4d71db0f94333de11d0339d5315f96c3e5c9d4fa",
+    "src/vendorlens/cost_grounding.py": "b741f9687e6231faaa5d7b41899b8c6815892c21b7aad62329dd806ee38d3de0",
+    "src/vendorlens/db.py": "e0d1b17de0b09daab4b6e8f992b66190d144ba93a865da164d5be1b118b746fa",
+    "src/vendorlens/domain.py": "bdf0373dd1dc7aae7457722ecf41197f804f8ccdb91d479de8117d323420c600",
+    "src/vendorlens/eval_cli.py": "351ee949f819cade40f4dbe65a0a00aba1ff5818907c7786236def379fb75add",
+    "src/vendorlens/evaluation.py": "c60dae5ad7d7eb3a20d65c3d4627c3023820e0ce258eb11b2f590401140f3fb3",
+    "src/vendorlens/events.py": "4ae395811ef0a41f8e7d2347d3dd4b7808ae8c17ccaedadf87d31deacde8b7c2",
+    "src/vendorlens/evidence.py": "55f34a48cf08afab503068d94383c49d5f483327e526d9148aa7db2af97f017b",
+    "src/vendorlens/evidence_benchmark.py": "699f4d5cc506418ae0d2cb26a0b24139d12372d40aa90cc720e6937fa7d73e9a",
+    "src/vendorlens/fallbacks.py": "d77de98d5b559bdf437d1e7a30adf00ff0752f5ba2873f086776ccd3060c821e",
+    "src/vendorlens/indexes.py": "95b0c8653a8ae68c17ebd87f71570353f7d386574a5b12dd3d704cf1fff4166f",
+    "src/vendorlens/ingestion.py": "8108aa5c3102a6b7885d91ad1bf94d2c81715b454cc148987206458c0472478f",
+    "src/vendorlens/management_api.py": "705e65977da83067db71f5a6c94af66a3a98fe167af0aa8b896fa0314cd78964",
+    "src/vendorlens/metrics_report.py": "e4a65105de6e7bb5befe602a925904a080176fb37342d0a42029bd0f9b50b380",
+    "src/vendorlens/model_adapter.py": "77226e087d3197b3180214d9875ba12813c56172927d9be142cee33ee3d608fd",
+    "src/vendorlens/model_analyzer.py": "720eb13fdfe33c9eb9f4bdc4b1504f8be6b6156e0fb04d64fbbe67dc0d10ff50",
+    "src/vendorlens/model_routing.py": "7cc1a1aa1ce5f8465071783ed6e763075495fad44341666664c84c9a5cd7dc62",
+    "src/vendorlens/model_smoke.py": "bf659dbeb7d65c139fc8e5f487396c2943648b2072eace2675685b1d25c90415",
+    "src/vendorlens/models.py": "8766572d00b90be9e8c0a12a810f05c4c512f604ece181bf3728315cc0492042",
+    "src/vendorlens/numeric_facts.py": "58cd01cae9b07c2744372ef466b82c5c8ab9d17c10be79e993ea617f7b40f304",
+    "src/vendorlens/observability.py": "7cde48f78d2fa822fa6755ef917764b23ecd8ebcf561283861abcff0e37917f7",
+    "src/vendorlens/outbox.py": "17cf8c002ec40d8b6c6ade16b0ddf03954542c4f2fdef76746e8f3cce54c37b6",
+    "src/vendorlens/parsers.py": "08ae160e873eff401de7835e92b64672dd60d05e2df7d606e473cb1b471d271c",
+    "src/vendorlens/recommendation.py": "1afc8ef855e5dc3ca63cf00cbf6636fde665e44400f59a792e97c80cb0eaece2",
+    "src/vendorlens/recovery.py": "7953aa23047cf64304f5957cfb6b97cda01f3b43a445fb671b2e9c0a20a89368",
+    "src/vendorlens/report_api.py": "7b79a9ed5681e210fa5394df5bd523d17beff425935ed7fbc1ccadece64c4866",
+    "src/vendorlens/retrieval.py": "3c01b080b10b868334556966a9cff905b16f5c7df5fa61090e1f2a76cd90949f",
+    "src/vendorlens/retrieval_runtime.py": "c273325a404bd6c4bac367d3cb350f7b10408e597e011a87013538b6ee916073",
+    "src/vendorlens/review_agent.py": "d20764c718f578ee7d00424c4c3b001bb5c4ffb05829345d5d48659486c901ee",
+    "src/vendorlens/review_tools.py": "ae219253c6b08c32b63b8380fa57ae44004ba1124e6c8dd499847b510f01f785",
+    "src/vendorlens/runtime_api.py": "10a310495ec28f922385199457f38ab07d67022ae7adbe40265b3add0147d463",
+    "src/vendorlens/runtime_benchmark.py": "c8a33124f12ed58429c139409651300f7e786ba2e4593c78bfbd10bd875bec87",
+    "src/vendorlens/schemas.py": "32c53b623db25f4fa5ca0be1c4b3848555bf30685c36181dddefd6ae73354287",
+    "src/vendorlens/semantic_rules.py": "3348f4449cf6ba5cf03c1337c68cc9f8736bdb10ccc3d7572a826e7250f845d8",
+    "src/vendorlens/skills.py": "038b7fcb3dbc765cb4b56d6c221d1de29aa940e704a43168fab609c169813ee2",
+    "src/vendorlens/storage.py": "6e96e8c03a3f67355cfebfe1a89252793f4e15d29aeef7b87f3b240fbb2b4778",
+    "src/vendorlens/strength_eval.py": "de213addb844c157695010cfe8338bf39d89c3c4fcb30a3b3f8046443c1e2b7c",
+    "src/vendorlens/tasks.py": "a2960d33673704f93999145eaf2934bcd02611d0485fe165a464b1c69e024255",
+    "src/vendorlens/tracing.py": "fd0e74605724c5ee07abbfeb6552a4954d05ced3fef3c3997c5a642a3f8ce1b4",
+    "src/vendorlens/worker.py": "8fcd8a15f4b060ba0e13c6fff91ad61cceb1b703f33128d03388219632c448f4",
+    "src/vendorlens/workflow.py": "9aa3ed5fe9e4fdf34f9edfae3bec18ed2481e72b9bc5d4b51cbba0055e175d15"
+  },
+  "offline": {
+    "requirements": {
+      "samples": 32,
+      "correct": 11,
+      "accuracy": 0.34375,
+      "macro_f1": 0.29642857142857143,
+      "per_class": {
+        "met": {
+          "precision": 0.42857142857142855,
+          "recall": 0.375,
+          "f1": 0.39999999999999997,
+          "support": 8
+        },
+        "partially_met": {
+          "precision": 0.3888888888888889,
+          "recall": 0.7,
+          "f1": 0.5,
+          "support": 10
+        },
+        "not_met": {
+          "precision": 1.0,
+          "recall": 0.16666666666666666,
+          "f1": 0.2857142857142857,
+          "support": 6
+        },
+        "not_stated": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0,
+          "support": 8
+        }
+      },
+      "cases": [
+        {
+          "id": "req-01",
+          "category": "paraphrase",
+          "requirement": "系统必须支持私有化部署",
+          "text": "全部组件可安装于客户自有机房，业务数据无需离开内网。",
+          "gold": "met",
+          "rationale": "客户机房安装与内网留存明确满足本地部署。",
+          "prediction": "not_stated"
+        },
+        {
+          "id": "req-02",
+          "category": "paraphrase",
+          "requirement": "支持离线运行",
+          "text": "断开外网后仍可完成录入、审批和查询，许可证在本地校验。",
+          "gold": "met",
+          "rationale": "明确断网可运行。",
+          "prediction": "not_stated"
+        },
+        {
+          "id": "req-03",
+          "category": "paraphrase",
+          "requirement": "提供单点登录",
+          "text": "已对接企业统一身份平台，员工用现有账号进入应用，无须再次输入口令。",
+          "gold": "met",
+          "rationale": "统一认证且无需二次登录。",
+          "prediction": "not_stated"
+        },
+        {
+          "id": "req-04",
+          "category": "paraphrase",
+          "requirement": "支持审计日志",
+          "text": "每次管理员配置变更均记录操作者、发生时间和修改前后的值，并保留两年。",
+          "gold": "met",
+          "rationale": "明确审计记录内容。",
+          "prediction": "not_stated"
+        },
+        {
+          "id": "req-05",
+          "category": "numeric",
+          "requirement": "响应时间不超过2秒",
+          "text": "常用查询在正常负载下为1.5秒。",
+          "gold": "met",
+          "rationale": "在已声明正常负载下满足上限。",
+          "prediction": "not_stated"
+        },
+        {
+          "id": "req-06",
+          "category": "direct",
+          "requirement": "支持数据导出",
+          "text": "支持数据导出，格式为CSV和XLSX。",
+          "gold": "met",
+          "rationale": "明确支持。",
+          "prediction": "met"
+        },
+        {
+          "id": "req-07",
+          "category": "scope",
+          "requirement": "支持私有化部署",
+          "text": "不支持离线运行，但支持私有化部署。",
+          "gold": "met",
+          "rationale": "否定对象是另一能力。",
+          "prediction": "met"
+        },
+        {
+          "id": "req-08",
+          "category": "parent",
+          "requirement": "支持审计日志",
+          "text": "支持审计日志。管理员无法删除日志，保留期为两年。",
+          "gold": "met",
+          "rationale": "补充描述未限制支持。",
+          "quote": "支持审计日志。",
+          "prediction": "met"
+        },
+        {
+          "id": "req-09",
+          "category": "paraphrase",
+          "requirement": "支持私有化部署",
+          "text": "本产品仅采用厂商云端交付，客户机房安装方案不提供。",
+          "gold": "not_met",
+          "rationale": "明确云端唯一交付。",
+          "prediction": "not_stated"
+        },
+        {
+          "id": "req-10",
+          "category": "negation",
+          "requirement": "支持离线运行",
+          "text": "离线运行不可用；每次操作均需在线访问授权服务。",
+          "gold": "not_met",
+          "rationale": "明确不可离线。",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-11",
+          "category": "paraphrase",
+          "requirement": "支持数据导出",
+          "text": "所有数据只能在网页内查看，无法下载为文件。",
+          "gold": "not_met",
+          "rationale": "明确不允许文件输出。",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-12",
+          "category": "numeric",
+          "requirement": "响应时间不超过2秒",
+          "text": "响应时间在常规负载下为5秒，暂无优化计划。",
+          "gold": "not_met",
+          "rationale": "数值超过上限。",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-13",
+          "category": "compound",
+          "requirement": "同时支持中文和英文界面",
+          "text": "中文界面支持，英文界面不支持。",
+          "gold": "partially_met",
+          "rationale": "复合需求只满足一部分。",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-14",
+          "category": "compound",
+          "requirement": "支持数据导出和自动备份",
+          "text": "支持数据导出。自动备份不支持，只能手工复制。",
+          "gold": "partially_met",
+          "rationale": "导出满足，自动备份不满足。",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-15",
+          "category": "edition",
+          "requirement": "标准版支持单点登录",
+          "text": "单点登录仅限企业版，标准版没有该功能。",
+          "gold": "not_met",
+          "rationale": "指定版本不具备能力。",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-16",
+          "category": "scope",
+          "requirement": "支持私有化部署",
+          "text": "客户需求书：必须支持私有化部署。供应商响应：不支持私有化部署。",
+          "gold": "not_met",
+          "rationale": "需求书不能当成供应商能力。",
+          "prediction": "not_met"
+        },
+        {
+          "id": "req-17",
+          "category": "condition",
+          "requirement": "支持私有化部署",
+          "text": "支持私有化部署，仅限企业版，需另行购买。",
+          "gold": "partially_met",
+          "rationale": "存在版本和额外采购限制。",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-18",
+          "category": "future",
+          "requirement": "支持自动备份",
+          "text": "自动备份计划在下一年度发布，当前版本只能手工备份。",
+          "gold": "partially_met",
+          "rationale": "未来承诺不能作为当前完全满足。",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-19",
+          "category": "numeric",
+          "requirement": "支持2000个并发用户",
+          "text": "并发用户上限为500，提升到2000需额外扩容。",
+          "gold": "partially_met",
+          "rationale": "购买扩容前无法达到目标。",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-20",
+          "category": "condition",
+          "requirement": "支持离线运行",
+          "text": "支持离线运行，但每隔7天必须联网刷新授权。",
+          "gold": "partially_met",
+          "rationale": "离线有时长限制。",
+          "prediction": "met"
+        },
+        {
+          "id": "req-21",
+          "category": "parent",
+          "requirement": "支持数据导出",
+          "text": "支持数据导出。该能力仅限管理员，普通用户无法使用。",
+          "gold": "partially_met",
+          "rationale": "父段包含角色限制。",
+          "quote": "支持数据导出。",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-22",
+          "category": "contradiction",
+          "requirement": "支持审计日志",
+          "text": "方案正文称支持审计日志；附件兼容性表标为不支持审计日志。",
+          "gold": "partially_met",
+          "rationale": "同一材料冲突需澄清，不视作完全支持。",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-23",
+          "category": "compound",
+          "requirement": "支持每日备份并保留30天",
+          "text": "支持每日备份，但只能保留7天。",
+          "gold": "partially_met",
+          "rationale": "保留时长不满足。",
+          "prediction": "met"
+        },
+        {
+          "id": "req-24",
+          "category": "condition",
+          "requirement": "支持接口调用",
+          "text": "接口调用支持。调用频率上限为每分钟60次，超过上限须另付费。",
+          "gold": "partially_met",
+          "rationale": "调用存在限额与费用条件。",
+          "prediction": "met"
+        },
+        {
+          "id": "req-25",
+          "category": "missing",
+          "requirement": "支持私有化部署",
+          "text": "本节介绍项目实施团队及售后联系电话，部署方案将在澄清后补充。",
+          "gold": "not_stated",
+          "rationale": "未给出能力判断。",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-26",
+          "category": "missing",
+          "requirement": "支持审计日志",
+          "text": "审计日志：待确认。",
+          "gold": "not_stated",
+          "rationale": "待确认不等于支持。",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-27",
+          "category": "scope",
+          "requirement": "支持数据导出",
+          "text": "采购方要求支持数据导出，供应商本节仅提供人员名单。",
+          "gold": "not_stated",
+          "rationale": "仅有采购方要求。",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-28",
+          "category": "missing",
+          "requirement": "支持单点登录",
+          "text": "单点登录事项需进一步沟通，本次材料未作答。",
+          "gold": "not_stated",
+          "rationale": "未回答。",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-29",
+          "category": "scope",
+          "requirement": "支持自动备份",
+          "text": "培训支持远程开展；自动备份功能未在材料中描述。",
+          "gold": "not_stated",
+          "rationale": "培训支持与目标功能无关。",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-30",
+          "category": "numeric",
+          "requirement": "响应时间不超过2秒",
+          "text": "响应时间指标需以验收阶段实测为准，本次未提供测量值。",
+          "gold": "not_stated",
+          "rationale": "没有性能测量值。",
+          "prediction": "met"
+        },
+        {
+          "id": "req-31",
+          "category": "scope",
+          "requirement": "支持离线运行",
+          "text": "离线运行是采购方列出的验收项，供应商仅提交价格表。",
+          "gold": "not_stated",
+          "rationale": "只描述验收要求。",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-32",
+          "category": "missing",
+          "requirement": "支持接口调用",
+          "text": "接口调用配置见附件B，但本次提交缺少附件B。",
+          "gold": "not_stated",
+          "rationale": "引用缺失资料不能确认。",
+          "prediction": "partially_met"
+        }
+      ]
+    },
+    "requirement_latency": {
+      "samples": 32,
+      "mean_ms": 0.043476604332681745,
+      "p50_ms": 0.01245853491127491,
+      "p95_ms": 0.14833384193480015
+    },
+    "parent_context_ablation": {
+      "samples": 32,
+      "correct": 10,
+      "accuracy": 0.3125,
+      "macro_f1": 0.27628968253968256,
+      "per_class": {
+        "met": {
+          "precision": 0.375,
+          "recall": 0.375,
+          "f1": 0.375,
+          "support": 8
+        },
+        "partially_met": {
+          "precision": 0.35294117647058826,
+          "recall": 0.6,
+          "f1": 0.4444444444444445,
+          "support": 10
+        },
+        "not_met": {
+          "precision": 1.0,
+          "recall": 0.16666666666666666,
+          "f1": 0.2857142857142857,
+          "support": 6
+        },
+        "not_stated": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0,
+          "support": 8
+        }
+      },
+      "cases": [
+        {
+          "id": "req-01",
+          "gold": "met",
+          "prediction": "not_stated"
+        },
+        {
+          "id": "req-02",
+          "gold": "met",
+          "prediction": "not_stated"
+        },
+        {
+          "id": "req-03",
+          "gold": "met",
+          "prediction": "not_stated"
+        },
+        {
+          "id": "req-04",
+          "gold": "met",
+          "prediction": "not_stated"
+        },
+        {
+          "id": "req-05",
+          "gold": "met",
+          "prediction": "not_stated"
+        },
+        {
+          "id": "req-06",
+          "gold": "met",
+          "prediction": "met"
+        },
+        {
+          "id": "req-07",
+          "gold": "met",
+          "prediction": "met"
+        },
+        {
+          "id": "req-08",
+          "gold": "met",
+          "prediction": "met"
+        },
+        {
+          "id": "req-09",
+          "gold": "not_met",
+          "prediction": "not_stated"
+        },
+        {
+          "id": "req-10",
+          "gold": "not_met",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-11",
+          "gold": "not_met",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-12",
+          "gold": "not_met",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-13",
+          "gold": "partially_met",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-14",
+          "gold": "partially_met",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-15",
+          "gold": "not_met",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-16",
+          "gold": "not_met",
+          "prediction": "not_met"
+        },
+        {
+          "id": "req-17",
+          "gold": "partially_met",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-18",
+          "gold": "partially_met",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-19",
+          "gold": "partially_met",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-20",
+          "gold": "partially_met",
+          "prediction": "met"
+        },
+        {
+          "id": "req-21",
+          "gold": "partially_met",
+          "prediction": "met"
+        },
+        {
+          "id": "req-22",
+          "gold": "partially_met",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-23",
+          "gold": "partially_met",
+          "prediction": "met"
+        },
+        {
+          "id": "req-24",
+          "gold": "partially_met",
+          "prediction": "met"
+        },
+        {
+          "id": "req-25",
+          "gold": "not_stated",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-26",
+          "gold": "not_stated",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-27",
+          "gold": "not_stated",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-28",
+          "gold": "not_stated",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-29",
+          "gold": "not_stated",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-30",
+          "gold": "not_stated",
+          "prediction": "met"
+        },
+        {
+          "id": "req-31",
+          "gold": "not_stated",
+          "prediction": "partially_met"
+        },
+        {
+          "id": "req-32",
+          "gold": "not_stated",
+          "prediction": "partially_met"
+        }
+      ]
+    },
+    "costs": {
+      "samples": 14,
+      "passed": 9,
+      "exact_match_rate": 0.6428571428571429,
+      "cases": [
+        {
+          "id": "cost-01",
+          "category": "simple",
+          "text": "软件及实施一次性费用80万元；年度维保服务费10万元。",
+          "currency": "CNY",
+          "months": 36,
+          "gold_tco": 1100000,
+          "rationale": "800000+100000×3",
+          "prediction_tco": 1100000.0,
+          "passed": true,
+          "missing": []
+        },
+        {
+          "id": "cost-02",
+          "category": "monthly",
+          "text": "一次性实施费用6万元；托管服务费每月2000元。",
+          "currency": "CNY",
+          "months": 18,
+          "gold_tco": 96000,
+          "rationale": "60000+2000×18",
+          "prediction_tco": 96000.0,
+          "passed": true,
+          "missing": []
+        },
+        {
+          "id": "cost-03",
+          "category": "quantity",
+          "text": "硬件单价2万元/台，采购3台，一次性付款。",
+          "currency": "CNY",
+          "months": 12,
+          "gold_tco": 60000,
+          "rationale": "20000×3；未注明其他费用，比较范围仅该项",
+          "prediction_tco": null,
+          "passed": false,
+          "missing": [
+            "汇总、估算、税费或计价单位需要进一步确认",
+            "未找到可确定币种和周期的明确费用项"
+          ]
+        },
+        {
+          "id": "cost-04",
+          "category": "tax",
+          "text": "软件许可一次性未税金额10万元，增值税率13%，另无周期性费用。",
+          "currency": "CNY",
+          "months": 12,
+          "gold_tco": 113000,
+          "rationale": "100000×1.13",
+          "prediction_tco": null,
+          "passed": false,
+          "missing": [
+            "汇总、估算、税费或计价单位需要进一步确认",
+            "未找到可确定币种和周期的明确费用项"
+          ]
+        },
+        {
+          "id": "cost-05",
+          "category": "quarterly",
+          "text": "维保费每季度3万元，软件许可一次性费用8万元。",
+          "currency": "CNY",
+          "months": 24,
+          "gold_tco": 320000,
+          "rationale": "80000+30000×8",
+          "prediction_tco": 80000.0,
+          "passed": false,
+          "missing": [
+            "汇总、估算、税费或计价单位需要进一步确认"
+          ]
+        },
+        {
+          "id": "cost-06",
+          "category": "bundle",
+          "text": "实施费用一次性20万元；三年维保打包费用9万元，覆盖完整36个月。",
+          "currency": "CNY",
+          "months": 36,
+          "gold_tco": 290000,
+          "rationale": "200000+90000",
+          "prediction_tco": 290000.0,
+          "passed": true,
+          "missing": []
+        },
+        {
+          "id": "cost-07",
+          "category": "discount",
+          "text": "软件许可一次性费用20万元；确认一次性折扣2万元，签约净支付18万元。",
+          "currency": "CNY",
+          "months": 12,
+          "gold_tco": 180000,
+          "rationale": "明确净支付180000，不重复累加",
+          "prediction_tco": 200000.0,
+          "passed": false,
+          "missing": [
+            "汇总、估算、税费或计价单位需要进一步确认"
+          ]
+        },
+        {
+          "id": "cost-08",
+          "category": "included",
+          "text": "软件许可及实施一次性费用30万元，已包含前两年维保；第三年维保费用5万元。",
+          "currency": "CNY",
+          "months": 36,
+          "gold_tco": 350000,
+          "rationale": "300000+50000",
+          "prediction_tco": 350000.0,
+          "passed": true,
+          "missing": []
+        },
+        {
+          "id": "cost-09",
+          "category": "optional",
+          "text": "软件许可一次性费用10万元；可选培训一次性费用2万元。",
+          "currency": "CNY",
+          "months": 12,
+          "gold_tco": 100000,
+          "rationale": "可选费用不进入基础TCO",
+          "prediction_tco": 100000.0,
+          "passed": true,
+          "missing": []
+        },
+        {
+          "id": "cost-10",
+          "category": "simple",
+          "text": "软件许可一次性费用12500元；每年维保费用1500元。",
+          "currency": "CNY",
+          "months": 24,
+          "gold_tco": 15500,
+          "rationale": "12500+1500×2",
+          "prediction_tco": 15500.0,
+          "passed": true,
+          "missing": []
+        },
+        {
+          "id": "cost-11",
+          "category": "uncertain",
+          "text": "软件许可预计10至15万元，维保另计。",
+          "currency": "CNY",
+          "months": 24,
+          "gold_tco": null,
+          "rationale": "范围报价且维保缺价，无法算出唯一TCO",
+          "prediction_tco": null,
+          "passed": true,
+          "missing": [
+            "汇总、估算、税费或计价单位需要进一步确认",
+            "未找到可确定币种和周期的明确费用项"
+          ]
+        },
+        {
+          "id": "cost-12",
+          "category": "uncertain",
+          "text": "实施费用一次性5万元；维保费另行商议。",
+          "currency": "CNY",
+          "months": 24,
+          "gold_tco": null,
+          "rationale": "仅可计算小计，完整TCO未知",
+          "prediction_tco": 50000.0,
+          "passed": false,
+          "missing": []
+        },
+        {
+          "id": "cost-13",
+          "category": "uncertain",
+          "text": "软件费用以美元结算，报价1000美元，比较币种为人民币，汇率待定。",
+          "currency": "CNY",
+          "months": 12,
+          "gold_tco": null,
+          "rationale": "换汇条件缺失",
+          "prediction_tco": null,
+          "passed": true,
+          "missing": [
+            "币种不一致或不明确，不自动换汇",
+            "未找到可确定币种和周期的明确费用项"
+          ]
+        },
+        {
+          "id": "cost-14",
+          "category": "uncertain",
+          "text": "总价20万元，其中包含多少年维保尚未确认。",
+          "currency": "CNY",
+          "months": 36,
+          "gold_tco": null,
+          "rationale": "周期缺失，完整TCO未知",
+          "prediction_tco": null,
+          "passed": true,
+          "missing": [
+            "汇总、估算、税费或计价单位需要进一步确认",
+            "未找到可确定币种和周期的明确费用项"
+          ]
+        }
+      ]
+    },
+    "retrieval": {
+      "chunks": 30,
+      "queries": 20,
+      "strategies": {
+        "bm25": {
+          "samples": 20,
+          "latency": {
+            "samples": 20,
+            "mean_ms": 0.26125836884602904,
+            "p50_ms": 0.255021033808589,
+            "p95_ms": 0.3153327852487564
+          },
+          "aggregate": {
+            "recall_at_k": 0.8,
+            "precision_at_k": 0.31666666666666665,
+            "mrr": 0.8,
+            "ndcg_at_k": 0.7815464876785729
+          },
+          "hit_rate_at_3": 0.85,
+          "scope_leakage_count": 0,
+          "cases": [
+            {
+              "id": "query-01",
+              "ranked_ids": [
+                "local",
+                "cloud",
+                "api"
+              ],
+              "gold": [
+                "local"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 1.0,
+                "ndcg_at_k": 1.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-02",
+              "ranked_ids": [
+                "auth",
+                "api",
+                "audit"
+              ],
+              "gold": [
+                "auth"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 1.0,
+                "ndcg_at_k": 1.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-03",
+              "ranked_ids": [
+                "api",
+                "audit",
+                "auth"
+              ],
+              "gold": [
+                "backup"
+              ],
+              "metrics": {
+                "recall_at_k": 0.0,
+                "precision_at_k": 0.0,
+                "mrr": 0.0,
+                "ndcg_at_k": 0.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-04",
+              "ranked_ids": [
+                "locale",
+                "hardware",
+                "latency"
+              ],
+              "gold": [
+                "audit"
+              ],
+              "metrics": {
+                "recall_at_k": 0.0,
+                "precision_at_k": 0.0,
+                "mrr": 0.0,
+                "ndcg_at_k": 0.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-05",
+              "ranked_ids": [
+                "export",
+                "auth",
+                "search"
+              ],
+              "gold": [
+                "export"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 1.0,
+                "ndcg_at_k": 1.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-06",
+              "ranked_ids": [
+                "encrypt",
+                "notice",
+                "cloud"
+              ],
+              "gold": [
+                "offline"
+              ],
+              "metrics": {
+                "recall_at_k": 0.0,
+                "precision_at_k": 0.0,
+                "mrr": 0.0,
+                "ndcg_at_k": 0.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-07",
+              "ranked_ids": [
+                "notice",
+                "fee",
+                "cloud"
+              ],
+              "gold": [
+                "fee",
+                "hardware"
+              ],
+              "metrics": {
+                "recall_at_k": 0.5,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 0.5,
+                "ndcg_at_k": 0.38685280723454163
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-08",
+              "ranked_ids": [
+                "delivery",
+                "search",
+                "sla"
+              ],
+              "gold": [
+                "delivery",
+                "hardware"
+              ],
+              "metrics": {
+                "recall_at_k": 0.5,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 1.0,
+                "ndcg_at_k": 0.6131471927654584
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-09",
+              "ranked_ids": [
+                "capacity",
+                "sla",
+                "encrypt"
+              ],
+              "gold": [
+                "capacity"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 1.0,
+                "ndcg_at_k": 1.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-10",
+              "ranked_ids": [
+                "latency",
+                "offline",
+                "api"
+              ],
+              "gold": [
+                "latency"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 1.0,
+                "ndcg_at_k": 1.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-11",
+              "ranked_ids": [
+                "support",
+                "migration",
+                "api"
+              ],
+              "gold": [
+                "support"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 1.0,
+                "ndcg_at_k": 1.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-12",
+              "ranked_ids": [
+                "audit",
+                "delete",
+                "search"
+              ],
+              "gold": [
+                "delete",
+                "audit"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.6666666666666666,
+                "mrr": 1.0,
+                "ndcg_at_k": 1.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-13",
+              "ranked_ids": [
+                "encrypt",
+                "api",
+                "audit"
+              ],
+              "gold": [
+                "api"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 0.5,
+                "ndcg_at_k": 0.6309297535714575
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-14",
+              "ranked_ids": [
+                "export",
+                "mobile",
+                "migration"
+              ],
+              "gold": [
+                "mobile",
+                "export"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.6666666666666666,
+                "mrr": 1.0,
+                "ndcg_at_k": 1.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-15",
+              "ranked_ids": [
+                "migration",
+                "mobile",
+                "encrypt"
+              ],
+              "gold": [
+                "migration"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 1.0,
+                "ndcg_at_k": 1.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-16",
+              "ranked_ids": [
+                "encrypt",
+                "hardware",
+                "migration"
+              ],
+              "gold": [
+                "encrypt"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 1.0,
+                "ndcg_at_k": 1.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-17",
+              "ranked_ids": [
+                "sla",
+                "hardware",
+                "fee"
+              ],
+              "gold": [
+                "sla"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 1.0,
+                "ndcg_at_k": 1.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-18",
+              "ranked_ids": [
+                "notice",
+                "auth",
+                "encrypt"
+              ],
+              "gold": [
+                "notice"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 1.0,
+                "ndcg_at_k": 1.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-19",
+              "ranked_ids": [
+                "upgrade",
+                "backup",
+                "offline"
+              ],
+              "gold": [
+                "upgrade"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 1.0,
+                "ndcg_at_k": 1.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-20",
+              "ranked_ids": [
+                "search",
+                "delete",
+                "export"
+              ],
+              "gold": [
+                "search"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 1.0,
+                "ndcg_at_k": 1.0
+              },
+              "scope_leakage": false
+            }
+          ]
+        },
+        "vector": {
+          "samples": 20,
+          "latency": {
+            "samples": 20,
+            "mean_ms": 0.2723917830735445,
+            "p50_ms": 0.2592714736238122,
+            "p95_ms": 0.34787505865097046
+          },
+          "aggregate": {
+            "recall_at_k": 0.6,
+            "precision_at_k": 0.2333333333333333,
+            "mrr": 0.4583333333333333,
+            "ndcg_at_k": 0.47217199017170086
+          },
+          "hit_rate_at_3": 0.65,
+          "scope_leakage_count": 0,
+          "cases": [
+            {
+              "id": "query-01",
+              "ranked_ids": [
+                "local",
+                "cloud",
+                "api"
+              ],
+              "gold": [
+                "local"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 1.0,
+                "ndcg_at_k": 1.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-02",
+              "ranked_ids": [
+                "upgrade",
+                "auth",
+                "latency"
+              ],
+              "gold": [
+                "auth"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 0.5,
+                "ndcg_at_k": 0.6309297535714575
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-03",
+              "ranked_ids": [
+                "support",
+                "notice",
+                "export"
+              ],
+              "gold": [
+                "backup"
+              ],
+              "metrics": {
+                "recall_at_k": 0.0,
+                "precision_at_k": 0.0,
+                "mrr": 0.0,
+                "ndcg_at_k": 0.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-04",
+              "ranked_ids": [
+                "hardware",
+                "migration",
+                "sla"
+              ],
+              "gold": [
+                "audit"
+              ],
+              "metrics": {
+                "recall_at_k": 0.0,
+                "precision_at_k": 0.0,
+                "mrr": 0.0,
+                "ndcg_at_k": 0.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-05",
+              "ranked_ids": [
+                "local",
+                "delete",
+                "auth"
+              ],
+              "gold": [
+                "export"
+              ],
+              "metrics": {
+                "recall_at_k": 0.0,
+                "precision_at_k": 0.0,
+                "mrr": 0.0,
+                "ndcg_at_k": 0.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-06",
+              "ranked_ids": [
+                "mobile",
+                "cloud",
+                "latency"
+              ],
+              "gold": [
+                "offline"
+              ],
+              "metrics": {
+                "recall_at_k": 0.0,
+                "precision_at_k": 0.0,
+                "mrr": 0.0,
+                "ndcg_at_k": 0.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-07",
+              "ranked_ids": [
+                "fee",
+                "local",
+                "cloud"
+              ],
+              "gold": [
+                "fee",
+                "hardware"
+              ],
+              "metrics": {
+                "recall_at_k": 0.5,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 1.0,
+                "ndcg_at_k": 0.6131471927654584
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-08",
+              "ranked_ids": [
+                "local",
+                "cloud",
+                "search"
+              ],
+              "gold": [
+                "delivery",
+                "hardware"
+              ],
+              "metrics": {
+                "recall_at_k": 0.0,
+                "precision_at_k": 0.0,
+                "mrr": 0.0,
+                "ndcg_at_k": 0.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-09",
+              "ranked_ids": [
+                "capacity",
+                "cloud",
+                "sla"
+              ],
+              "gold": [
+                "capacity"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 1.0,
+                "ndcg_at_k": 1.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-10",
+              "ranked_ids": [
+                "latency",
+                "delivery",
+                "api"
+              ],
+              "gold": [
+                "latency"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 1.0,
+                "ndcg_at_k": 1.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-11",
+              "ranked_ids": [
+                "locale",
+                "support",
+                "migration"
+              ],
+              "gold": [
+                "support"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 0.5,
+                "ndcg_at_k": 0.6309297535714575
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-12",
+              "ranked_ids": [
+                "mobile",
+                "audit",
+                "search"
+              ],
+              "gold": [
+                "delete",
+                "audit"
+              ],
+              "metrics": {
+                "recall_at_k": 0.5,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 0.5,
+                "ndcg_at_k": 0.38685280723454163
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-13",
+              "ranked_ids": [
+                "audit",
+                "encrypt",
+                "upgrade"
+              ],
+              "gold": [
+                "api"
+              ],
+              "metrics": {
+                "recall_at_k": 0.0,
+                "precision_at_k": 0.0,
+                "mrr": 0.0,
+                "ndcg_at_k": 0.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-14",
+              "ranked_ids": [
+                "export",
+                "local",
+                "mobile"
+              ],
+              "gold": [
+                "mobile",
+                "export"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.6666666666666666,
+                "mrr": 1.0,
+                "ndcg_at_k": 0.9197207891481876
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-15",
+              "ranked_ids": [
+                "delete",
+                "offline",
+                "support"
+              ],
+              "gold": [
+                "migration"
+              ],
+              "metrics": {
+                "recall_at_k": 0.0,
+                "precision_at_k": 0.0,
+                "mrr": 0.0,
+                "ndcg_at_k": 0.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-16",
+              "ranked_ids": [
+                "mobile",
+                "encrypt",
+                "export"
+              ],
+              "gold": [
+                "encrypt"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 0.5,
+                "ndcg_at_k": 0.6309297535714575
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-17",
+              "ranked_ids": [
+                "sla",
+                "hardware",
+                "mobile"
+              ],
+              "gold": [
+                "sla"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 1.0,
+                "ndcg_at_k": 1.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-18",
+              "ranked_ids": [
+                "export",
+                "notice",
+                "upgrade"
+              ],
+              "gold": [
+                "notice"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 0.5,
+                "ndcg_at_k": 0.6309297535714575
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-19",
+              "ranked_ids": [
+                "offline",
+                "search",
+                "upgrade"
+              ],
+              "gold": [
+                "upgrade"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 0.3333333333333333,
+                "ndcg_at_k": 0.5
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-20",
+              "ranked_ids": [
+                "export",
+                "training",
+                "search"
+              ],
+              "gold": [
+                "search"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 0.3333333333333333,
+                "ndcg_at_k": 0.5
+              },
+              "scope_leakage": false
+            }
+          ]
+        },
+        "hybrid": {
+          "samples": 20,
+          "latency": {
+            "samples": 20,
+            "mean_ms": 0.25682286359369755,
+            "p50_ms": 0.25122903753072023,
+            "p95_ms": 0.28541614301502705
+          },
+          "aggregate": {
+            "recall_at_k": 0.775,
+            "precision_at_k": 0.3,
+            "mrr": 0.725,
+            "ndcg_at_k": 0.7212828621314009
+          },
+          "hit_rate_at_3": 0.8,
+          "scope_leakage_count": 0,
+          "cases": [
+            {
+              "id": "query-01",
+              "ranked_ids": [
+                "local",
+                "cloud",
+                "api"
+              ],
+              "gold": [
+                "local"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 1.0,
+                "ndcg_at_k": 1.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-02",
+              "ranked_ids": [
+                "auth",
+                "cloud",
+                "api"
+              ],
+              "gold": [
+                "auth"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 1.0,
+                "ndcg_at_k": 1.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-03",
+              "ranked_ids": [
+                "backup",
+                "api",
+                "export"
+              ],
+              "gold": [
+                "backup"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 1.0,
+                "ndcg_at_k": 1.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-04",
+              "ranked_ids": [
+                "hardware",
+                "migration",
+                "search"
+              ],
+              "gold": [
+                "audit"
+              ],
+              "metrics": {
+                "recall_at_k": 0.0,
+                "precision_at_k": 0.0,
+                "mrr": 0.0,
+                "ndcg_at_k": 0.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-05",
+              "ranked_ids": [
+                "export",
+                "auth",
+                "delete"
+              ],
+              "gold": [
+                "export"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 1.0,
+                "ndcg_at_k": 1.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-06",
+              "ranked_ids": [
+                "cloud",
+                "encrypt",
+                "notice"
+              ],
+              "gold": [
+                "offline"
+              ],
+              "metrics": {
+                "recall_at_k": 0.0,
+                "precision_at_k": 0.0,
+                "mrr": 0.0,
+                "ndcg_at_k": 0.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-07",
+              "ranked_ids": [
+                "fee",
+                "cloud",
+                "hardware"
+              ],
+              "gold": [
+                "fee",
+                "hardware"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.6666666666666666,
+                "mrr": 1.0,
+                "ndcg_at_k": 0.9197207891481876
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-08",
+              "ranked_ids": [
+                "search",
+                "local",
+                "cloud"
+              ],
+              "gold": [
+                "delivery",
+                "hardware"
+              ],
+              "metrics": {
+                "recall_at_k": 0.0,
+                "precision_at_k": 0.0,
+                "mrr": 0.0,
+                "ndcg_at_k": 0.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-09",
+              "ranked_ids": [
+                "capacity",
+                "sla",
+                "cloud"
+              ],
+              "gold": [
+                "capacity"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 1.0,
+                "ndcg_at_k": 1.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-10",
+              "ranked_ids": [
+                "latency",
+                "api",
+                "delivery"
+              ],
+              "gold": [
+                "latency"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 1.0,
+                "ndcg_at_k": 1.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-11",
+              "ranked_ids": [
+                "support",
+                "migration",
+                "api"
+              ],
+              "gold": [
+                "support"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 1.0,
+                "ndcg_at_k": 1.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-12",
+              "ranked_ids": [
+                "audit",
+                "search",
+                "export"
+              ],
+              "gold": [
+                "delete",
+                "audit"
+              ],
+              "metrics": {
+                "recall_at_k": 0.5,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 1.0,
+                "ndcg_at_k": 0.6131471927654584
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-13",
+              "ranked_ids": [
+                "encrypt",
+                "audit",
+                "auth"
+              ],
+              "gold": [
+                "api"
+              ],
+              "metrics": {
+                "recall_at_k": 0.0,
+                "precision_at_k": 0.0,
+                "mrr": 0.0,
+                "ndcg_at_k": 0.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-14",
+              "ranked_ids": [
+                "export",
+                "mobile",
+                "audit"
+              ],
+              "gold": [
+                "mobile",
+                "export"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.6666666666666666,
+                "mrr": 1.0,
+                "ndcg_at_k": 1.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-15",
+              "ranked_ids": [
+                "delete",
+                "migration",
+                "local"
+              ],
+              "gold": [
+                "migration"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 0.5,
+                "ndcg_at_k": 0.6309297535714575
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-16",
+              "ranked_ids": [
+                "encrypt",
+                "upgrade",
+                "delete"
+              ],
+              "gold": [
+                "encrypt"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 1.0,
+                "ndcg_at_k": 1.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-17",
+              "ranked_ids": [
+                "sla",
+                "hardware",
+                "fee"
+              ],
+              "gold": [
+                "sla"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 1.0,
+                "ndcg_at_k": 1.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-18",
+              "ranked_ids": [
+                "notice",
+                "encrypt",
+                "audit"
+              ],
+              "gold": [
+                "notice"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 1.0,
+                "ndcg_at_k": 1.0
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-19",
+              "ranked_ids": [
+                "offline",
+                "upgrade",
+                "backup"
+              ],
+              "gold": [
+                "upgrade"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 0.5,
+                "ndcg_at_k": 0.6309297535714575
+              },
+              "scope_leakage": false
+            },
+            {
+              "id": "query-20",
+              "ranked_ids": [
+                "export",
+                "search",
+                "delete"
+              ],
+              "gold": [
+                "search"
+              ],
+              "metrics": {
+                "recall_at_k": 1.0,
+                "precision_at_k": 0.3333333333333333,
+                "mrr": 0.5,
+                "ndcg_at_k": 0.6309297535714575
+              },
+              "scope_leakage": false
+            }
+          ]
+        }
+      }
+    }
+  },
+  "cost_diagnostics": {
+    "known_tco_cases": 10,
+    "numeric_answers": 8,
+    "numeric_coverage": 0.8,
+    "correct_numeric_answers": 6,
+    "answer_exact_accuracy": 0.75,
+    "known_tco_exact_accuracy": 0.6,
+    "unknown_tco_cases": 4,
+    "unknown_correct_abstentions": 3,
+    "unknown_numeric_outputs": [
+      "cost-12"
+    ],
+    "wrong_numeric_outputs": [
+      "cost-05",
+      "cost-07"
+    ],
+    "unanswered_known_cases": [
+      "cost-03",
+      "cost-04"
+    ]
+  },
+  "real_model": {
+    "status": "executed",
+    "model": "deepseek-flash",
+    "samples": 12,
+    "requirement_correct": 2,
+    "cost_correct": 4,
+    "all_domain_success": 5,
+    "domain_success_count": 15,
+    "latency": {
+      "samples": 12,
+      "mean_ms": 4214.775149303023,
+      "p50_ms": 4126.9571874290705,
+      "p95_ms": 5657.694833120331
+    },
+    "http": [
+      {
+        "latency_ms": 878.1054997816682,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2438,
+          "completion_tokens": 97,
+          "total_tokens": 2535,
+          "prompt_tokens_details": {
+            "cached_tokens": 1664
+          },
+          "prompt_cache_hit_tokens": 1664,
+          "prompt_cache_miss_tokens": 774
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 1247.5418329704553,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 3547,
+          "completion_tokens": 148,
+          "total_tokens": 3695,
+          "prompt_tokens_details": {
+            "cached_tokens": 2432
+          },
+          "prompt_cache_hit_tokens": 2432,
+          "prompt_cache_miss_tokens": 1115
+        },
+        "tool_call_count": 3
+      },
+      {
+        "latency_ms": 2769.540375098586,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 3952,
+          "completion_tokens": 692,
+          "total_tokens": 4644,
+          "prompt_tokens_details": {
+            "cached_tokens": 3584
+          },
+          "prompt_cache_hit_tokens": 3584,
+          "prompt_cache_miss_tokens": 368
+        },
+        "tool_call_count": 0
+      },
+      {
+        "latency_ms": 719.2896250635386,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2434,
+          "completion_tokens": 97,
+          "total_tokens": 2531,
+          "prompt_tokens_details": {
+            "cached_tokens": 1664
+          },
+          "prompt_cache_hit_tokens": 1664,
+          "prompt_cache_miss_tokens": 770
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 1110.1189579349011,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 3563,
+          "completion_tokens": 149,
+          "total_tokens": 3712,
+          "prompt_tokens_details": {
+            "cached_tokens": 2432
+          },
+          "prompt_cache_hit_tokens": 2432,
+          "prompt_cache_miss_tokens": 1131
+        },
+        "tool_call_count": 3
+      },
+      {
+        "latency_ms": 978.5801670514047,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 3900,
+          "completion_tokens": 106,
+          "total_tokens": 4006,
+          "prompt_tokens_details": {
+            "cached_tokens": 3712
+          },
+          "prompt_cache_hit_tokens": 3712,
+          "prompt_cache_miss_tokens": 188
+        },
+        "tool_call_count": 2
+      },
+      {
+        "latency_ms": 2840.862166834995,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 4094,
+          "completion_tokens": 568,
+          "total_tokens": 4662,
+          "prompt_tokens_details": {
+            "cached_tokens": 3840
+          },
+          "prompt_cache_hit_tokens": 3840,
+          "prompt_cache_miss_tokens": 254
+        },
+        "tool_call_count": 0
+      },
+      {
+        "latency_ms": 1012.4920001253486,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2432,
+          "completion_tokens": 96,
+          "total_tokens": 2528,
+          "prompt_tokens_details": {
+            "cached_tokens": 1664
+          },
+          "prompt_cache_hit_tokens": 1664,
+          "prompt_cache_miss_tokens": 768
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 598.6589998938143,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2558,
+          "completion_tokens": 96,
+          "total_tokens": 2654,
+          "prompt_tokens_details": {
+            "cached_tokens": 2304
+          },
+          "prompt_cache_hit_tokens": 2304,
+          "prompt_cache_miss_tokens": 254
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 649.8609581030905,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2684,
+          "completion_tokens": 96,
+          "total_tokens": 2780,
+          "prompt_tokens_details": {
+            "cached_tokens": 2432
+          },
+          "prompt_cache_hit_tokens": 2432,
+          "prompt_cache_miss_tokens": 252
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 763.3984999265522,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2810,
+          "completion_tokens": 105,
+          "total_tokens": 2915,
+          "prompt_tokens_details": {
+            "cached_tokens": 2560
+          },
+          "prompt_cache_hit_tokens": 2560,
+          "prompt_cache_miss_tokens": 250
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 722.0606671180576,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2966,
+          "completion_tokens": 96,
+          "total_tokens": 3062,
+          "prompt_tokens_details": {
+            "cached_tokens": 2816
+          },
+          "prompt_cache_hit_tokens": 2816,
+          "prompt_cache_miss_tokens": 150
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 1095.907208044082,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2426,
+          "completion_tokens": 96,
+          "total_tokens": 2522,
+          "prompt_tokens_details": {
+            "cached_tokens": 1664
+          },
+          "prompt_cache_hit_tokens": 1664,
+          "prompt_cache_miss_tokens": 762
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 713.8545829802752,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2552,
+          "completion_tokens": 96,
+          "total_tokens": 2648,
+          "prompt_tokens_details": {
+            "cached_tokens": 2304
+          },
+          "prompt_cache_hit_tokens": 2304,
+          "prompt_cache_miss_tokens": 248
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 757.9232088755816,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2678,
+          "completion_tokens": 96,
+          "total_tokens": 2774,
+          "prompt_tokens_details": {
+            "cached_tokens": 2432
+          },
+          "prompt_cache_hit_tokens": 2432,
+          "prompt_cache_miss_tokens": 246
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 589.000582927838,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2804,
+          "completion_tokens": 100,
+          "total_tokens": 2904,
+          "prompt_tokens_details": {
+            "cached_tokens": 2560
+          },
+          "prompt_cache_hit_tokens": 2560,
+          "prompt_cache_miss_tokens": 244
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 828.8610421586782,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2934,
+          "completion_tokens": 96,
+          "total_tokens": 3030,
+          "prompt_tokens_details": {
+            "cached_tokens": 2688
+          },
+          "prompt_cache_hit_tokens": 2688,
+          "prompt_cache_miss_tokens": 246
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 928.716209018603,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2408,
+          "completion_tokens": 97,
+          "total_tokens": 2505,
+          "prompt_tokens_details": {
+            "cached_tokens": 1664
+          },
+          "prompt_cache_hit_tokens": 1664,
+          "prompt_cache_miss_tokens": 744
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 643.5909171123058,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2540,
+          "completion_tokens": 97,
+          "total_tokens": 2637,
+          "prompt_tokens_details": {
+            "cached_tokens": 2304
+          },
+          "prompt_cache_hit_tokens": 2304,
+          "prompt_cache_miss_tokens": 236
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 691.6097500361502,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2672,
+          "completion_tokens": 97,
+          "total_tokens": 2769,
+          "prompt_tokens_details": {
+            "cached_tokens": 2432
+          },
+          "prompt_cache_hit_tokens": 2432,
+          "prompt_cache_miss_tokens": 240
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 709.3561249785125,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2804,
+          "completion_tokens": 97,
+          "total_tokens": 2901,
+          "prompt_tokens_details": {
+            "cached_tokens": 2560
+          },
+          "prompt_cache_hit_tokens": 2560,
+          "prompt_cache_miss_tokens": 244
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 664.0137080103159,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2936,
+          "completion_tokens": 97,
+          "total_tokens": 3033,
+          "prompt_tokens_details": {
+            "cached_tokens": 2688
+          },
+          "prompt_cache_hit_tokens": 2688,
+          "prompt_cache_miss_tokens": 248
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 950.3665419761091,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2436,
+          "completion_tokens": 97,
+          "total_tokens": 2533,
+          "prompt_tokens_details": {
+            "cached_tokens": 1664
+          },
+          "prompt_cache_hit_tokens": 1664,
+          "prompt_cache_miss_tokens": 772
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 1023.0486658401787,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2567,
+          "completion_tokens": 97,
+          "total_tokens": 2664,
+          "prompt_tokens_details": {
+            "cached_tokens": 2432
+          },
+          "prompt_cache_hit_tokens": 2432,
+          "prompt_cache_miss_tokens": 135
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 693.4760001022369,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2698,
+          "completion_tokens": 97,
+          "total_tokens": 2795,
+          "prompt_tokens_details": {
+            "cached_tokens": 2560
+          },
+          "prompt_cache_hit_tokens": 2560,
+          "prompt_cache_miss_tokens": 138
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 566.1817078944296,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2829,
+          "completion_tokens": 97,
+          "total_tokens": 2926,
+          "prompt_tokens_details": {
+            "cached_tokens": 2688
+          },
+          "prompt_cache_hit_tokens": 2688,
+          "prompt_cache_miss_tokens": 141
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 783.893666928634,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2960,
+          "completion_tokens": 97,
+          "total_tokens": 3057,
+          "prompt_tokens_details": {
+            "cached_tokens": 2816
+          },
+          "prompt_cache_hit_tokens": 2816,
+          "prompt_cache_miss_tokens": 144
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 720.2033749781549,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2438,
+          "completion_tokens": 96,
+          "total_tokens": 2534,
+          "prompt_tokens_details": {
+            "cached_tokens": 1664
+          },
+          "prompt_cache_hit_tokens": 1664,
+          "prompt_cache_miss_tokens": 774
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 1029.655999969691,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2568,
+          "completion_tokens": 96,
+          "total_tokens": 2664,
+          "prompt_tokens_details": {
+            "cached_tokens": 2432
+          },
+          "prompt_cache_hit_tokens": 2432,
+          "prompt_cache_miss_tokens": 136
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 1027.2853749338537,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2698,
+          "completion_tokens": 96,
+          "total_tokens": 2794,
+          "prompt_tokens_details": {
+            "cached_tokens": 2560
+          },
+          "prompt_cache_hit_tokens": 2560,
+          "prompt_cache_miss_tokens": 138
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 1193.8483340200037,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 3770,
+          "completion_tokens": 186,
+          "total_tokens": 3956,
+          "prompt_tokens_details": {
+            "cached_tokens": 2432
+          },
+          "prompt_cache_hit_tokens": 2432,
+          "prompt_cache_miss_tokens": 1338
+        },
+        "tool_call_count": 4
+      },
+      {
+        "latency_ms": 788.100624922663,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 4233,
+          "completion_tokens": 90,
+          "total_tokens": 4323,
+          "prompt_tokens_details": {
+            "cached_tokens": 3840
+          },
+          "prompt_cache_hit_tokens": 3840,
+          "prompt_cache_miss_tokens": 393
+        },
+        "tool_call_count": 2
+      },
+      {
+        "latency_ms": 879.6538340393454,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2433,
+          "completion_tokens": 97,
+          "total_tokens": 2530,
+          "prompt_tokens_details": {
+            "cached_tokens": 1664
+          },
+          "prompt_cache_hit_tokens": 1664,
+          "prompt_cache_miss_tokens": 769
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 774.1998338606209,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2564,
+          "completion_tokens": 96,
+          "total_tokens": 2660,
+          "prompt_tokens_details": {
+            "cached_tokens": 2304
+          },
+          "prompt_cache_hit_tokens": 2304,
+          "prompt_cache_miss_tokens": 260
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 682.6243328396231,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2694,
+          "completion_tokens": 97,
+          "total_tokens": 2791,
+          "prompt_tokens_details": {
+            "cached_tokens": 2560
+          },
+          "prompt_cache_hit_tokens": 2560,
+          "prompt_cache_miss_tokens": 134
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 1069.7992499917746,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2825,
+          "completion_tokens": 98,
+          "total_tokens": 2923,
+          "prompt_tokens_details": {
+            "cached_tokens": 2688
+          },
+          "prompt_cache_hit_tokens": 2688,
+          "prompt_cache_miss_tokens": 137
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 814.3064170144498,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2957,
+          "completion_tokens": 97,
+          "total_tokens": 3054,
+          "prompt_tokens_details": {
+            "cached_tokens": 2816
+          },
+          "prompt_cache_hit_tokens": 2816,
+          "prompt_cache_miss_tokens": 141
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 740.9226659219712,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2434,
+          "completion_tokens": 97,
+          "total_tokens": 2531,
+          "prompt_tokens_details": {
+            "cached_tokens": 1664
+          },
+          "prompt_cache_hit_tokens": 1664,
+          "prompt_cache_miss_tokens": 770
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 1897.162666078657,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 3560,
+          "completion_tokens": 484,
+          "total_tokens": 4044,
+          "prompt_tokens_details": {
+            "cached_tokens": 2432
+          },
+          "prompt_cache_hit_tokens": 2432,
+          "prompt_cache_miss_tokens": 1128
+        },
+        "tool_call_count": 0
+      },
+      {
+        "latency_ms": 913.0489171948284,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2406,
+          "completion_tokens": 97,
+          "total_tokens": 2503,
+          "prompt_tokens_details": {
+            "cached_tokens": 1664
+          },
+          "prompt_cache_hit_tokens": 1664,
+          "prompt_cache_miss_tokens": 742
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 2577.0589171443135,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 3524,
+          "completion_tokens": 559,
+          "total_tokens": 4083,
+          "prompt_tokens_details": {
+            "cached_tokens": 2432
+          },
+          "prompt_cache_hit_tokens": 2432,
+          "prompt_cache_miss_tokens": 1092
+        },
+        "tool_call_count": 0
+      },
+      {
+        "latency_ms": 1007.2368329856545,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2421,
+          "completion_tokens": 95,
+          "total_tokens": 2516,
+          "prompt_tokens_details": {
+            "cached_tokens": 1664
+          },
+          "prompt_cache_hit_tokens": 1664,
+          "prompt_cache_miss_tokens": 757
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 898.7389169633389,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2546,
+          "completion_tokens": 96,
+          "total_tokens": 2642,
+          "prompt_tokens_details": {
+            "cached_tokens": 2304
+          },
+          "prompt_cache_hit_tokens": 2304,
+          "prompt_cache_miss_tokens": 242
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 726.793915964663,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2672,
+          "completion_tokens": 96,
+          "total_tokens": 2768,
+          "prompt_tokens_details": {
+            "cached_tokens": 2432
+          },
+          "prompt_cache_hit_tokens": 2432,
+          "prompt_cache_miss_tokens": 240
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 1339.0410840511322,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2798,
+          "completion_tokens": 96,
+          "total_tokens": 2894,
+          "prompt_tokens_details": {
+            "cached_tokens": 2560
+          },
+          "prompt_cache_hit_tokens": 2560,
+          "prompt_cache_miss_tokens": 238
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 787.5577500090003,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2924,
+          "completion_tokens": 98,
+          "total_tokens": 3022,
+          "prompt_tokens_details": {
+            "cached_tokens": 2688
+          },
+          "prompt_cache_hit_tokens": 2688,
+          "prompt_cache_miss_tokens": 236
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 776.7152080778033,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 2419,
+          "completion_tokens": 96,
+          "total_tokens": 2515,
+          "prompt_tokens_details": {
+            "cached_tokens": 1664
+          },
+          "prompt_cache_hit_tokens": 1664,
+          "prompt_cache_miss_tokens": 755
+        },
+        "tool_call_count": 1
+      },
+      {
+        "latency_ms": 1434.2979998327792,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 3478,
+          "completion_tokens": 237,
+          "total_tokens": 3715,
+          "prompt_tokens_details": {
+            "cached_tokens": 2432
+          },
+          "prompt_cache_hit_tokens": 2432,
+          "prompt_cache_miss_tokens": 1046
+        },
+        "tool_call_count": 5
+      },
+      {
+        "latency_ms": 2482.353791128844,
+        "status_code": 200,
+        "usage": {
+          "prompt_tokens": 3978,
+          "completion_tokens": 513,
+          "total_tokens": 4491,
+          "prompt_tokens_details": {
+            "cached_tokens": 3712
+          },
+          "prompt_cache_hit_tokens": 3712,
+          "prompt_cache_miss_tokens": 266
+        },
+        "tool_call_count": 0
+      }
+    ],
+    "cases": [
+      {
+        "id": "challenge-req-01-cost-01",
+        "gold_requirement": "met",
+        "gold_tco": 1100000,
+        "result": {
+          "vendor_id": "smoke-vendor",
+          "domains": {
+            "requirement_compliance": {
+              "domain": "requirement_compliance",
+              "vendor_id": "smoke-vendor",
+              "status": "completed",
+              "requirement_findings": [
+                {
+                  "vendor_id": "smoke-vendor",
+                  "requirement_id": "requirement-private-deployment",
+                  "mandatory": true,
+                  "weight": 1.0,
+                  "status": "met",
+                  "explanation": "证据原文说明全部组件可安装于客户自有机房，业务数据无需离开内网，直接满足“系统必须支持私有化部署”的强制要求。",
+                  "evidence_ids": [
+                    "smoke-requirement-evidence"
+                  ],
+                  "confidence": 0.9
+                }
+              ],
+              "cost_assessment": null,
+              "commitment_assessment": null,
+              "missing_information": [],
+              "conflicts": [],
+              "evidence_ids": [
+                "smoke-requirement-evidence"
+              ],
+              "revision_count": 0
+            },
+            "cost_modeling": {
+              "domain": "cost_modeling",
+              "vendor_id": "smoke-vendor",
+              "status": "completed",
+              "requirement_findings": [],
+              "cost_assessment": {
+                "vendor_id": "smoke-vendor",
+                "currency": "CNY",
+                "comparison_months": 36,
+                "one_time_cost": 800000.0,
+                "recurring_cost": 100000.0,
+                "optional_cost": 0.0,
+                "total_cost_of_ownership": 1100000.0,
+                "cost_sources": [
+                  {
+                    "evidence_id": "smoke-cost-evidence",
+                    "source_text": "软件及实施一次性费用80万元",
+                    "start": 0,
+                    "end": 14,
+                    "amount": 800000.0,
+                    "currency": "CNY",
+                    "period": "one_time",
+                    "category": "one_time",
+                    "business_categories": [
+                      "software",
+                      "implementation"
+                    ],
+                    "annual_amount": 800000.0
+                  },
+                  {
+                    "evidence_id": "smoke-cost-evidence",
+                    "source_text": "年度维保服务费10万元",
+                    "start": 15,
+                    "end": 26,
+                    "amount": 100000.0,
+                    "currency": "CNY",
+                    "period": "annual",
+                    "category": "recurring",
+                    "business_categories": [
+                      "maintenance"
+                    ],
+                    "annual_amount": 100000.0
+                  }
+                ],
+                "payment_terms": [],
+                "missing_costs": [],
+                "conflicts": [],
+                "evidence_ids": [
+                  "smoke-cost-evidence"
+                ]
+              },
+              "commitment_assessment": null,
+              "missing_information": [],
+              "conflicts": [],
+              "evidence_ids": [
+                "smoke-cost-evidence"
+              ],
+              "revision_count": 0
+            },
+            "commitment_verification": {
+              "domain": "commitment_verification",
+              "vendor_id": "smoke-vendor",
+              "status": "completed",
+              "requirement_findings": [],
+              "cost_assessment": null,
+              "commitment_assessment": {
+                "vendor_id": "smoke-vendor",
+                "findings": [
+                  {
+                    "category": "delivery",
+                    "statement": "证据原文声明“合同签署后 90 天完成上线”，构成明确的交付时间承诺；原文未给出延期责任或罚则等附加约定。",
+                    "status": "verified",
+                    "evidence_ids": [
+                      "smoke-commitment-evidence"
+                    ]
+                  },
+                  {
+                    "category": "dependency",
+                    "statement": "证据原文声明“客户需在项目启动前提供服务器和接口文档”，明确客户侧前置依赖及时间要求（项目启动前）。",
+                    "status": "verified",
+                    "evidence_ids": [
+                      "smoke-commitment-evidence"
+                    ]
+                  }
+                ],
+                "missing_information": [
+                  "交付承诺仅以原文“合同签署后 90 天完成上线”为准，未说明起算日定义、验收标准及延期责任或违约金安排。",
+                  "依赖承诺未说明客户未按时提供服务器和接口文档时的替代方案、责任划分或进度影响。"
+                ],
+                "conflicts": []
+              },
+              "missing_information": [
+                "交付承诺仅以原文“合同签署后 90 天完成上线”为准，未说明起算日定义、验收标准及延期责任或违约金安排。",
+                "依赖承诺未说明客户未按时提供服务器和接口文档时的替代方案、责任划分或进度影响。"
+              ],
+              "conflicts": [],
+              "evidence_ids": [
+                "smoke-commitment-evidence"
+              ],
+              "revision_count": 0
+            }
+          }
+        },
+        "requirement_prediction": "met",
+        "tco": 1100000.0,
+        "completed_domains": 3,
+        "requirement_passed": true,
+        "cost_passed": true,
+        "all_domains_passed": true,
+        "duration_ms": 4904.419707832858,
+        "http_calls": 3
+      },
+      {
+        "id": "challenge-req-02-cost-02",
+        "gold_requirement": "met",
+        "gold_tco": 96000,
+        "result": {
+          "vendor_id": "smoke-vendor",
+          "domains": {
+            "requirement_compliance": {
+              "domain": "requirement_compliance",
+              "vendor_id": "smoke-vendor",
+              "status": "completed",
+              "requirement_findings": [
+                {
+                  "vendor_id": "smoke-vendor",
+                  "requirement_id": "requirement-private-deployment",
+                  "mandatory": true,
+                  "weight": 1.0,
+                  "status": "not_stated",
+                  "explanation": "证据 smoke-requirement-evidence 的父块原文（quote 与 context_text 相同）仅说明“断开外网后仍可完成录入、审批和查询，许可证在本地校验”，即描述了离线可用与本地许可证校验的能力。但对强制要求“支持离线运行”的完整含义（例如是否支持完全脱离外网的部署、安装与升级、离线授权续期等）未作明确承诺，未将该表述与需求条目对应确认，因此判定为未明确陈述。",
+                  "evidence_ids": [
+                    "smoke-requirement-evidence"
+                  ],
+                  "confidence": 0.6
+                }
+              ],
+              "cost_assessment": null,
+              "commitment_assessment": null,
+              "missing_information": [
+                "requirement-private-deployment"
+              ],
+              "conflicts": [],
+              "evidence_ids": [
+                "smoke-requirement-evidence"
+              ],
+              "revision_count": 0
+            },
+            "cost_modeling": {
+              "domain": "cost_modeling",
+              "vendor_id": "smoke-vendor",
+              "status": "completed",
+              "requirement_findings": [],
+              "cost_assessment": {
+                "vendor_id": "smoke-vendor",
+                "currency": "CNY",
+                "comparison_months": 18,
+                "one_time_cost": 60000.0,
+                "recurring_cost": 24000.0,
+                "optional_cost": 0.0,
+                "total_cost_of_ownership": 96000.0,
+                "cost_sources": [
+                  {
+                    "evidence_id": "smoke-cost-evidence",
+                    "source_text": "一次性实施费用6万元",
+                    "start": 0,
+                    "end": 10,
+                    "amount": 60000.0,
+                    "currency": "CNY",
+                    "period": "one_time",
+                    "category": "one_time",
+                    "business_categories": [
+                      "implementation"
+                    ],
+                    "annual_amount": 60000.0
+                  },
+                  {
+                    "evidence_id": "smoke-cost-evidence",
+                    "source_text": "托管服务费每月2000元",
+                    "start": 11,
+                    "end": 23,
+                    "amount": 2000.0,
+                    "currency": "CNY",
+                    "period": "monthly",
+                    "category": "recurring",
+                    "business_categories": [
+                      "hosting"
+                    ],
+                    "annual_amount": 24000.0
+                  }
+                ],
+                "payment_terms": [],
+                "missing_costs": [
+                  "必要费用类别未提供可核验报价: software",
+                  "必要费用类别未提供可核验报价: maintenance"
+                ],
+                "conflicts": [],
+                "evidence_ids": [
+                  "smoke-cost-evidence"
+                ]
+              },
+              "commitment_assessment": null,
+              "missing_information": [
+                "必要费用类别未提供可核验报价: software",
+                "必要费用类别未提供可核验报价: maintenance"
+              ],
+              "conflicts": [],
+              "evidence_ids": [
+                "smoke-cost-evidence"
+              ],
+              "revision_count": 0
+            },
+            "commitment_verification": {
+              "domain": "commitment_verification",
+              "vendor_id": "smoke-vendor",
+              "status": "completed",
+              "requirement_findings": [],
+              "cost_assessment": null,
+              "commitment_assessment": {
+                "vendor_id": "smoke-vendor",
+                "findings": [
+                  {
+                    "category": "delivery",
+                    "statement": "证书/交付承诺：合同签署后 90 天完成上线（父块原文仅此一句，未附加条件或例外），可作为交付里程碑承诺。",
+                    "status": "verified",
+                    "evidence_ids": [
+                      "smoke-commitment-evidence"
+                    ]
+                  },
+                  {
+                    "category": "dependency",
+                    "statement": "依赖项承诺：客户需在项目启动前提供服务器和接口文档，即交付依赖客户方前置提供资源与资料。",
+                    "status": "verified",
+                    "evidence_ids": [
+                      "smoke-commitment-evidence"
+                    ]
+                  }
+                ],
+                "missing_information": [],
+                "conflicts": []
+              },
+              "missing_information": [],
+              "conflicts": [],
+              "evidence_ids": [
+                "smoke-commitment-evidence"
+              ],
+              "revision_count": 0
+            }
+          }
+        },
+        "requirement_prediction": "not_stated",
+        "tco": 96000.0,
+        "completed_domains": 3,
+        "requirement_passed": false,
+        "cost_passed": true,
+        "all_domains_passed": true,
+        "duration_ms": 5657.694833120331,
+        "http_calls": 4
+      },
+      {
+        "id": "challenge-req-09-cost-03",
+        "gold_requirement": "not_met",
+        "gold_tco": 60000,
+        "error_type": "ModelToolLoopError",
+        "requirement_passed": false,
+        "cost_passed": false,
+        "all_domains_passed": false,
+        "completed_domains": 0,
+        "duration_ms": 3753.612875007093,
+        "http_calls": 5
+      },
+      {
+        "id": "challenge-req-10-cost-04",
+        "gold_requirement": "not_met",
+        "gold_tco": 113000,
+        "error_type": "ModelToolLoopError",
+        "requirement_passed": false,
+        "cost_passed": false,
+        "all_domains_passed": false,
+        "completed_domains": 0,
+        "duration_ms": 3992.8074169438332,
+        "http_calls": 5
+      },
+      {
+        "id": "challenge-req-13-cost-05",
+        "gold_requirement": "partially_met",
+        "gold_tco": 320000,
+        "error_type": "ModelToolLoopError",
+        "requirement_passed": false,
+        "cost_passed": false,
+        "all_domains_passed": false,
+        "completed_domains": 0,
+        "duration_ms": 3644.955542171374,
+        "http_calls": 5
+      },
+      {
+        "id": "challenge-req-17-cost-06",
+        "gold_requirement": "partially_met",
+        "gold_tco": 290000,
+        "error_type": "ModelToolLoopError",
+        "requirement_passed": false,
+        "cost_passed": false,
+        "all_domains_passed": false,
+        "completed_domains": 0,
+        "duration_ms": 4027.4042908567935,
+        "http_calls": 5
+      },
+      {
+        "id": "challenge-req-18-cost-07",
+        "gold_requirement": "partially_met",
+        "gold_tco": 180000,
+        "error_type": "ModelToolLoopError",
+        "requirement_passed": false,
+        "cost_passed": false,
+        "all_domains_passed": false,
+        "completed_domains": 0,
+        "duration_ms": 4766.558332834393,
+        "http_calls": 5
+      },
+      {
+        "id": "challenge-req-21-cost-08",
+        "gold_requirement": "partially_met",
+        "gold_tco": 350000,
+        "error_type": "ModelToolLoopError",
+        "requirement_passed": false,
+        "cost_passed": false,
+        "all_domains_passed": false,
+        "completed_domains": 0,
+        "duration_ms": 4226.510084001347,
+        "http_calls": 5
+      },
+      {
+        "id": "challenge-req-25-cost-09",
+        "gold_requirement": "not_stated",
+        "gold_tco": 100000,
+        "result": {
+          "vendor_id": "smoke-vendor",
+          "domains": {
+            "requirement_compliance": {
+              "domain": "requirement_compliance",
+              "vendor_id": "smoke-vendor",
+              "status": "completed",
+              "requirement_findings": [
+                {
+                  "vendor_id": "smoke-vendor",
+                  "requirement_id": "requirement-private-deployment",
+                  "mandatory": true,
+                  "weight": 1.0,
+                  "status": "not_stated",
+                  "explanation": "证据 smoke-requirement-evidence 仅说明项目实施团队与售后联系电话，并称部署方案将在澄清后补充，未对'支持私有化部署'作出任何承诺或说明，故判定为未陈述。",
+                  "evidence_ids": [
+                    "smoke-requirement-evidence"
+                  ],
+                  "confidence": 0.9
+                }
+              ],
+              "cost_assessment": null,
+              "commitment_assessment": null,
+              "missing_information": [
+                "requirement-private-deployment"
+              ],
+              "conflicts": [],
+              "evidence_ids": [
+                "smoke-requirement-evidence"
+              ],
+              "revision_count": 0
+            },
+            "cost_modeling": {
+              "domain": "cost_modeling",
+              "vendor_id": "smoke-vendor",
+              "status": "completed",
+              "requirement_findings": [],
+              "cost_assessment": {
+                "vendor_id": "smoke-vendor",
+                "currency": "CNY",
+                "comparison_months": 12,
+                "one_time_cost": 100000.0,
+                "recurring_cost": 0.0,
+                "optional_cost": 20000.0,
+                "total_cost_of_ownership": 100000.0,
+                "cost_sources": [
+                  {
+                    "evidence_id": "smoke-cost-evidence",
+                    "source_text": "软件许可一次性费用10万元",
+                    "start": 0,
+                    "end": 13,
+                    "amount": 100000.0,
+                    "currency": "CNY",
+                    "period": "one_time",
+                    "category": "one_time",
+                    "business_categories": [
+                      "software"
+                    ],
+                    "annual_amount": 100000.0
+                  },
+                  {
+                    "evidence_id": "smoke-cost-evidence",
+                    "source_text": "可选培训一次性费用2万元",
+                    "start": 14,
+                    "end": 26,
+                    "amount": 20000.0,
+                    "currency": "CNY",
+                    "period": "one_time",
+                    "category": "optional",
+                    "business_categories": [
+                      "training"
+                    ],
+                    "annual_amount": 20000.0
+                  }
+                ],
+                "payment_terms": [],
+                "missing_costs": [
+                  "必要费用类别未提供可核验报价: implementation",
+                  "必要费用类别未提供可核验报价: maintenance"
+                ],
+                "conflicts": [],
+                "evidence_ids": [
+                  "smoke-cost-evidence"
+                ]
+              },
+              "commitment_assessment": null,
+              "missing_information": [
+                "必要费用类别未提供可核验报价: implementation",
+                "必要费用类别未提供可核验报价: maintenance"
+              ],
+              "conflicts": [],
+              "evidence_ids": [
+                "smoke-cost-evidence"
+              ],
+              "revision_count": 0
+            },
+            "commitment_verification": {
+              "domain": "commitment_verification",
+              "vendor_id": "smoke-vendor",
+              "status": "completed",
+              "requirement_findings": [],
+              "cost_assessment": null,
+              "commitment_assessment": {
+                "vendor_id": "smoke-vendor",
+                "findings": [
+                  {
+                    "category": "delivery",
+                    "statement": "合同签署后 90 天完成上线，构成明确的交付时间承诺。",
+                    "status": "verified",
+                    "evidence_ids": [
+                      "smoke-commitment-evidence"
+                    ]
+                  },
+                  {
+                    "category": "dependency",
+                    "statement": "客户需在项目启动前提供服务器和接口文档，构成对客户侧前置依赖的明确说明。",
+                    "status": "verified",
+                    "evidence_ids": [
+                      "smoke-commitment-evidence"
+                    ]
+                  }
+                ],
+                "missing_information": [],
+                "conflicts": []
+              },
+              "missing_information": [],
+              "conflicts": [],
+              "evidence_ids": [
+                "smoke-commitment-evidence"
+              ],
+              "revision_count": 0
+            }
+          }
+        },
+        "requirement_prediction": "not_stated",
+        "tco": 100000.0,
+        "completed_domains": 3,
+        "requirement_passed": true,
+        "cost_passed": true,
+        "all_domains_passed": true,
+        "duration_ms": 2644.826333038509,
+        "http_calls": 2
+      },
+      {
+        "id": "challenge-req-26-cost-10",
+        "gold_requirement": "not_stated",
+        "gold_tco": 15500,
+        "result": {
+          "vendor_id": "smoke-vendor",
+          "domains": {
+            "requirement_compliance": {
+              "domain": "requirement_compliance",
+              "vendor_id": "smoke-vendor",
+              "status": "completed",
+              "requirement_findings": [
+                {
+                  "vendor_id": "smoke-vendor",
+                  "requirement_id": "requirement-private-deployment",
+                  "mandatory": true,
+                  "weight": 1.0,
+                  "status": "not_met",
+                  "explanation": "需求文本为“支持审计日志”，对应证据 smoke-requirement-evidence 的引用与父块内容均为“审计日志：待确认。”，供应商未对该审计日志要求给出明确承诺，仅标注待确认，因此判定为未满足。",
+                  "evidence_ids": [
+                    "smoke-requirement-evidence"
+                  ],
+                  "confidence": 0.9
+                }
+              ],
+              "cost_assessment": null,
+              "commitment_assessment": null,
+              "missing_information": [],
+              "conflicts": [],
+              "evidence_ids": [
+                "smoke-requirement-evidence"
+              ],
+              "revision_count": 0
+            },
+            "cost_modeling": {
+              "domain": "cost_modeling",
+              "vendor_id": "smoke-vendor",
+              "status": "completed",
+              "requirement_findings": [],
+              "cost_assessment": {
+                "vendor_id": "smoke-vendor",
+                "currency": "CNY",
+                "comparison_months": 24,
+                "one_time_cost": 12500.0,
+                "recurring_cost": 1500.0,
+                "optional_cost": 0.0,
+                "total_cost_of_ownership": 15500.0,
+                "cost_sources": [
+                  {
+                    "evidence_id": "smoke-cost-evidence",
+                    "source_text": "软件许可一次性费用12500元",
+                    "start": 0,
+                    "end": 15,
+                    "amount": 12500.0,
+                    "currency": "CNY",
+                    "period": "one_time",
+                    "category": "one_time",
+                    "business_categories": [
+                      "software"
+                    ],
+                    "annual_amount": 12500.0
+                  },
+                  {
+                    "evidence_id": "smoke-cost-evidence",
+                    "source_text": "每年维保费用1500元",
+                    "start": 16,
+                    "end": 27,
+                    "amount": 1500.0,
+                    "currency": "CNY",
+                    "period": "annual",
+                    "category": "recurring",
+                    "business_categories": [
+                      "maintenance"
+                    ],
+                    "annual_amount": 1500.0
+                  }
+                ],
+                "payment_terms": [],
+                "missing_costs": [
+                  "必要费用类别未提供可核验报价: implementation"
+                ],
+                "conflicts": [],
+                "evidence_ids": [
+                  "smoke-cost-evidence"
+                ]
+              },
+              "commitment_assessment": null,
+              "missing_information": [
+                "必要费用类别未提供可核验报价: implementation"
+              ],
+              "conflicts": [],
+              "evidence_ids": [
+                "smoke-cost-evidence"
+              ],
+              "revision_count": 0
+            },
+            "commitment_verification": {
+              "domain": "commitment_verification",
+              "vendor_id": "smoke-vendor",
+              "status": "completed",
+              "requirement_findings": [],
+              "cost_assessment": null,
+              "commitment_assessment": {
+                "vendor_id": "smoke-vendor",
+                "findings": [
+                  {
+                    "category": "delivery",
+                    "statement": "smoke-commitment-evidence 的引用原文仅说明“合同签署后 90 天完成上线”，未声明更细的交付里程碑或验收标准，该证据 context_text 为 null，无法补充父块限定条件。",
+                    "status": "partial",
+                    "evidence_ids": [
+                      "smoke-commitment-evidence"
+                    ]
+                  },
+                  {
+                    "category": "dependency",
+                    "statement": "smoke-commitment-evidence 引用原文说明“客户需在项目启动前提供服务器和接口文档”，明确了客户侧前置依赖，但未说明依赖未满足时的处理方式或对交付时间的影响。",
+                    "status": "partial",
+                    "evidence_ids": [
+                      "smoke-commitment-evidence"
+                    ]
+                  }
+                ],
+                "missing_information": [
+                  "未提供交付节点与验收标准的细化承诺",
+                  "未说明客户依赖不满足时对交付时间的影响及责任划分"
+                ],
+                "conflicts": []
+              },
+              "missing_information": [
+                "未提供交付节点与验收标准的细化承诺",
+                "未说明客户依赖不满足时对交付时间的影响及责任划分"
+              ],
+              "conflicts": [],
+              "evidence_ids": [
+                "smoke-commitment-evidence"
+              ],
+              "revision_count": 0
+            }
+          }
+        },
+        "requirement_prediction": "not_met",
+        "tco": 15500.0,
+        "completed_domains": 3,
+        "requirement_passed": false,
+        "cost_passed": true,
+        "all_domains_passed": true,
+        "duration_ms": 3495.1412088703364,
+        "http_calls": 2
+      },
+      {
+        "id": "challenge-req-27-cost-11",
+        "gold_requirement": "not_stated",
+        "gold_tco": null,
+        "error_type": "ModelToolLoopError",
+        "requirement_passed": false,
+        "cost_passed": false,
+        "all_domains_passed": false,
+        "completed_domains": 0,
+        "duration_ms": 4765.1229170151055,
+        "http_calls": 5
+      },
+      {
+        "id": "challenge-req-28-cost-12",
+        "gold_requirement": "not_stated",
+        "gold_tco": null,
+        "result": {
+          "vendor_id": "smoke-vendor",
+          "domains": {
+            "requirement_compliance": {
+              "domain": "requirement_compliance",
+              "vendor_id": "smoke-vendor",
+              "status": "completed",
+              "requirement_findings": [
+                {
+                  "vendor_id": "smoke-vendor",
+                  "requirement_id": "requirement-private-deployment",
+                  "mandatory": true,
+                  "weight": 1.0,
+                  "status": "partially_met",
+                  "explanation": "证据 smoke-requirement-evidence 仅说明「单点登录事项需进一步沟通，本次材料未作答」，未给出明确的支持或不支持承诺，因此对强制要求「支持单点登录」仅构成部分回应，剩余内容待沟通确认。",
+                  "evidence_ids": [
+                    "smoke-requirement-evidence"
+                  ],
+                  "confidence": 0.4
+                }
+              ],
+              "cost_assessment": null,
+              "commitment_assessment": null,
+              "missing_information": [],
+              "conflicts": [],
+              "evidence_ids": [
+                "smoke-requirement-evidence"
+              ],
+              "revision_count": 0
+            },
+            "cost_modeling": {
+              "domain": "cost_modeling",
+              "vendor_id": "smoke-vendor",
+              "status": "completed",
+              "requirement_findings": [],
+              "cost_assessment": {
+                "vendor_id": "smoke-vendor",
+                "currency": "CNY",
+                "comparison_months": 24,
+                "one_time_cost": 50000.0,
+                "recurring_cost": 0.0,
+                "optional_cost": 0.0,
+                "total_cost_of_ownership": 50000.0,
+                "cost_sources": [
+                  {
+                    "evidence_id": "smoke-cost-evidence",
+                    "source_text": "实施费用一次性5万元",
+                    "start": 0,
+                    "end": 10,
+                    "amount": 50000.0,
+                    "currency": "CNY",
+                    "period": "one_time",
+                    "category": "one_time",
+                    "business_categories": [
+                      "implementation"
+                    ],
+                    "annual_amount": 50000.0
+                  }
+                ],
+                "payment_terms": [],
+                "missing_costs": [
+                  "必要费用类别未提供可核验报价: software",
+                  "必要费用类别未提供可核验报价: maintenance",
+                  "维保费金额未给出（原文为「维保费另行商议」），无法归一化"
+                ],
+                "conflicts": [],
+                "evidence_ids": [
+                  "smoke-cost-evidence"
+                ]
+              },
+              "commitment_assessment": null,
+              "missing_information": [
+                "必要费用类别未提供可核验报价: software",
+                "必要费用类别未提供可核验报价: maintenance",
+                "维保费金额未给出（原文为「维保费另行商议」），无法归一化"
+              ],
+              "conflicts": [],
+              "evidence_ids": [
+                "smoke-cost-evidence"
+              ],
+              "revision_count": 0
+            },
+            "commitment_verification": {
+              "domain": "commitment_verification",
+              "vendor_id": "smoke-vendor",
+              "status": "completed",
+              "requirement_findings": [],
+              "cost_assessment": null,
+              "commitment_assessment": {
+                "vendor_id": "smoke-vendor",
+                "findings": [
+                  {
+                    "category": "delivery",
+                    "statement": "证据明确「合同签署后 90 天完成上线」，交付里程碑可核验，未发现与其他证据的冲突。",
+                    "status": "verified",
+                    "evidence_ids": [
+                      "smoke-commitment-evidence"
+                    ]
+                  },
+                  {
+                    "category": "dependency",
+                    "statement": "证据明确「客户需在项目启动前提供服务器和接口文档」，属于客户侧前置依赖，已明确表述。",
+                    "status": "verified",
+                    "evidence_ids": [
+                      "smoke-commitment-evidence"
+                    ]
+                  }
+                ],
+                "missing_information": [
+                  "未提供交付/依赖事项的具体责任方、违约或延期处理条款"
+                ],
+                "conflicts": []
+              },
+              "missing_information": [
+                "未提供交付/依赖事项的具体责任方、违约或延期处理条款"
+              ],
+              "conflicts": [],
+              "evidence_ids": [
+                "smoke-commitment-evidence"
+              ],
+              "revision_count": 0
+            }
+          }
+        },
+        "requirement_prediction": "partially_met",
+        "tco": 50000.0,
+        "completed_domains": 3,
+        "requirement_passed": false,
+        "cost_passed": false,
+        "all_domains_passed": true,
+        "duration_ms": 4698.2482499442995,
+        "http_calls": 3
+      }
+    ]
+  },
+  "finished_at": "2026-10-03T13:11:08.213684+00:00",
+  "dataset_unchanged": true,
+  "code_unchanged": true
+}

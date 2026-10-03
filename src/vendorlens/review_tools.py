@@ -1,14 +1,19 @@
 from __future__ import annotations
 
-import re
 from collections.abc import Callable
 from typing import Any
 
-from vendorlens.fallbacks import DeterministicCostEngine
+from vendorlens.cost_grounding import (
+    CostGroundingError,
+    extract_grounded_costs,
+    validate_cost_numbers,
+)
+from vendorlens.numeric_facts import decimal_value
 from vendorlens.retrieval import tokenize
 from vendorlens.review_agent import (
     REVIEW_TOOLS_BY_DOMAIN,
     ReviewToolAccessError,
+    ReviewToolGroundingError,
     VendorReviewInput,
 )
 from vendorlens.schemas import EvidenceItem, RequirementStatus, ReviewDomain
@@ -96,6 +101,8 @@ class ReviewToolRegistry:
             raise ReviewToolAccessError(f"tool {name!r} is not registered")
         try:
             return self._handlers[name](**arguments)
+        except CostGroundingError as error:
+            raise ReviewToolGroundingError(str(error)) from error
         except ReviewToolAccessError:
             raise
         except (TypeError, ValueError) as error:
@@ -131,23 +138,21 @@ class ReviewToolRegistry:
         items = self._domain_evidence(ReviewDomain.REQUIREMENT_COMPLIANCE)
         ranked = sorted(
             items,
-            key=lambda item: len(terms & set(tokenize(item.quote))),
+            key=lambda item: len(terms & set(tokenize(item.context_text or item.quote))),
             reverse=True,
         )
-        return [{"evidence_id": item.id, "quote": item.quote} for item in ranked[:5]]
+        return [
+            {"evidence_id": item.id, "quote": item.quote, "context_text": item.context_text}
+            for item in ranked[:5]
+        ]
 
     def _compare_requirement_response(self, requirement_id: str, evidence_ids: list[str]) -> dict:
         requirement = self._requirement(requirement_id)
         items = self._evidence(ReviewDomain.REQUIREMENT_COMPLIANCE, evidence_ids)
-        quote = " ".join(item.quote for item in items)
-        negative = any(word in quote for word in ("不支持", "不满足", "无法", "不提供"))
-        overlap = len(set(tokenize(requirement.text)) & set(tokenize(quote))) / max(
-            len(set(tokenize(requirement.text))), 1
-        )
-        status = RequirementStatus.NOT_MET if negative else RequirementStatus.PARTIALLY_MET
-        if not negative and overlap >= 0.2:
-            status = RequirementStatus.MET
-        return {"status": status.value, "overlap": overlap, "evidence_ids": evidence_ids}
+        from vendorlens.semantic_rules import requirement_response
+
+        text = " ".join(item.context_text or item.quote for item in items)
+        return {**requirement_response(requirement.text, text), "evidence_ids": evidence_ids}
 
     def _mark_missing_response(self, requirement_id: str) -> dict:
         self._requirement(requirement_id)
@@ -155,23 +160,18 @@ class ReviewToolRegistry:
 
     def _extract_cost_items(self, evidence_ids: list[str]) -> list[dict]:
         items = self._evidence(ReviewDomain.COST_MODELING, evidence_ids)
-        extracted = []
-        for item in items:
-            for match in DeterministicCostEngine.amount_pattern.finditer(item.quote):
-                extracted.append(
-                    {
-                        "amount": DeterministicCostEngine._amount(match),
-                        "evidence_id": item.id,
-                        "quote": item.quote,
-                    }
-                )
-        return extracted
+        grounded = extract_grounded_costs(items, self.input_data.currency).require_categories(
+            self.input_data.required_cost_categories
+        )
+        return [item.model_dump() for item in grounded.items]
 
     def _normalize_cost(self, amount: float, period: str) -> dict:
-        if amount < 0 or period not in {"one_time", "monthly", "annual"}:
+        value = decimal_value(amount)
+        if value < 0 or period not in {"one_time", "monthly", "annual"}:
             raise ValueError("invalid cost")
-        annual = amount * 12 if period == "monthly" else amount
-        return {"amount": amount, "period": period, "annual_amount": annual}
+        annual = value * 12 if period == "monthly" else value
+        # This is an arithmetic helper, not evidence authorization for calculate_tco.
+        return {"amount": amount, "period": period, "annual_amount": float(annual)}
 
     def _calculate_tco(
         self,
@@ -180,20 +180,23 @@ class ReviewToolRegistry:
         optional_cost: float,
         evidence_ids: list[str],
     ) -> dict:
-        self._evidence(ReviewDomain.COST_MODELING, evidence_ids)
-        if min(one_time_cost, annual_recurring_cost, optional_cost) < 0:
-            raise ValueError("cost cannot be negative")
-        result = {
-            "vendor_id": self.input_data.vendor_id,
-            "currency": self.input_data.currency,
-            "comparison_months": self.input_data.comparison_months,
-            "one_time_cost": one_time_cost,
-            "recurring_cost": annual_recurring_cost,
-            "optional_cost": optional_cost,
-            "total_cost_of_ownership": one_time_cost
-            + annual_recurring_cost * self.input_data.comparison_months / 12,
-            "evidence_ids": evidence_ids,
-        }
+        self.authoritative_cost = None
+        items = self._evidence(ReviewDomain.COST_MODELING, evidence_ids)
+        grounded = extract_grounded_costs(items, self.input_data.currency).require_categories(
+            self.input_data.required_cost_categories
+        )
+        validate_cost_numbers(
+            grounded,
+            one_time=one_time_cost,
+            recurring=annual_recurring_cost,
+            optional=optional_cost,
+        )
+        result = grounded.result(
+            vendor_id=self.input_data.vendor_id,
+            currency=self.input_data.currency,
+            comparison_months=self.input_data.comparison_months,
+        )
+        result["missing_costs"] = grounded.missing
         self.authoritative_cost = result
         return result
 
@@ -206,15 +209,21 @@ class ReviewToolRegistry:
 
     def _compare_milestones(self, evidence_ids: list[str]) -> dict:
         quotes = self._commitment_quotes(evidence_ids)
-        numbers = sorted({value for item in quotes for value in re.findall(r"\d+", item["quote"])})
-        return {"values": numbers, "conflicting": len(numbers) > 1}
+        from vendorlens.semantic_rules import milestone_values
+
+        values = set().union(*(milestone_values(item["context_text"]) for item in quotes))
+        units = {unit for unit, _ in values}
+        return {
+            "values": sorted({value for _, value in values}),
+            "conflicting": any(len({v for u, v in values if u == unit}) > 1 for unit in units),
+        }
 
     def _check_dependencies(self, evidence_ids: list[str]) -> dict:
         quotes = self._commitment_quotes(evidence_ids)
         dependencies = [
             item
             for item in quotes
-            if any(word in item["quote"] for word in ("依赖", "前提", "甲方"))
+            if any(word in item["context_text"] for word in ("依赖", "前提", "甲方", "客户"))
         ]
         return {"dependencies": dependencies}
 
@@ -223,7 +232,14 @@ class ReviewToolRegistry:
 
     def _commitment_quotes(self, evidence_ids: list[str]) -> list[dict]:
         items = self._evidence(ReviewDomain.COMMITMENT_VERIFICATION, evidence_ids)
-        return [{"evidence_id": item.id, "quote": item.quote} for item in items]
+        return [
+            {
+                "evidence_id": item.id,
+                "quote": item.quote,
+                "context_text": item.context_text or item.quote,
+            }
+            for item in items
+        ]
 
 
 assert set(TOOL_SCHEMAS) == set().union(*REVIEW_TOOLS_BY_DOMAIN.values())

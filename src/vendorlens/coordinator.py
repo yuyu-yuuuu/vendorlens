@@ -173,6 +173,8 @@ class DatabaseRetrievalCoordinator:
             document_version_id=metadata["version_id"],
             chunk_id=hit.parent.chunk_id,
             quote=hit.matched_child.text,
+            context_text=hit.parent.text,
+            matched_chunk_id=hit.matched_child.chunk_id,
             source_text_hash=metadata["text_hash"],
             location=metadata["location"],
             vendor_id=metadata.get("vendor_id"),

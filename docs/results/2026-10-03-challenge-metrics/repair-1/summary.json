@@ -1,0 +1,14 @@
+{
+  "dataset_sha256": "d821787398818a13d2052a903d8a8f8c03bcfb7a41702923453844ab3af87362",
+  "model_inputs_sha256": "d99b4de5aef136209f2a1aab62ecaa70bd28c5f2ab7d82c9b4f12d396cb38c23",
+  "rule_correct": 24,
+  "rule_total": 32,
+  "rule_macro_f1": 0.7261857707509882,
+  "model_requirement_correct": 12,
+  "model_samples": 12,
+  "executor_exceptions": 0,
+  "three_domain_complete": 5,
+  "known_tco_correct": 6,
+  "known_tco_total": 10,
+  "tests": 240
+}

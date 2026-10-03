@@ -12,7 +12,7 @@ API 接收请求和校验，RQ/Redis 保存等待执行的工作，Worker 消费
 
 submit_review 先 session.commit，再调用 enqueuer。否则 Worker 可能已经执行，数据库中任务却还没提交，查不到任务。数据库和 Redis 不在同一个事务里，所以提交后入队失败仍可能发生；当前记录 enqueue_failed 并返回 task_id，不声称 exactly-once。
 
-HTTP 202 表示已接受任务，不表示分析已经完成。创建 task_id 用于查询业务记录，run_id 用于队列 job_id 和 checkpoint thread_id，trace_id 用于关联执行记录；三个 ID 在当前首版是一个任务各一个，恢复后的生命周期策略尚未实现。
+HTTP 202 表示已接受任务，不表示分析已经完成。创建 task_id 用于查询业务记录，run_id 用于队列 job_id 和 checkpoint thread_id，trace_id 用于关联执行记录；三个 ID 在当前首版是一个任务各一个，恢复沿用这些 ID，每次领取增加 attempt，新建 Trace 根跨度；新的 RQ job_id 增加恢复后缀以避免旧 job ID 冲突。
 
 ## 2. 为什么要 request_snapshot
 
@@ -24,7 +24,7 @@ HTTP 202 表示已接受任务，不表示分析已经完成。创建 task_id �
 
 run_review_task 执行条件更新：UPDATE research_tasks SET status='running' WHERE id=... AND status='queued'。只有影响一行的 Worker 才能继续。第二个 Worker 看到状态不再 queued，rowcount 为零，退出。
 
-若使用先 SELECT queued 再 UPDATE，两个 Worker 都可能先看到 queued，从而重复调用模型和写报告。当前的防重针对同一个 task_id，不是同一请求多次提交的幂等，也不是硬中断后的自动恢复。
+若使用先 SELECT queued 再 UPDATE，两个 Worker 都可能先看到 queued，从而重复调用模型和写报告。当前的防重针对同一个 task_id，不是同一请求多次提交的幂等，硬中断恢复由执行租约与过期扫描承担，恢复后仍用所有权条件防止旧执行写入。
 
 ## 4. 领域结果、报告、终态为何一起提交
 
@@ -60,10 +60,16 @@ workflow 每次 executor.execute 外包 agent 跨度，记录 Vendor、revision_
 
 提示词、原始材料、工具参数/结果、Authorization 和 API Key 不进入 Trace。safe_attributes 只接受选定的标量字段，错误只保存异常类名，未注册工具名称统一为 unregistered_tool。
 
-provider 未报告完整 usage 时，不把默认零值当真实消耗。trace 接口统计 model_calls/tool_calls/usage_reported_calls；Token 只合计完整 usage 的调用，通过 usage_complete 标记是否完整；没有完整 usage 时汇总为 null。当前不计算账单金额，也不记录隐藏思维链。
+provider 未报告完整 usage 时，不把默认零值当真实消耗。trace 接口统计 model_calls/tool_calls/usage_reported_calls；Token 只合计完整 usage 的调用，通过 usage_complete 标记是否完整；没有完整 usage 时汇总为 null。配置输入/输出每百万 Token 单价后，完整 usage 可计算 estimated_cost；未配置单价或未报告 usage 视为未知，按币种汇总且提供 cost_complete。这不是账单金额。Trace 不记录隐藏思维链。
 
 ## 9. 面试表达与当前边界
 
 可以说：将证据驱动评审工作流接入 RQ 后台任务，使用数据库原子领取避免同任务重复执行，将结果和终态事件事务提交，持久化 SSE 序号支持续读，并用 ContextVar/copy_context 实现并行 Vendor 的父子 Trace。
 
-必须补充：数据库/Redis 之间没有事务 outbox；API 没有鉴权；硬中断可能遗留 running 任务或跨度，自动恢复尚未实现；trace 不是模型效果评测；离线假模型测试不代表真实模型质量或生产吞吐量。
+必须补充：数据库/Redis 之间没有事务 outbox；共享 Bearer Key 可选，未配置时仅可信本地使用且没有多租户权限；硬中断通过租约恢复持久化 checkpoint 并标记 interrupted，但外部调用不能回滚；trace 不是模型效果评测；离线假模型测试不代表真实模型质量或生产吞吐量。
+
+## 10. 恢复后的 Trace 和 checkpoint
+
+Worker 心跳续租；过期 scanner 或 retry 释放旧所有权并保留输入快照。新 Worker 的事件、报告以及 checkpoint 写入都经过 lease_owner 校验；checkpoint 写入持有任务行锁，避免旧执行在新 Worker 领取后污染恢复点。该检查不是证据门禁，前者限制谁能写，后者限制哪些结论能进入报告。
+
+恢复可重做最后一个没有保存完成状态的节点，因此模型调用并非 exactly-once。旧执行中断跨度不能精确计算结束耗时，duration_ms 可空。一次 trace_id 可以对应多个尝试根节点，失败和 interrupted 历史不能抹除。完整 checkpoint 已完成但业务报告未提交时，恢复直接保存结果，不重复 Agent。
