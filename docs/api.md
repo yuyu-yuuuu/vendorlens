@@ -16,11 +16,11 @@
 .venv/bin/uvicorn vendorlens.api:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-文档页面和 OpenAPI 可在没有数据库连接时读取，但业务接口需要数据库可用。在本机终端运行时，依赖应使用本机映射地址；`.env.example` 中 postgres/redis/chroma 主机名适用于 Compose 容器内，不能直接用于 Mac 终端。不要用示例文件覆盖已保存的模型密钥。
+文档页面和 OpenAPI 可在没有数据库连接时读取，但业务接口需要数据库可用。先运行 `python3 scripts/setup_local_env.py` 初始化忽略的本地凭证，脚本保留已有模型密钥。`.env` 使用本机映射地址，Compose 自动覆盖容器内依赖地址。不要用示例文件覆盖已保存的模型密钥。
 
 执行真实任务前需要完成数据库迁移、准备项目/供应商/需求目录、摄取并索引资料，以及另行启动 `.venv/bin/python -m vendorlens.worker`。项目、供应商、需求、配置与资料准备均可通过管理 HTTP 接口完成。上传同步完成解析和索引；大文件/高并发后台摄取尚未实现。
 
-**Try it out 调用的是真实接口，不是模拟演示。** POST 创建任务可能导致后台模型费用；文档中的 ID 是占位值，执行前必须替换。配置 VENDORLENS_API_ACCESS_KEY 后，业务接口要求 Authorization: Bearer <key>；未配置时只在可信本地环境使用。文档页公开，共享 Key 不提供租户权限。
+**Try it out 调用的是真实接口，不是模拟演示。** POST 创建任务可能导致后台模型费用；文档中的 ID 是占位值，执行前必须替换。配置 VENDORLENS_API_ACCESS_KEY 后，业务接口要求 Authorization: Bearer <key>；在 Swagger 的 Authorize 中填写密钥。仅 development 环境允许未配置 Key，其他环境缺少或为空时返回 503。Compose 使用 production 模式并要求凭证。文档页公开，共享 Key 不提供租户权限。
 
 Swagger/ReDoc 使用框架默认的 CDN 前端资源；如果页面空白但 openapi.json 正常，先检查浏览器是否能加载 CDN。当前未打包离线前端资源。
 

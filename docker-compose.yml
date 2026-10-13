@@ -1,29 +1,39 @@
 name: vendorlens
 
+x-runtime-environment: &runtime-environment
+  VENDORLENS_DATABASE_URL: postgresql+psycopg://vendorlens:${VENDORLENS_POSTGRES_PASSWORD:?Run python3 scripts/setup_local_env.py first}@postgres:5432/vendorlens
+  VENDORLENS_REDIS_URL: redis://:${VENDORLENS_REDIS_PASSWORD:?Run python3 scripts/setup_local_env.py first}@redis:6379/0
+  VENDORLENS_CHROMA_URL: http://chroma:8000
+  VENDORLENS_STORAGE_ROOT: /data/files
+  VENDORLENS_ENVIRONMENT: production
+  VENDORLENS_API_ACCESS_KEY: ${VENDORLENS_API_ACCESS_KEY:?Run python3 scripts/setup_local_env.py first}
+
 services:
   postgres:
     image: postgres:17-alpine
     environment:
       POSTGRES_DB: vendorlens
       POSTGRES_USER: vendorlens
-      POSTGRES_PASSWORD: vendorlens
+      POSTGRES_PASSWORD: ${VENDORLENS_POSTGRES_PASSWORD:?Run python3 scripts/setup_local_env.py first}
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U vendorlens -d vendorlens"]
       interval: 5s
       timeout: 3s
       retries: 12
-    ports: ["5433:5432"]
+    ports: ["127.0.0.1:5433:5432"]
     volumes: ["postgres_data:/var/lib/postgresql/data"]
 
   redis:
     image: redis:7.4-alpine
-    command: ["redis-server", "--appendonly", "yes"]
+    environment:
+      REDISCLI_AUTH: ${VENDORLENS_REDIS_PASSWORD:?Run python3 scripts/setup_local_env.py first}
+    command: ["sh", "-c", 'exec redis-server --appendonly yes --requirepass "$$REDISCLI_AUTH"']
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 3s
       retries: 12
-    ports: ["6380:6379"]
+    ports: ["127.0.0.1:6380:6379"]
     volumes: ["redis_data:/data"]
 
   chroma:
@@ -40,10 +50,11 @@ services:
       interval: 5s
       timeout: 3s
       retries: 12
-    ports: ["8100:8000"]
+    ports: ["127.0.0.1:8100:8000"]
     volumes: ["chroma_data:/data"]
 
   api:
+    environment: *runtime-environment
     build:
       context: .
       dockerfile: services/api/Dockerfile
@@ -51,7 +62,7 @@ services:
       - path: .env
         required: false
     command: ["uvicorn", "vendorlens.api:app", "--host", "0.0.0.0", "--port", "8000"]
-    ports: ["8000:8000"]
+    ports: ["127.0.0.1:8000:8000"]
     volumes:
       - files_data:/data/files
       - ./skills:/app/skills:ro
@@ -61,6 +72,7 @@ services:
       chroma: {condition: service_healthy}
 
   worker:
+    environment: *runtime-environment
     build:
       context: .
       dockerfile: services/worker/Dockerfile
@@ -77,6 +89,7 @@ services:
       chroma: {condition: service_healthy}
 
   recovery:
+    environment: *runtime-environment
     build:
       context: .
       dockerfile: services/worker/Dockerfile

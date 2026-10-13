@@ -53,6 +53,7 @@ npm run dev
 ```bash
 python3 -m venv .venv
 .venv/bin/pip install -e '.[dev]'
+python3 scripts/setup_local_env.py
 docker compose up -d postgres redis chroma
 .venv/bin/alembic upgrade head
 .venv/bin/uvicorn vendorlens.api:app --reload
@@ -60,7 +61,13 @@ docker compose up -d postgres redis chroma
 
 API 健康检查：`GET http://localhost:8000/health`。本机 ChromaDB 使用 `http://localhost:8100`；容器内服务通过 `http://chroma:8000` 访问。
 
-注意：`.env.example` 的依赖地址适用于 Compose 内的 API/Worker。若在 Mac 终端启动服务，将 `.env` 中依赖地址改成本机映射地址：数据库 `postgresql+psycopg://vendorlens:vendorlens@localhost:5433/vendorlens`、Redis `redis://localhost:6380/0`、Chroma `http://localhost:8100`，文件目录改为 `data/files`。保留已有模型密钥，不要再次用示例覆盖 `.env`。
+初始化脚本为 PostgreSQL、Redis 和 API 生成独立随机密钥，保存到 Git 忽略的 `.env`，并同步前端 `.env.local` 的 API Key；文件权限为 600。脚本保留已有模型配置，重复执行不轮换已有密钥。`.env` 使用本机映射地址，Compose 自动覆盖容器内依赖地址。不要用示例文件覆盖已保存的模型密钥。
+
+如果已有 PostgreSQL 数据卷，其数据库密码不会随环境变量自动改变。复用前需由数据库管理员将 `vendorlens` 角色密码更新为本地 `VENDORLENS_POSTGRES_PASSWORD`；先备份数据，不要通过删除卷来解决密码不一致。Redis 重启后使用本地新密码。此处未提供公网部署配置。
+
+Compose 的所有发布端口只绑定 `127.0.0.1`，Redis 启用密码认证，API 使用 production 模式并强制要求 Bearer Key。前端真实项目请求通过服务端代理自动携带密钥；在 Swagger 的 Authorize 中填写本地 API Key。直接用 Python 启动时，仅 development 模式允许不配置 Key，其他环境未配置时业务接口返回 503。
+
+个人简历、环境文件、数据库和私钥禁止纳入 Git 或 Docker 构建上下文。共享 Key 只适用于可信人员访问；需要对外提供服务时，仍需 HTTPS、用户认证和项目级权限控制。
 
 真实模型执行器使用 `.env.example` 中的 `VENDORLENS_MODEL_*` 配置；不要把真实 API Key 提交到仓库。
 
@@ -107,7 +114,7 @@ Swagger 已提供中文分组、请求示例、响应模型、错误状态和 Tr
 
 提交时冻结需求、项目上下文与 ReviewConfig；没有配置时使用 CNY、36 个月和 50/30/20 权重，必需成本类别为 software/implementation/maintenance。可通过 `queries_by_domain` 覆盖三个领域查询。文档版本在 Worker 检索节点执行时冻结。
 
-事件包括 run.queued、run.started、node.completed、run.finished/run.failed/run.enqueue_failed。终态后事件连接关闭；刷新页面不会重新执行任务。队列失败返回 503 和已创建 task_id；Worker 异常记录脱敏失败事件。Worker 领取时写入执行租约，心跳续租。启动 `python -m vendorlens.recovery --watch` 扫描过期 running 任务；也可调用 `POST /tasks/{task_id}/retry` 恢复执行异常或入队失败任务。有效租约及已有报告的任务返回 409。恢复保留 run_id/trace_id 和快照，旧未结束跨度标记 interrupted；新执行产生新根跨度。共享 Bearer Key 可选，未配置时限可信本地使用；它不是多租户权限系统。
+事件包括 run.queued、run.started、node.completed、run.finished/run.failed/run.enqueue_failed。终态后事件连接关闭；刷新页面不会重新执行任务。队列失败返回 503 和已创建 task_id；Worker 异常记录脱敏失败事件。Worker 领取时写入执行租约，心跳续租。启动 `python -m vendorlens.recovery --watch` 扫描过期 running 任务；也可调用 `POST /tasks/{task_id}/retry` 恢复执行异常或入队失败任务。有效租约及已有报告的任务返回 409。恢复保留 run_id/trace_id 和快照，旧未结束跨度标记 interrupted；新执行产生新根跨度。共享 Bearer Key 在非 development 环境必需；它不是多租户权限系统。
 
 Trace 的 parent_span_id 构成执行树；并行供应商通过独立 ContextVar 上下文保持父子关系。模型接口未提供完整 usage 时，usage_reported=false；Trace 汇总只累加已报告调用，并通过 usage_complete 标明是否完整，没有已报告调用时 Token 为 null。仅在完整 usage 和输入/输出单价均配置时估算金额，按币种汇总，并用 cost_complete 表示完整性；这是配置单价估算，不是供应商账单。耗时包含嵌套子操作，父子 duration_ms 不能简单相加。详细代码学习见[后台任务与 Trace 讲解](docs/learning/2026-10-02-task-runtime-and-trace.md)。
 
@@ -173,6 +180,6 @@ Skills 存放于 skills 目录，支持 JSON 和带 JSON 元数据头的 SKILL.m
 
 ## 强指标测试与简历
 
-[修订测试报告](docs/results/2026-10-03-challenge-metrics/测试报告.md)记录固定挑战集、真实模型调用、计算口径和失败样例。[简历文本](docs/resume/VendorLens-强指标简历.txt)按已验证的实现与测试范围描述项目。旧模板集的满分结果仅保留作功能回归记录，已撤出简历效果指标；当前诊断暴露了语义判断和复杂报价处理的不足。
+[修订测试报告](docs/results/2026-10-03-challenge-metrics/测试报告.md)记录固定挑战集、真实模型调用、计算口径和失败样例。个人简历单独保存在仓库外。旧模板集的满分结果仅保留作功能回归记录，已撤出简历效果指标；当前诊断暴露了语义判断和复杂报价处理的不足。
 
 任务创建现保存事务 outbox，恢复扫描同时处理未发送记录。升级到 `e72f01b7c391` 后更新 API/Worker/recovery；新增表不改变已有报告。

@@ -1,4 +1,5 @@
-.env
+.env*
+!.env.example
 .venv/
 __pycache__/
 .pytest_cache/
@@ -13,4 +14,20 @@ artifacts/
 node_modules/
 .next/
 *.tsbuildinfo
-apps/web/.env.local
+# Private documents and runtime credentials
+docs/resume/
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.sqlite-*
+*.sqlite3-*
+*.log
+*.bak
+*.backup
